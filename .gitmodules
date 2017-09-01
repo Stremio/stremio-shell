@@ -1,0 +1,14 @@
+[submodule "deps/qBreakpad"]
+	path = deps/qBreakpad
+	url = https://github.com/Ivshti/qBreakpad
+
+[submodule "deps/libmpv"]
+	path = deps/libmpv
+	url = https://github.com/Ivshti/libmpv
+[submodule "deps/singleapplication"]
+	path = deps/singleapplication
+	url = http://github.com/itay-grudev/SingleApplication
+[submodule "deps/chroma"]
+	path = deps/chroma
+	url = https://github.com/Ivshti/razerchroma
+
