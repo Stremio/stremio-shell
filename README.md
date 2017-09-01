@@ -7,10 +7,15 @@
 
 
 
-Command line to build:
+## Command line to build:
 
 ```
 ( cd deps/qBreakpad/handler ; qmake ; make )
 qmake
 make
 ```
+
+## Releasing a version
+
+1. Bump the version in the `stremio.pro` file
+2. Create a git tag with the corresponding version
