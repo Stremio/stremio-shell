@@ -10,7 +10,7 @@
 Command line to build:
 
 ```
-( cd shell/deps/qBreakpad/handler ; qmake ; make )
+( cd deps/qBreakpad/handler ; qmake ; make )
 qmake
 make
 ```
