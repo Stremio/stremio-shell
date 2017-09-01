@@ -47,4 +47,4 @@ release/*
 moc_predefs\.h
 
 # binary on Linux
-./stremio
+stremio
