@@ -318,7 +318,8 @@ ApplicationWindow {
         // Prevent navigation
         onNavigationRequested: function(req) {
             if (! req.url.toString().match(/^http(s?):\/\/(127.0.0.1:1147(\d)|app.strem.io|www.strem.io)\//)) {
-                req.action = WebEngineView.IgnoreRequest;
+                 console.log("onNavigationRequested: disallowed URL "+req.url.toString());
+                 req.action = WebEngineView.IgnoreRequest;
             }
         }
 
