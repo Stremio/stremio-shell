@@ -124,7 +124,7 @@ ApplicationWindow {
               }
               MenuItem {
                   text: qsTr("Open in browser")
-                  onTriggered: Qt.openUrlExternally("http://127.0.0.1:11470/")
+                  onTriggered: Qt.openUrlExternally("http://127.0.0.1:11470/") // XXX: FIXME: hardcode
               }
               MenuItem {
                   text: qsTr("Quit")
