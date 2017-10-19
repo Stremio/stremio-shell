@@ -245,7 +245,7 @@ ApplicationWindow {
 
         // WARNING: mainUrl should load the app through HTTPs to avoid the possibility of MITM attacks
         readonly property string params: "?winControls=true&loginFlow=desktop";
-        readonly property string mainUrl: Qt.application.arguments.indexOf("--development") > -1 || debug ? "http://127.0.0.1:11470/#"+webView.params : "http://app.strem.io/#"+webView.params;
+        readonly property string mainUrl: Qt.application.arguments.indexOf("--development") > -1 || debug ? "http://127.0.0.1:11470/#"+webView.params : "https://app.strem.io/#"+webView.params;
         readonly property string backupUrl: "http://127.0.0.1:11470/#"+webView.params;
 
         url: webView.mainUrl;
@@ -413,7 +413,7 @@ ApplicationWindow {
     signal autoUpdaterRestartTimer();
     function initAutoUpdater() {
         var endpoints = ["https://www.strem.io/updater/check", "https://www.stremio.com/updater/check", "https://www.stremio.net/updater/check"];
-        var fallbackSite = "http://www.stremio.com/?fromFailedAutoupdate=true";
+        var fallbackSite = "https://www.stremio.com/?fromFailedAutoupdate=true";
         var doAutoupdate = autoUpdater.isInstalled()
 
         // On Linux, because we use AppImage, we cannot do partial updates - because we can't replace files in the read-only mountpoint
