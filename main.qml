@@ -37,7 +37,7 @@ ApplicationWindow {
     QtObject {
         id: transport
         readonly property string shellVersion: Qt.application.version
-        property string serverAddress: "http://127.0.0.1:11470" // will be set to something else if server inits on another port
+        property string serverAddress: "https://local.strem.io:12470" // will be set to something else if server inits on another port
         readonly property bool isFullscreen: root.visibility === Window.FullScreen // just to send the initial state
 
         signal event(var ev, var args)
@@ -124,7 +124,7 @@ ApplicationWindow {
               }
               MenuItem {
                   text: qsTr("Open in browser")
-                  onTriggered: Qt.openUrlExternally("http://127.0.0.1:11470/") // XXX: FIXME: hardcode
+                  onTriggered: Qt.openUrlExternally(transport.serverAddress)
               }
               MenuItem {
                   text: qsTr("Quit")
@@ -208,7 +208,10 @@ ApplicationWindow {
     function launchServer() {
         var node_executable = applicationDirPath + "/node"
         if (Qt.platform.os === "windows") node_executable = applicationDirPath + "/node.exe"
-        streamingServer.start(node_executable, [applicationDirPath +"/server.js"].concat(Qt.application.arguments.slice(1)), "EngineFS server started at ")
+        streamingServer.start(node_executable, 
+            [applicationDirPath +"/server.js"].concat(Qt.application.arguments.slice(1)), 
+            "EngineFS HTTPS endpoint at "
+        )
     }
     // TimerStreamingServer
     Timer {
@@ -242,9 +245,6 @@ ApplicationWindow {
     }
     WebEngineView {
         id: webView;
-
-        settings.allowRunningInsecureContent: true
-        //settings.localContentCanAccessRemoteUrls: true // enabled in plex but security needs to be throught through
 
         focus: true
 
