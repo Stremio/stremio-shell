@@ -243,6 +243,8 @@ ApplicationWindow {
     WebEngineView {
         id: webView;
 
+        focus: true
+
         // WARNING: mainUrl should load the app through HTTPs to avoid the possibility of MITM attacks
         readonly property string params: "?winControls=true&loginFlow=desktop";
         readonly property string mainUrl: Qt.application.arguments.indexOf("--development") > -1 || debug ? "http://127.0.0.1:11470/#"+webView.params : "https://app.strem.io/#"+webView.params;
