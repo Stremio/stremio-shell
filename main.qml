@@ -243,11 +243,17 @@ ApplicationWindow {
     WebEngineView {
         id: webView;
 
+        settings.allowRunningInsecureContent: true
+        //settings.localContentCanAccessRemoteUrls: true // enabled in plex but security needs to be throught through
+
         focus: true
 
-        // WARNING: mainUrl should load the app through HTTPs to avoid the possibility of MITM attacks
         readonly property string params: "?winControls=true&loginFlow=desktop";
-        readonly property string mainUrl: Qt.application.arguments.indexOf("--development") > -1 || debug ? "http://127.0.0.1:11470/#"+webView.params : "https://app.strem.io/#"+webView.params;
+        readonly property string mainUrl: 
+            Qt.application.arguments.indexOf("--development") > -1 || debug 
+            ? "http://127.0.0.1:11470/#"+webView.params 
+            : "https://app.strem.io/#"+webView.params;
+        
         readonly property string backupUrl: "http://127.0.0.1:11470/#"+webView.params;
 
         url: webView.mainUrl;
