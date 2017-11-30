@@ -568,7 +568,7 @@ ApplicationWindow {
                 
                 var baseName = firstFile.split("/").pop()
                 var code = autoUpdater.executeCmd("/bin/sh", ["-c", "mv '"+firstFile+"' $HOME; chmod +x $HOME/'"+baseName+"'"], false)
-        if (code !== 0) {
+                if (code !== 0) {
                     root.autoUpdaterErr("preparing Linux .appimage failed", null);
                     return;
                 }
