@@ -30,14 +30,16 @@ ApplicationWindow {
     color: "#201f32";
     title: appTitle
 
-    // This is built on the assumption it will be executed twice, at the start and end of the loading stage; which means everything has to be checked
+    // This is built on the assumption it will be executed twice, at the start and end of the loading stage;
+    // which means everything has to be checked
     property string injectedJs: "initShellComm()"
 
     // Transport
     QtObject {
         id: transport
         readonly property string shellVersion: Qt.application.version
-        property string serverAddress: "https://local.strem.io:12470" // will be set to something else if server inits on another port
+        property string serverAddress: "https://local.strem.io:12470" // will be set to something else if server inits
+                                                                      // on another port
         readonly property bool isFullscreen: root.visibility === Window.FullScreen // just to send the initial state
 
         signal event(var ev, var args)
@@ -51,7 +53,8 @@ ApplicationWindow {
             if (ev === "open-external") Qt.openUrlExternally(args)
             if (ev === "balloon-show" && root.notificationsEnabled) trayIcon.showMessage(args.title, args.content)
             if (ev === "win-focus") { if (!root.visible) root.show(); root.raise(); root.requestActivate(); }
-            if (ev === "win-set-visibility") root.visibility = args.hasOwnProperty('fullscreen') ? (args.fullscreen ? Window.FullScreen : Window.Windowed) : args.visibility
+            if (ev === "win-set-visibility") root.visibility = args.hasOwnProperty('fullscreen') ?
+                                             (args.fullscreen ? Window.FullScreen : Window.Windowed) : args.visibility
             if (ev === "autoupdater-notif-clicked" && autoUpdater.onNotifClicked) autoUpdater.onNotifClicked()
             if (ev === "chroma-toggle") { args.enabled ? chroma.enable() : chroma.disable() }
             if (ev === "screensaver-toggle") shouldDisableScreensaver(args.disabled)
@@ -84,7 +87,7 @@ ApplicationWindow {
     }
 
     function shouldDisableScreensaver(condition) {
-        if (condition === screenSaver.disabled) return
+        if (condition === screenSaver.disabled) return;
         condition ? screenSaver.disable() : screenSaver.enable();
         screenSaver.disabled = condition;
     }
@@ -149,7 +152,8 @@ ApplicationWindow {
         id: screenSaver
         property bool disabled: false // track last state so we don't call it multiple times
     }
-    // This is needed so that 300s after the remote control has been used, we can re-enable the screensaver (if the player is not playing)
+    // This is needed so that 300s after the remote control has been used, we can re-enable the screensaver
+    // (if the player is not playing)
     Timer {
         id: timerScreensaver
         interval: 300000
@@ -172,7 +176,8 @@ ApplicationWindow {
     //
     Process {
         id: streamingServer
-        property string errMessage: "Error while starting streaming server. Please consider re-installing Stremio from https://www.stremio.com"
+        property string errMessage:
+            "Error while starting streaming server. Please consider re-installing Stremio from https://www.stremio.com"
         property int errors: 0
         property bool fastReload: false
 
@@ -199,9 +204,11 @@ ApplicationWindow {
             transport.event("server-address", address)
         }
         onErrorThrown: function (error) {
-            if (streamingServer.fastReload && error == 1) return; // inhibit errors during fast reload mode; we'll unset that after we've restarted the server 
+            if (streamingServer.fastReload && error == 1) return; // inhibit errors during fast reload mode;
+                                                                  // we'll unset that after we've restarted the server
             errorDialog.text = streamingServer.errMessage
-            errorDialog.detailedText = 'Stremio streaming server has thrown an error \nQProcess::ProcessError code: ' + error
+            errorDialog.detailedText =
+                    'Stremio streaming server has thrown an error \nQProcess::ProcessError code: ' + error
             errorDialog.visible = true
        }
     }
@@ -265,15 +272,18 @@ ApplicationWindow {
 
         onLoadingChanged: function(loadRequest) {
             if (webView.tries > 0) {
-                // show the webview only if we're already on the backupUrl; the first one (network based) can fail because of many reasons, including captive portals
+                // show the webview only if we're already on the backupUrl; the first one (network based)
+                // can fail because of many reasons, including captive portals
                 splashScreen.visible = false
             }
 
             if (loadRequest.status == WebEngineView.LoadSucceededStatus) { 
                 webView.webChannel.registerObject( 'transport', transport );
 
-                // Try-catch to be able to return the error as result, but still throw it in the client context so it can be caught and reported
-                var injectedJS = "try { "+root.injectedJs+" } catch(e) { setTimeout(function() { throw e }); e.message || JSON.stringify(e) }";
+                // Try-catch to be able to return the error as result, but still throw it in the client context
+                // so it can be caught and reported
+                var injectedJS = "try { "+root.injectedJs+" } " +
+                        "catch(e) { setTimeout(function() { throw e }); e.message || JSON.stringify(e) }";
                 webView.runJavaScript(injectedJS, function(err) {
                     if (! err) {
                         splashScreen.visible = false
@@ -281,7 +291,8 @@ ApplicationWindow {
                         return
                     }
 
-                    errorDialog.text = "Error while applying shell JS. Please consider re-installing Stremio from https://www.stremio.com"
+                    errorDialog.text = "Error while applying shell JS." +
+                            " Please consider re-installing Stremio from https://www.stremio.com"
                     errorDialog.detailedText = err
                     errorDialog.visible = true
 
@@ -295,7 +306,8 @@ ApplicationWindow {
                 });
             }
 
-            var shouldRetry = loadRequest.status == WebEngineView.LoadFailedStatus || loadRequest.status == WebEngineView.LoadStoppedStatus
+            var shouldRetry = loadRequest.status == WebEngineView.LoadFailedStatus ||
+                    loadRequest.status == WebEngineView.LoadStoppedStatus
             if ( shouldRetry && webView.tries < webView.maxTries) {
                 retryTimer.restart()
             }
@@ -367,8 +379,10 @@ ApplicationWindow {
             SequentialAnimation {
                 id: pulseOpacity
                 running: true
-                NumberAnimation { target: splashLogo; property: "opacity"; to: 1.0; duration: 600; easing.type: Easing.Linear; }
-                NumberAnimation { target: splashLogo; property: "opacity"; to: 0.3; duration: 600; easing.type: Easing.Linear; }
+                NumberAnimation { target: splashLogo; property: "opacity"; to: 1.0; duration: 600;
+                    easing.type: Easing.Linear; }
+                NumberAnimation { target: splashLogo; property: "opacity"; to: 0.3; duration: 600;
+                    easing.type: Easing.Linear; }
                 loops: Animation.Infinite
             }
         }
@@ -393,7 +407,8 @@ ApplicationWindow {
     }
 
     onVisibilityChanged: {
-        transport.event("win-visibility-changed", { visible: root.visible, visibility: root.visibility, isFullscreen: root.visibility === Window.FullScreen })
+        transport.event("win-visibility-changed", { visible: root.visible, visibility: root.visibility,
+                            isFullscreen: root.visibility === Window.FullScreen })
     }
     
     property int appState: Qt.application.state;
@@ -420,11 +435,13 @@ ApplicationWindow {
     signal autoUpdaterErr(var msg, var err);
     signal autoUpdaterRestartTimer();
     function initAutoUpdater() {
-        var endpoints = ["https://www.strem.io/updater/check", "https://www.stremio.com/updater/check", "https://www.stremio.net/updater/check"];
+        var endpoints = ["https://www.strem.io/updater/check", "https://www.stremio.com/updater/check",
+                         "https://www.stremio.net/updater/check"];
         var fallbackSite = "https://www.stremio.com/?fromFailedAutoupdate=true";
         var doAutoupdate = autoUpdater.isInstalled()
 
-        // On Linux, because we use AppImage, we cannot do partial updates - because we can't replace files in the read-only mountpoint
+        // On Linux, because we use AppImage, we cannot do partial updates - because we can't replace files
+        // in the read-only mountpoint
         if (Qt.platform.os === "linux" && doAutoupdate) autoUpdater.setForceFullUpdate(true);
 
         var args = Qt.application.arguments
@@ -462,7 +479,8 @@ ApplicationWindow {
         // Re-start this timer only from the main thread
         root.autoUpdaterRestartTimer.connect(function() { autoUpdaterLongTimer.restart() })
 
-        // WARNING: all of the slot handlers are handled in another thread, that's why we need the autoUpdaterErr() signal - to bring execution back to UI thread
+        // WARNING: all of the slot handlers are handled in another thread, that's why we need the autoUpdaterErr()
+        // signal - to bring execution back to UI thread
         autoUpdater.checkFinished.connect(function(check) {
             // reset the notif, so there's no chance we'd trigger a re-start while downloading new ver
             if (check && !check.upToDate) autoUpdater.onNotifClicked = null;
@@ -482,8 +500,9 @@ ApplicationWindow {
             autoUpdaterLongTimer.restart()
         
             // Fallback to auto-update: just open the website
-            // Ideally, we don't want this happening if the check has failed, because in most cases of the check, we would not have a new version
-            // however, since the check will only happen if we have an internet connection according to QNetworkConfigurationManager, checks should not fail
+            // Ideally, we don't want this happening if the check has failed, because in most cases of the check,
+            // we would not have a new version however, since the check will only happen if we have an internet
+            // connection according to QNetworkConfigurationManager, checks should not fail
             // Apply the fall-back only if there's no prepared version before...
             if (! autoUpdater.onNotifClicked) {
                 transport.queueEvent("autoupdater-show-notif", { mode: "fallback" })
@@ -498,7 +517,8 @@ ApplicationWindow {
 
             console.log("Auto-updater: prepared update "+preparedFiles.join(", "))
 
-            // When we finish preparing an update, we must call transport.queueEvent so that the app can receive a notification event once it loads
+            // When we finish preparing an update, we must call transport.queueEvent so that the app can receive
+            // a notification event once it loads
             // Then, we must set .onNotifClicked to what we'll do when the notification is clicked
 
             if (preparedFiles.length == 2) {
@@ -531,8 +551,10 @@ ApplicationWindow {
                     +"&& NEW=/Applications/$(date +%s).app"
                     +"&& MNT=\"/Volumes/Stremio "+ver+"\""
 
-                    +"&& hdiutil attach \"$DMG\" -nobrowse -noautoopen" // NOTE: this returns 0, even if it's already mounted
-                    //+"&& MNT=$(hdiutil attach \"$DMG\" -nobrowse -noautoopen | awk -F'/Volumes/' '/Apple_HFS/ {print $2}') &&" // WARNING: I'm not sure about this working on every OSX ver
+                    +"&& hdiutil attach \"$DMG\" -nobrowse -noautoopen" // NOTE: this returns 0,
+                                                                        // even if it's already mounted
+                    //+"&& MNT=$(hdiutil attach \"$DMG\" -nobrowse -noautoopen | awk -F'/Volumes/' '/Apple_HFS/ {print $2}') &&"
+                            // WARNING: I'm not sure about this working on every OSX ver
 
                     +"&& cp -R \"$MNT\"/*.app \"$NEW\""
                     +"&& rm -rf /Applications/Stremio.app && mv \"$NEW\" \"/Applications/Stremio.app\""
@@ -567,26 +589,30 @@ ApplicationWindow {
                 console.log("Auto-updater: executing Linux update");
                 
                 var baseName = firstFile.split("/").pop()
-                var code = autoUpdater.executeCmd("/bin/sh", ["-c", "mv '"+firstFile+"' $HOME; chmod +x $HOME/'"+baseName+"'"], false)
+                var code = autoUpdater.executeCmd("/bin/sh",
+                                                  ["-c", "mv '"+firstFile+"' $HOME; chmod +x $HOME/'"+baseName+"'"], false)
                 if (code !== 0) {
                     root.autoUpdaterErr("preparing Linux .appimage failed", null);
                     return;
                 }
                 transport.queueEvent("autoupdater-show-notif", { mode: "launchNew" })
                 autoUpdater.onNotifClicked = function() {
-                    autoUpdater.executeCmd("/bin/sh", ["-c", "$HOME/'"+baseName+"'"], true) // crappy, but otherwise we have to write code to get env var
+                    autoUpdater.executeCmd("/bin/sh", ["-c", "$HOME/'"+baseName+"'"], true)
+                                    // crappy, but otherwise we have to write code to get env var
                     Qt.quit()
                 }
             } else {
                 root.autoUpdaterErr("Insane auto-update: "+preparedFiles.join(", "), null)
             }
 
-            // WARNING: this seems to randomly crash the program in rare cases if called more than once in this signal handler...
+            // WARNING: this seems to randomly crash the program in rare cases if called more than once
+            // in this signal handler...
             root.autoUpdaterRestartTimer()
         })
     }
     // Explanation: when the long timer expires, we schedule the short timer; we do that, 
-    // because in case the computer has been asleep for a long time, we want another short timer so we don't check immediately (network not connected yet, etc)
+    // because in case the computer has been asleep for a long time, we want another short timer so we don't check
+    // immediately (network not connected yet, etc)
     // we also schedule the short timer if the computer is offline
     Timer {
         id: autoUpdaterLongTimer
@@ -605,7 +631,8 @@ ApplicationWindow {
     // On complete handler
     //
     Component.onCompleted: function() {
-        // Kind of hacky way to ensure there are no Qt bindings going on; otherwise when we go to fullscreen Qt tries to restore original window size
+        // Kind of hacky way to ensure there are no Qt bindings going on; otherwise when we go to fullscreen
+        // Qt tries to restore original window size
         root.height = root.initialHeight
         root.width = root.initialWidth
 
@@ -617,7 +644,8 @@ ApplicationWindow {
             launchServer();
 
         // Handle file opens
-        var lastArg = args[1]; // not actually last, but we want to be consistent with what happens when we open a second instance (main.cpp)
+        var lastArg = args[1]; // not actually last, but we want to be consistent with what happens when we open
+                               // a second instance (main.cpp)
         if (args.length > 1 && !lastArg.match('^--')) onAppOpenMedia(lastArg)
 
         // Check for updates

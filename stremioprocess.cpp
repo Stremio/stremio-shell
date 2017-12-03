@@ -23,7 +23,8 @@ void Process::start(const QString &program, const QVariantList &arguments, QStri
         else
         {
             JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
-            jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE | JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION;
+            jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE |\
+                    JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION;
             if(0 == SetInformationJobObject( jobMainProcess, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli)))
             {
                 qDebug() << "[WIN32] Failed to SetInformationJobObject";
@@ -44,7 +45,8 @@ void Process::start(const QString &program, const QVariantList &arguments, QStri
         this->magicPatternFound = false;
     }
 
-    // We will also proxy the error channel ourselves, because otherwise we have issues on Windows 7 because of the lack of stderr
+    // We will also proxy the error channel ourselves, because otherwise we have issues on Windows 7 because of
+    // the lack of stderr
     //this->setProcessChannelMode(QProcess::ForwardedErrorChannel);
 
     QObject::connect(this, &QProcess::errorOccurred, this, &Process::onError);

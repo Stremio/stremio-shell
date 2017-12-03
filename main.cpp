@@ -95,7 +95,8 @@ int main(int argc, char **argv)
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     QObject::connect( &app, &SingleApplication::receivedMessage, &app, &MainApp::processMessage );
-    QObject::connect( &app, SIGNAL(receivedMessage(QVariant, QVariant)), engine.rootObjects().value(0), SLOT(onAppMessageReceived(QVariant, QVariant)) );
+    QObject::connect( &app, SIGNAL(receivedMessage(QVariant, QVariant)), engine.rootObjects().value(0),
+                      SLOT(onAppMessageReceived(QVariant, QVariant)) );
 
     return app.exec();
 }

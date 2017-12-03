@@ -44,7 +44,8 @@ void AutoUpdater::checkForUpdates(QString endpoint) {
 void AutoUpdater::updateFromVersionDesc(QUrl versionDesc, QByteArray base64Sig) {
     if (inProgress) return;
     inProgress = true;
-    QMetaObject::invokeMethod(this, "updateFromVersionDescPerform", Qt::QueuedConnection, Q_ARG(QUrl, versionDesc), Q_ARG(QByteArray, base64Sig));
+    QMetaObject::invokeMethod(this, "updateFromVersionDescPerform", Qt::QueuedConnection, Q_ARG(QUrl, versionDesc),
+                              Q_ARG(QByteArray, base64Sig));
 }
 void AutoUpdater::abort() {
     QMetaObject::invokeMethod(this, "abortPerform", Qt::QueuedConnection);
@@ -265,9 +266,12 @@ void AutoUpdater::startNextDownload() {
     // WARNING: TODO: do we want to make a separate dir inside tempPath? ; we should ensure downloadFile always overrides
     QString dest = QDir::tempPath() + QDir::separator() + url.fileName();
 
-    // Check if the download is already downloaded - could happen if we try to do a full upgrade when we've already prepared one
+    // Check if the download is already downloaded - could happen if we try to do a full upgrade when we've
+    // already prepared one
     // Sketchy case: if the file does not exist, getFileChecksum would return the default sha256 hash; - 
-    //   this would actually prevent a case where the version descriptor is generated from empty files from breaking the system - because this check would return true, and then the file wouldn't exist at all, emitting an error (this shouldn't be able to happen, but still...)
+    //   this would actually prevent a case where the version descriptor is generated from empty files from breaking
+    // the system - because this check would return true, and then the file wouldn't exist at all, emitting an error
+    // (this shouldn't be able to happen, but still...)
     if (checksum == getFileChecksum(dest)) {
         preparedFiles.push_back(dest);
         startNextDownload();
@@ -324,7 +328,8 @@ void AutoUpdater::downloadFinished()
 // ABORT
 void AutoUpdater::abortPerform() {
     // EXPLANATION: those will be aborted, and then in the 'finished' handler, they will be deleted via ->deleteLater()
-    // since the event handlers are executed in the event loop, one might think calling .checkForVer() right after .abort() will re-set currentCheck before the 'finished' handler is executed
+    // since the event handlers are executed in the event loop, one might think calling .checkForVer() right after
+    // .abort() will re-set currentCheck before the 'finished' handler is executed
     // This is not a problem, because all public methods call the internal ones with invokeMethod and queuedConnection
     if (currentCheck) currentCheck->abort();
     if (currentDownload) currentDownload->abort();
