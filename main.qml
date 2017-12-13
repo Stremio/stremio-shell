@@ -195,8 +195,11 @@ ApplicationWindow {
             }
         }
         onAddressReady: function (address) {
-            transport.serverAddress = address
-            transport.event("server-address", address)
+            // NOTE: XXX: this will return an address to the local network IP: we would rather use the loopback address (127.0.0.1)
+	    // because it can be AJAX'd in WebEngineView even for https-loaded pages
+	    //transport.serverAddress = address
+            
+	    transport.event("server-address", address)
         }
         onErrorThrown: function (error) {
             if (streamingServer.fastReload && error == 1) return; // inhibit errors during fast reload mode; we'll unset that after we've restarted the server 
