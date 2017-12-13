@@ -37,7 +37,7 @@ ApplicationWindow {
     QtObject {
         id: transport
         readonly property string shellVersion: Qt.application.version
-        property string serverAddress: "https://local.strem.io:12470" // will be set to something else if server inits on another port
+        property string serverAddress: "http://127.0.0.1:11470" // will be set to something else if server inits on another port
         readonly property bool isFullscreen: root.visibility === Window.FullScreen // just to send the initial state
 
         signal event(var ev, var args)
