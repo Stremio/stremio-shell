@@ -210,7 +210,7 @@ ApplicationWindow {
         if (Qt.platform.os === "windows") node_executable = applicationDirPath + "/node.exe"
         streamingServer.start(node_executable, 
             [applicationDirPath +"/server.js"].concat(Qt.application.arguments.slice(1)), 
-            "EngineFS HTTP endpoint at "
+            "EngineFS server started at "
         )
     }
     // TimerStreamingServer
