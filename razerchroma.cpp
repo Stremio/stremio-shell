@@ -48,7 +48,8 @@ void RazerChroma::enable() {
 void RazerChroma::disable() {
 #ifdef _WIN32
 if (m_ChromaSDKImpl) {
-	// WARNING: after this is done, effects do not get applied on the next enable() even though we use a separate instance that initialized successfully
+    // WARNING: after this is done, effects do not get applied on the next enable() even though we use a separate instance
+    // that initialized successfully
 	m_ChromaSDKImpl->ShowColor(KEYBOARD_DEVICES, RGB(140, 40, 170));
 	//m_ChromaSDKImpl->UnInitialize();
 	//delete m_ChromaSDKImpl;

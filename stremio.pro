@@ -4,7 +4,7 @@ VERSION=4.4.0
 
 DEFINES += STREMIO_SHELL_VERSION=\\\"$$VERSION\\\"
 
-ICON = ../images/stremio.icns
+ICON = images/stremio.icns
 
 QT += qml quick network
 CONFIG += c++11

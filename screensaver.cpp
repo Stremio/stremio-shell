@@ -10,8 +10,10 @@ struct _XDisplay;
 typedef struct _XDisplay Display;
 typedef Display* (*fXOpenDisplay)(const char*/* display_name */);
 typedef int (*fXCloseDisplay)(Display*/* display */);
-typedef int (*fXSetScreenSaver)(Display*, int /* timeout */, int /* interval */,int /* prefer_blanking */, int /* allow_exposures */);
-typedef int (*fXGetScreenSaver)(Display*, int* /* timeout_return */, int* /* interval_return */, int* /* prefer_blanking_return */, int* /* allow_exposures_return */);
+typedef int (*fXSetScreenSaver)(Display*, int /* timeout */, int /* interval */,int /* prefer_blanking */,
+                                int /* allow_exposures */);
+typedef int (*fXGetScreenSaver)(Display*, int* /* timeout_return */, int* /* interval_return */,
+                                int* /* prefer_blanking_return */, int* /* allow_exposures_return */);
 typedef int (*fXResetScreenSaver)(Display*/* display */);
 static fXOpenDisplay XOpenDisplay = 0;
 static fXCloseDisplay XCloseDisplay = 0;
@@ -188,8 +190,10 @@ bool ScreenSaver::enable(bool yes)
     //http://msdn.microsoft.com/en-us/library/aa373208%28VS.85%29.aspx
     static EXECUTION_STATE sLastState = 0;
     if (!yes) {
-        //Calling SetThreadExecutionState without ES_CONTINUOUS simply resets the idle timer; to keep the display or system in the working state, the thread must call SetThreadExecutionState periodically
-        //ES_CONTINUOUS: Informs the system that the state being set should remain in effect until the next call that uses ES_CONTINUOUS and one of the other state flags is cleared.
+        //Calling SetThreadExecutionState without ES_CONTINUOUS simply resets the idle timer; to keep the display
+        // or system in the working state, the thread must call SetThreadExecutionState periodically
+        //ES_CONTINUOUS: Informs the system that the state being set should remain in effect until the next call
+        // that uses ES_CONTINUOUS and one of the other state flags is cleared.
         sLastState = SetThreadExecutionState(ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED | ES_CONTINUOUS);
     } else {
         if (sLastState)
@@ -235,7 +239,8 @@ bool ScreenSaver::enable(bool yes)
     IOReturn success;
     if (!yes) {
         CFStringRef reasonForActivity = CFSTR("Disable Screensaver");
-        success = IOPMAssertionCreateWithName(kIOPMAssertionTypeNoDisplaySleep, kIOPMAssertionLevelOn, reasonForActivity, &assertionID);
+        success = IOPMAssertionCreateWithName(kIOPMAssertionTypeNoDisplaySleep, kIOPMAssertionLevelOn,
+                                              reasonForActivity, &assertionID);
     } else {
         success = IOPMAssertionRelease(assertionID);
         rv = true;
@@ -271,7 +276,8 @@ bool ScreenSaver::retrieveState() {
             Display *display = XOpenDisplay(0);
             XGetScreenSaver(display, &timeout, &interval, &preferBlanking, &allowExposures);
             XCloseDisplay(display);
-            qDebug("ScreenSaver::retrieveState timeout: %d, interval: %d, preferBlanking:%d, allowExposures:%d", timeout, interval, preferBlanking, allowExposures);
+            qDebug("ScreenSaver::retrieveState timeout: %d, interval: %d, preferBlanking:%d, allowExposures:%d",
+                   timeout, interval, preferBlanking, allowExposures);
             state_saved = true;
             rv = true;
         }
