@@ -119,12 +119,15 @@ ApplicationWindow {
                   text: root.visible ? qsTr("Hide Stremio") : qsTr("Show Stremio")
                   onTriggered: root.visible ? root.hide() : root.show()
               }
+              /*
               MenuItem {
+                  id: trayIconNotifications
                   text: qsTr("Notifications")
-                  onTriggered: root.notificationsEnabled = !root.notificationsEnabled
+                  onTriggered: root.notificationsEnabled = trayIconNotifications.checked
                   checked: root.notificationsEnabled
                   checkable: true
               }
+              */
               MenuItem {
                   text: qsTr("Open in browser")
                   onTriggered: Qt.openUrlExternally(transport.serverAddress)
