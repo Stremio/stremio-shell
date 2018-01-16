@@ -504,18 +504,6 @@ ApplicationWindow {
                 errorDialog.text = "Auto updater error"
                 errorDialog.detailedText = msg
                 errorDialog.visible = true
-
-                // Fallback to auto-update: just open the website
-                // Ideally, we don't want this happening if the check has failed, because in most cases of the check,
-                // we would not have a new version however, since the check will only happen if we have an internet
-                // connection according to QNetworkConfigurationManager, checks should not fail
-                // Apply the fall-back only if there's no prepared version before...
-                if (! autoUpdater.onNotifClicked) {
-                    transport.queueEvent("autoupdater-show-notif", { mode: "fallback" })
-                    autoUpdater.onNotifClicked = function() {
-                        Qt.openUrlExternally(fallbackSite)
-                    }                
-                }
             }
         })
 
