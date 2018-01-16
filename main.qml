@@ -493,6 +493,9 @@ ApplicationWindow {
         // signal hack to bring it back to the main thread
         autoUpdater.error.connect(function(msg, err) { root.autoUpdaterErr(msg, err) })
         root.autoUpdaterErr.connect(function(msg, err) {
+            // send to front-end, so we can handle accordingly
+            transport.queueEvent("autoupdater-error", { err: err, msg: msg })
+
             autoUpdaterLongTimer.restart()
 
             // Display the error only if it's not QNetworkReply::HostNotFound (3) - this usually happens when 
