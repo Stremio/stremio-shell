@@ -113,7 +113,7 @@ ApplicationWindow {
     SystemTrayIcon {
         visible: true
         id: trayIcon
-        iconSource: "qrc:/images/stremio.png"
+        iconSource: "qrc:/images/stremio_tray_white.svg"
         menu: Menu {
               MenuItem {
                   text: root.visible ? qsTr("Hide Stremio") : qsTr("Show Stremio")
