@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>main.qml</file>
 	<file alias="/images/stremio.png">./images/stremio.png</file>
+	<file alias="/images/stremio_tray_white.svg">./images/stremio_tray_white.svg</file>
     </qresource>
 </RCC>
