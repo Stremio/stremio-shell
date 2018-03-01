@@ -113,7 +113,7 @@ ApplicationWindow {
     SystemTrayIcon {
         visible: true
         id: trayIcon
-        iconSource: "qrc:/images/stremio_tray_white.png"
+        iconSource: Qt.platform.os === "osx" ? "qrc:/images/stremio_tray_black.png" : "qrc:/images/stremio_tray_white.png"
         menu: Menu {
               MenuItem {
                   text: root.visible ? qsTr("Hide Stremio") : qsTr("Show Stremio")
