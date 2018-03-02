@@ -51,7 +51,8 @@ ApplicationWindow {
             if (ev === "control-event") remoteControlEventFired()
             if (ev === "set-window-mode") onWindowMode(args)
             if (ev === "open-external") Qt.openUrlExternally(args)
-            if (ev === "balloon-show" && root.notificationsEnabled) trayIcon.showMessage(args.title, args.content)
+            // TODO: restore this
+	    //if (ev === "balloon-show" && root.notificationsEnabled) trayIcon.showMessage(args.title, args.content)
             if (ev === "win-focus") { if (!root.visible) root.show(); root.raise(); root.requestActivate(); }
             if (ev === "win-set-visibility") root.visibility = args.hasOwnProperty('fullscreen') ?
                                              (args.fullscreen ? Window.FullScreen : Window.Windowed) : args.visibility
