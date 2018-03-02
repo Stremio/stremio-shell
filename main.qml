@@ -114,7 +114,6 @@ ApplicationWindow {
      * */
     Connections {
         target: systemTray
-        // Сигнал - показать окно
         onSignalShow: {
             root.visible ? root.hide() : root.show();
         }
@@ -130,7 +129,7 @@ ApplicationWindow {
             root.show()
             root.raise()
             root.requestActivate()
-        }
+       }
     }
 
     // Screen saver - enable & disable
