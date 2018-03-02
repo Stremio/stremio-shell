@@ -27,8 +27,7 @@
         icon.setIsMask(true);
         trayIcon->setIcon(icon);
         trayIcon->show();
-        trayIcon->setToolTip("Tray Program" "\n"
-                             "Work with winimizing program to tray");
+        //trayIcon->setToolTip("Tray Program" "\n" "Work with winimizing program to tray");
      
         /* Also connect clicking on the icon to the signal handler of the pressing
          * */
