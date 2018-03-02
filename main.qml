@@ -162,6 +162,7 @@ ApplicationWindow {
  
         // The signal - close the application by ignoring the check-box
         onSignalQuit: {
+            systemTray.hideIconTray();
             Qt.quit();
         }
  
