@@ -18,6 +18,9 @@ typedef QApplication Application;
 #include <QBreakpadHandler.h>
 #include <QStandardPaths>
 
+#include <QSystemTrayIcon>
+#include "systemtray.h"
+
 #include "mainapplication.h"
 #include "stremioprocess.h"
 #include "mpv.h"
@@ -92,6 +95,13 @@ int main(int argc, char **argv)
     QQmlApplicationEngine engine;
     InitializeParameters(engine, app);
     QtWebEngine::initialize();
+ 
+    SystemTray * systemTray = new SystemTray();
+    QQmlContext * context = engine.rootContext();
+    // Set access to an object of class properties in QML context
+    context->setContextProperty("systemTray", systemTray);
+ 
+
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     QObject::connect( &app, &SingleApplication::receivedMessage, &app, &MainApp::processMessage );

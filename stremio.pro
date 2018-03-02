@@ -67,6 +67,7 @@ SOURCES += main.cpp \
     stremioprocess.cpp \
     screensaver.cpp \
     autoupdater.cpp \
+    systemtray.cpp \
     razerchroma.cpp \
     qclipboardproxy.cpp \
     verifysig.c
@@ -85,6 +86,7 @@ HEADERS += \
     screensaver.h \
     mainapplication.h \
     autoupdater.h \
+    systemtray.h \
     razerchroma.h \
     qclipboardproxy.h \
     verifysig.h \
