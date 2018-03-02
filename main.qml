@@ -109,45 +109,28 @@ ApplicationWindow {
         transport.queueEvent("open-media", url)
     }
 
-    // Tray icon
-    SystemTrayIcon {
-        visible: true
-        id: trayIcon
-        iconSource: "qrc:/images/stremio_tray_white.png"
-        menu: Menu {
-              MenuItem {
-                  text: root.visible ? qsTr("Hide Stremio") : qsTr("Show Stremio")
-                  onTriggered: root.visible ? root.hide() : root.show()
-              }
-              /*
-              MenuItem {
-                  id: trayIconNotifications
-                  text: qsTr("Notifications")
-                  onTriggered: root.notificationsEnabled = trayIconNotifications.checked
-                  checked: root.notificationsEnabled
-                  checkable: true
-              }
-              */
-              MenuItem {
-                  text: qsTr("Open in browser")
-                  onTriggered: Qt.openUrlExternally(transport.serverAddress)
-              }
-              MenuItem {
-                  text: qsTr("Quit")
-                  onTriggered: Qt.quit()
-              }
-          }
-    
-        onActivated: function (reason) {
-            // WARNING: on windows and mac, the reason is always undefined for some reason
-            if (reason !== SystemTrayIcon.Context) {
-                root.show()
-                root.raise()
-                root.requestActivate()
-            }
+    /* With help Connections object
+     * set connections with System tray class
+     * */
+    Connections {
+        target: systemTray
+        // Сигнал - показать окно
+        onSignalShow: {
+            root.visible ? root.hide() : root.show();
         }
-
-        onMessageClicked: function(data) { root.show() }
+ 
+        // The signal - close the application by ignoring the check-box
+        onSignalQuit: {
+            systemTray.hideIconTray();
+            Qt.quit();
+        }
+ 
+        // Minimize / maximize the window by clicking on the default system tray
+        onSignalIconActivated: {
+            root.show()
+            root.raise()
+            root.requestActivate()
+        }
     }
 
     // Screen saver - enable & disable
