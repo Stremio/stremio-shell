@@ -28,7 +28,7 @@ unix:!mac {
 }
 
 win32 {
-    RC_ICONS = ../images/stremio.ico
+    RC_ICONS = ../src/images/stremio.ico
     LIBS += $$PWD/deps/libmpv/win32/mpv.lib
 }
 
