@@ -14,6 +14,7 @@
     signals:
         void signalIconActivated();
         void signalShow();
+        void signalAlwaysOnTop();
         void signalQuit();
      
     private slots:
@@ -23,10 +24,14 @@
      
     public slots:
         void hideIconTray();
+        void updateVisibleAction(bool isVisible);
+        void updateIsOnTop(bool isOnTop);
      
     private:
         /* Declare the object of future applications for the tray icon*/
         QSystemTrayIcon         * trayIcon;
+        QAction * viewWindowAction;
+        QAction * alwaysOnTopAction;
     };
      
     #endif // SYSTEMTRAY_H

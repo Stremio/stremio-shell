@@ -7,16 +7,24 @@
      
         // Create a context menu with two items
         QMenu *trayIconMenu = new QMenu();
-     
-        QAction * viewWindow = new QAction(trUtf8("Show/hide window"), this);
+
+
+        viewWindowAction = new QAction(trUtf8("Show window"), this);
+        viewWindowAction->setCheckable(true);
+
+        alwaysOnTopAction = new QAction(trUtf8("Always on top"), this);
+        alwaysOnTopAction->setCheckable(true);
+        
         QAction * quitAction = new QAction(trUtf8("Quit"), this);
      
         /* to connect the signals clicks on menu items to the appropriate signals for QML.
          * */
-        connect(viewWindow, &QAction::triggered, this, &SystemTray::signalShow);
+        connect(viewWindowAction, &QAction::triggered, this, &SystemTray::signalShow);
+        connect(alwaysOnTopAction, &QAction::triggered, this, &SystemTray::signalAlwaysOnTop);
         connect(quitAction, &QAction::triggered, this, &SystemTray::signalQuit);
      
-        trayIconMenu->addAction(viewWindow);
+        trayIconMenu->addAction(viewWindowAction);
+        trayIconMenu->addAction(alwaysOnTopAction);
         trayIconMenu->addAction(quitAction);
      
         /* Initialize the tray icon, icon set, and specify the tooltip
@@ -27,7 +35,6 @@
         icon.setIsMask(true);
         trayIcon->setIcon(icon);
         trayIcon->show();
-        //trayIcon->setToolTip("Tray Program" "\n" "Work with winimizing program to tray");
      
         /* Also connect clicking on the icon to the signal handler of the pressing
          * */
@@ -52,4 +59,14 @@
     void SystemTray::hideIconTray()
     {
         trayIcon->hide();
+    }
+
+    void SystemTray::updateVisibleAction(bool isVisible)
+    {
+        viewWindowAction->setChecked(isVisible);
+    }
+
+    void SystemTray::updateIsOnTop(bool isOnTop)
+    {
+        alwaysOnTopAction->setChecked(isOnTop);
     }

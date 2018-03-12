@@ -118,6 +118,16 @@ ApplicationWindow {
         onSignalShow: {
             root.visible ? root.hide() : root.show();
         }
+
+        onSignalAlwaysOnTop: {
+            root.show()
+            root.raise()
+            if(root.flags & Qt.WindowStaysOnTopHint) {
+                root.flags &= ~Qt.WindowStaysOnTopHint;
+            } else {
+                root.flags |= Qt.WindowStaysOnTopHint;
+            }
+        }
  
         // The signal - close the application by ignoring the check-box
         onSignalQuit: {
@@ -393,6 +403,8 @@ ApplicationWindow {
     }
 
     onVisibilityChanged: {
+        systemTray.updateIsOnTop((root.flags & Qt.WindowStaysOnTopHint) === Qt.WindowStaysOnTopHint);
+        systemTray.updateVisibleAction(root.visible);
         transport.event("win-visibility-changed", { visible: root.visible, visibility: root.visibility,
                             isFullscreen: root.visibility === Window.FullScreen })
     }
