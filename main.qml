@@ -315,10 +315,10 @@ ApplicationWindow {
         }
 
         // WARNING: does not work..for some reason: "Scripts may close only the windows that were opened by it."
-        onWindowCloseRequested: function() {
-            root.visible = false;
-            Qt.quit()
-        }
+        // onWindowCloseRequested: function() {
+        //     root.visible = false;
+        //     Qt.quit()
+        // }
 
         // In the app, we use open-external IPC signal, but make sure this works anyway
         property string hoveredUrl: ""

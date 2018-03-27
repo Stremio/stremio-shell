@@ -49,7 +49,9 @@
         switch (reason){
         case QSystemTrayIcon::Trigger:
             // In the case of pressing the signal on the icon tray in the call signal QML layer
+#ifndef Q_OS_OSX
             emit signalIconActivated();
+#endif
             break;
         default:
             break;
