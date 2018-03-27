@@ -271,6 +271,7 @@ ApplicationWindow {
                 // show the webview only if we're already on the backupUrl; the first one (network based)
                 // can fail because of many reasons, including captive portals
                 splashScreen.visible = false
+                pulseOpacity.running = false
             }
 
             if (loadRequest.status == WebEngineView.LoadSucceededStatus) { 
@@ -283,6 +284,7 @@ ApplicationWindow {
                 webView.runJavaScript(injectedJS, function(err) {
                     if (! err) {
                         splashScreen.visible = false
+                        pulseOpacity.running = false
                         webView.tries = 0
                         return
                     }
@@ -528,6 +530,7 @@ ApplicationWindow {
                 transport.queueEvent("autoupdater-show-notif", { mode: "reload" })
                 autoUpdater.onNotifClicked = function() {
                     splashScreen.visible = true
+                    pulseOpacity.running = true
                     webView.reloadAndBypassCache()
                     streamingServer.fastReload = true
                     streamingServer.terminate()
