@@ -116,7 +116,13 @@ ApplicationWindow {
     Connections {
         target: systemTray
         onSignalShow: {
-            root.visible ? root.hide() : root.show();
+            if(root.visible) {
+                root.hide();
+            } else {
+                root.show();
+                root.raise();
+                root.requestActivate();
+            }
         }
 
         onSignalAlwaysOnTop: {
