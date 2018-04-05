@@ -26,6 +26,7 @@ ApplicationWindow {
     height: root.initialHeight
 
     property bool notificationsEnabled: true
+    property int alwaysOnTopFlags: 0
 
     color: "#201f32";
     title: appTitle
@@ -54,8 +55,17 @@ ApplicationWindow {
             // TODO: restore this
 	    //if (ev === "balloon-show" && root.notificationsEnabled) trayIcon.showMessage(args.title, args.content)
             if (ev === "win-focus") { if (!root.visible) root.show(); root.raise(); root.requestActivate(); }
-            if (ev === "win-set-visibility") root.visibility = args.hasOwnProperty('fullscreen') ?
-                                             (args.fullscreen ? Window.FullScreen : Window.Windowed) : args.visibility
+            if (ev === "win-set-visibility") {
+                root.visibility = args.hasOwnProperty('fullscreen') ? (args.fullscreen ? Window.FullScreen : Window.Windowed) : args.visibility
+                if(root.visibility == Window.FullScreen) {
+                    root.alwaysOnTopFlags = root.flags;
+                    root.flags &= ~Qt.WindowStaysOnTopHint;
+                    systemTray.updateIsOnTop(false);
+                } else {
+                    root.flags = root.alwaysOnTopFlags;
+                    systemTray.updateIsOnTop((root.flags & Qt.WindowStaysOnTopHint) === Qt.WindowStaysOnTopHint);
+                }
+            }
             if (ev === "autoupdater-notif-clicked" && autoUpdater.onNotifClicked) autoUpdater.onNotifClicked()
             if (ev === "chroma-toggle") { args.enabled ? chroma.enable() : chroma.disable() }
             if (ev === "screensaver-toggle") shouldDisableScreensaver(args.disabled)
@@ -333,6 +343,7 @@ ApplicationWindow {
         onLinkHovered: webView.hoveredUrl = hoveredUrl
         onNewViewRequested: function(req) { if (req.userInitiated) Qt.openUrlExternally(webView.hoveredUrl) }
 
+        // FIXME: When is this called?
         onFullScreenRequested: function(req) {
             if (req.toggleOn) root.visibility = Window.FullScreen;
             else root.visibility = Window.Windowed;
