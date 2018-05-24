@@ -65,7 +65,10 @@ int main(int argc, char **argv)
     Application::setAttribute(Qt::AA_UseOpenGLES);
     #endif
 
+    // This is really broken on Linux
+    #ifndef __linux__
     Application::setAttribute(Qt::AA_EnableHighDpiScaling);
+    #endif
 
     Application::setApplicationName("Stremio");
     Application::setApplicationVersion(STREMIO_SHELL_VERSION);
