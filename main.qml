@@ -110,6 +110,11 @@ ApplicationWindow {
         transport.queueEvent("open-media", url)
     }
 
+    function quitApp() {
+        streamingServer.kill();
+        Qt.quit();
+    }
+
     /* With help Connections object
      * set connections with System tray class
      * */
@@ -138,7 +143,7 @@ ApplicationWindow {
         // The signal - close the application by ignoring the check-box
         onSignalQuit: {
             systemTray.hideIconTray();
-            Qt.quit();
+            quitApp();
         }
  
         // Minimize / maximize the window by clicking on the default system tray
@@ -573,7 +578,7 @@ ApplicationWindow {
                 transport.queueEvent("autoupdater-show-notif", { mode: "restart" })
                 autoUpdater.onNotifClicked = function() {
                     autoUpdater.executeCmd("/bin/sh", ["-c", "sleep 5; open -n /Applications/Stremio.app"], true)
-                    Qt.quit()
+                    quitApp();
                 }
             } else if ( Qt.platform.os === "windows" && firstFile.match(".exe") ) {
                 // 
@@ -582,7 +587,7 @@ ApplicationWindow {
                 transport.queueEvent("autoupdater-show-notif", { mode: "launchNew" })
                 autoUpdater.onNotifClicked = function() {
                     Qt.openUrlExternally("file:///"+firstFile.replace(/\\/g,'/'))
-                    Qt.quit()
+                    quitApp();
                 }
             } else if (Qt.platform.os === "linux" && firstFile.match(".appimage")) {
                 // 
@@ -601,7 +606,7 @@ ApplicationWindow {
                 autoUpdater.onNotifClicked = function() {
                     autoUpdater.executeCmd("/bin/sh", ["-c", "$HOME/'"+baseName+"'"], true)
                                     // crappy, but otherwise we have to write code to get env var
-                    Qt.quit()
+                    quitApp();
                 }
             } else {
                 root.autoUpdaterErr("Insane auto-update: "+preparedFiles.join(", "), null)
