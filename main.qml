@@ -111,6 +111,7 @@ ApplicationWindow {
     }
 
     function quitApp() {
+        systemTray.hideIconTray();
         streamingServer.kill();
         streamingServer.waitForFinished(2000);
         Qt.quit();
@@ -143,7 +144,6 @@ ApplicationWindow {
  
         // The signal - close the application by ignoring the check-box
         onSignalQuit: {
-            systemTray.hideIconTray();
             quitApp();
         }
  
