@@ -111,6 +111,7 @@ ApplicationWindow {
     }
 
     function quitApp() {
+        webView.destroy();
         systemTray.hideIconTray();
         streamingServer.kill();
         streamingServer.waitForFinished(2000);
