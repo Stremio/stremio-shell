@@ -24,7 +24,10 @@ private slots:
     void onOutput();
     void onStdErr();
     void onStarted();
-    
+
+public slots:
+    bool waitForFinished(int msecs = 30000);
+
 signals:
     void addressReady(QString address);
     void errorThrown(int error);

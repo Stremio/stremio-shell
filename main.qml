@@ -112,6 +112,7 @@ ApplicationWindow {
 
     function quitApp() {
         streamingServer.kill();
+        streamingServer.waitForFinished(2000);
         Qt.quit();
     }
 
