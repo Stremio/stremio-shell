@@ -57,6 +57,10 @@ void Process::start(const QString &program, const QVariantList &arguments, QStri
     QProcess::start(program, args);
 }
 
+bool Process::waitForFinished(int msecs) {
+    return QProcess::waitForFinished(msecs);
+}
+
 void Process::onError(QProcess::ProcessError error) {
     this->errorThrown(error);
 }
