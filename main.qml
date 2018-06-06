@@ -221,9 +221,10 @@ ApplicationWindow {
         onErrorThrown: function (error) {
             if (streamingServer.fastReload && error == 1) return; // inhibit errors during fast reload mode;
                                                                   // we'll unset that after we've restarted the server
+            transport.queueEvent("server-crash", {"code": error, "log": streamingServer.getErrBuff()});
             errorDialog.text = streamingServer.errMessage
             errorDialog.detailedText =
-                    'Stremio streaming server has thrown an error \nQProcess::ProcessError code: ' + error
+                    'Stremio streaming server has thrown an error \nQProcess::ProcessError code: ' + error + '\n\n' + streamingServer.getErrBuff();
             errorDialog.visible = true
        }
     }

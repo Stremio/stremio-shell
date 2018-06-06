@@ -17,6 +17,7 @@ private:
     void checkServerAddressMessage(QByteArray message);
 
     QByteArray magicPattern;
+    QByteArrayList errBuff;
     bool magicPatternFound = true; // will be set to false if we have one
 
 private slots:
@@ -27,6 +28,7 @@ private slots:
 
 public slots:
     bool waitForFinished(int msecs = 30000);
+    QByteArray getErrBuff();
 
 signals:
     void addressReady(QString address);

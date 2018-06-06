@@ -66,6 +66,7 @@ void Process::onError(QProcess::ProcessError error) {
 }
 
 void Process::onOutput() {
+    setReadChannel(QProcess::ProcessChannel::StandardOutput);
     while (this->canReadLine()) {
         QByteArray line = this->readLine();
         std::cout << line.toStdString() << std::endl;
@@ -74,10 +75,20 @@ void Process::onOutput() {
 }
 
 void Process::onStdErr() {
+    setReadChannel(QProcess::ProcessChannel::StandardError);
     while (this->canReadLine()) {
         QByteArray line = this->readLine();
+        errBuff.append(line);
+        if(errBuff.size() > 50) {
+            errBuff.removeFirst();
+        }
         std::cerr << line.toStdString() << std::endl;
     }   
+}
+
+QByteArray Process::getErrBuff() {
+    return errBuff.join();
+    //return QString::fromUtf16((ushort *)(errBuff.join()).data());
 }
 
 void Process::onStarted() {
