@@ -143,7 +143,7 @@
                 transport.queueEvent("autoupdater-show-notif", { mode: "restart" })
                 autoUpdater.onNotifClicked = function() {
                     autoUpdater.executeCmd("/bin/sh", ["-c", "sleep 5; open -n /Applications/Stremio.app"], true)
-                    Qt.quit()
+                    quitApp();
                 }
             } else if ( Qt.platform.os === "windows" && firstFile.match(".exe") ) {
                 // 
@@ -152,7 +152,7 @@
                 transport.queueEvent("autoupdater-show-notif", { mode: "launchNew" })
                 autoUpdater.onNotifClicked = function() {
                     Qt.openUrlExternally("file:///"+firstFile.replace(/\\/g,'/'))
-                    Qt.quit()
+                    quitApp();
                 }
             } else if (Qt.platform.os === "linux" && firstFile.match(".appimage")) {
                 // 
@@ -171,7 +171,7 @@
                 autoUpdater.onNotifClicked = function() {
                     autoUpdater.executeCmd("/bin/sh", ["-c", "$HOME/'"+baseName+"'"], true)
                                     // crappy, but otherwise we have to write code to get env var
-                    Qt.quit()
+                    quitApp();
                 }
             } else {
                 autoUpdaterErr("Insane auto-update: "+preparedFiles.join(", "), null)

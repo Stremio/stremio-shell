@@ -112,6 +112,18 @@ ApplicationWindow {
         transport.queueEvent("open-media", url)
     }
 
+    function stopStreamingServer() {
+        systemTray.hideIconTray();
+        streamingServer.kill();
+    }
+
+    function quitApp() {
+        webView.destroy();
+        stopStreamingServer();
+        streamingServer.waitForFinished(2000);
+        Qt.quit();
+    }
+
     /* With help Connections object
      * set connections with System tray class
      * */
@@ -139,8 +151,7 @@ ApplicationWindow {
  
         // The signal - close the application by ignoring the check-box
         onSignalQuit: {
-            systemTray.hideIconTray();
-            Qt.quit();
+            quitApp();
         }
  
         // Minimize / maximize the window by clicking on the default system tray
