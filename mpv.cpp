@@ -75,6 +75,7 @@ MpvObject::MpvObject(QQuickItem * parent)
     if (!mpv)
         throw std::runtime_error("could not create mpv context");
 
+    // terminal=yes brings us all the terminal logs; on windows it's much better with winpty (https://github.com/mpv-player/mpv/blob/master/DOCS/compile-windows.md)
     mpv_set_option_string(mpv, "terminal", "yes");
     mpv_set_option_string(mpv, "msg-level", "all=v");
 
@@ -86,9 +87,6 @@ MpvObject::MpvObject(QQuickItem * parent)
 
     // Enable opengl-hwdec-interop so we can set hwdec at runtime
     mpv::qt::set_property(mpv, "opengl-hwdec-interop", "auto");
-
-    //mpv::qt::set_proprety(mpv, "vo", "gpu");
-    //mpv::qt::set_property(mpv, "osc", "yes");
 
     // No need to set, will be auto-detected
     //mpv::qt::set_property(mpv, "opengl-backend", "angle");
