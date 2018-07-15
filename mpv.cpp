@@ -87,6 +87,9 @@ MpvObject::MpvObject(QQuickItem * parent)
     // Enable opengl-hwdec-interop so we can set hwdec at runtime
     mpv::qt::set_property(mpv, "opengl-hwdec-interop", "auto");
 
+    //mpv::qt::set_proprety(mpv, "vo", "gpu");
+    //mpv::qt::set_property(mpv, "osc", "yes");
+
     // No need to set, will be auto-detected
     //mpv::qt::set_property(mpv, "opengl-backend", "angle");
 
