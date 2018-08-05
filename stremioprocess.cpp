@@ -68,8 +68,10 @@ void Process::onError(QProcess::ProcessError error) {
 void Process::onOutput() {
     setReadChannel(QProcess::ProcessChannel::StandardOutput);
     while (this->canReadLine()) {
+        // from http://doc.qt.io/qt-5/qiodevice.html#readLine
+        // The newline character ('\n') is included in the buffer. If a newline is not encountered before maxSize - 1 bytes are read, a newline will not be inserted into the buffer. On windows newline characters are replaced with '\n'.
         QByteArray line = this->readLine();
-        std::cout << line.toStdString() << std::endl;
+        std::cout << line.toStdString();
         if (!this->magicPatternFound) checkServerAddressMessage(line);
     }
 }
@@ -82,7 +84,7 @@ void Process::onStdErr() {
         if(errBuff.size() > 50) {
             errBuff.removeFirst();
         }
-        std::cerr << line.toStdString() << std::endl;
+        std::cerr << line.toStdString();
     }   
 }
 
