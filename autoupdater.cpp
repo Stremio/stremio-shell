@@ -212,7 +212,7 @@ void AutoUpdater::prepareUpdate(QJsonDocument versionDescDoc) {
     QVector<QString> toDownload;
     
     if (forceFullUpdate
-        || versionDesc.value("shellVersion").toString() !=  QCoreApplication::applicationVersion()
+        || versionDesc.value("shellVersion").toString() != QCoreApplication::applicationVersion()
     ) {
         toDownload = FULL_UPDATE_FILES;
     } else {
