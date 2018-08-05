@@ -6,6 +6,8 @@
 HANDLE jobMainProcess = NULL;
 #endif
 
+#define ERR_BUF_LINES 200
+
 void Process::start(const QString &program, const QVariantList &arguments, QString mPattern) {
 #ifdef WIN32
     // On windows, Child processes by default survive death of their parent, unlike on *nix
@@ -81,7 +83,7 @@ void Process::onStdErr() {
     while (this->canReadLine()) {
         QByteArray line = this->readLine();
         errBuff.append(line);
-        if(errBuff.size() > 50) {
+        if(errBuff.size() > ERR_BUF_LINES) {
             errBuff.removeFirst();
         }
         std::cerr << line.toStdString();
