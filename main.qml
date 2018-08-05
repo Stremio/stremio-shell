@@ -210,10 +210,10 @@ ApplicationWindow {
         onFinished: function(code, status) { 
             // status -> QProcess::CrashExit is 1
             if (!streamingServer.fastReload && errors < 5 && (code !== 0 || status !== 0)) {
+                transport.queueEvent("server-crash", {"code": code, "log": streamingServer.getErrBuff()});
+
                 errors++
-                errorDialog.text = streamingServer.errMessage
-                errorDialog.detailedText = 'Stremio streaming server has thrown an error \nexit code: ' + code
-                errorDialog.visible = true
+                showStreamingServerErr(code)
             }
 
             if (streamingServer.fastReload) {
@@ -232,12 +232,16 @@ ApplicationWindow {
             if (streamingServer.fastReload && error == 1) return; // inhibit errors during fast reload mode;
                                                                   // we'll unset that after we've restarted the server
             transport.queueEvent("server-crash", {"code": error, "log": streamingServer.getErrBuff()});
-            errorDialog.text = streamingServer.errMessage
-            errorDialog.detailedText =
-                    'Stremio streaming server has thrown an error \nQProcess::ProcessError code: ' + error + '\n\n' + streamingServer.getErrBuff();
-            errorDialog.visible = true
+            showStreamingServerErr(error)
        }
     }
+   function showStreamingServerErr(code) {
+        errorDialog.text = streamingServer.errMessage
+        errorDialog.detailedText = 'Stremio streaming server has thrown an error \nQProcess::ProcessError code: ' 
+            + code + '\n\n' 
+            + streamingServer.getErrBuff();
+        errorDialog.visible = true
+   }
     function launchServer() {
         var node_executable = applicationDirPath + "/node"
         if (Qt.platform.os === "windows") node_executable = applicationDirPath + "/node.exe"
