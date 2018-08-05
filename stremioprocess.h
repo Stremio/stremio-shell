@@ -18,7 +18,7 @@ private:
 
     QByteArray magicPattern;
     QByteArrayList errBuff;
-    bool magicPatternFound = true; // will be set to false if we have one
+    bool magicPatternFound = true; // will be set to false if we are searching for one
 
 private slots:
     void onError(QProcess::ProcessError error);
