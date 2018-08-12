@@ -276,8 +276,10 @@ ApplicationWindow {
         running: false
         onTriggered: function () {
             webView.tries++
-            console.log("failed load, trying backupUrl ("+webView.backupUrl+"), tries: "+webView.tries) 
-            webView.url = webView.backupUrl; // TODO: invalidate all caches
+            // we want to revert to the mainUrl in case the URL we were at was the one that caused the crash
+            //webView.reload()
+            webView.url = webView.mainUrl;
+            webView.backgroundColor = "transparent"
         }
     }
     WebEngineView {
@@ -291,8 +293,6 @@ ApplicationWindow {
             ? "http://127.0.0.1:11470/#"+webView.params 
             : "https://app.strem.io/#"+webView.params;
         
-        readonly property string backupUrl: "http://127.0.0.1:11470/#"+webView.params;
-
         url: webView.mainUrl;
         anchors.fill: parent
         backgroundColor: "transparent";
@@ -302,7 +302,7 @@ ApplicationWindow {
 
         onLoadingChanged: function(loadRequest) {
             if (webView.tries > 0) {
-                // show the webview only if we're already on the backupUrl; the first one (network based)
+                // show the webview if the loading is failing
                 // can fail because of many reasons, including captive portals
                 splashScreen.visible = false
                 pulseOpacity.running = false
@@ -329,12 +329,6 @@ ApplicationWindow {
                     errorDialog.visible = true
 
                     console.error(err)
-
-                    // Fallback to local Stremio if we have an error with executing JS
-                    if (webView.url !== webView.backupUrl && !webView.tries) {
-                        console.log("fallbacking to local stremio")
-                        webView.url = webView.backupUrl
-                    }
                 });
             }
 
