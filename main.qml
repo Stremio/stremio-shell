@@ -226,13 +226,13 @@ ApplicationWindow {
             showStreamingServerErr(error)
        }
     }
-   function showStreamingServerErr(code) {
+    function showStreamingServerErr(code) {
         errorDialog.text = streamingServer.errMessage
         errorDialog.detailedText = 'Stremio streaming server has thrown an error \nQProcess::ProcessError code: ' 
             + code + '\n\n' 
             + streamingServer.getErrBuff();
         errorDialog.visible = true
-   }
+    }
     function launchServer() {
         var node_executable = applicationDirPath + "/node"
         if (Qt.platform.os === "windows") node_executable = applicationDirPath + "/node.exe"
