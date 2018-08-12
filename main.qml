@@ -293,6 +293,11 @@ ApplicationWindow {
 
         Component.onCompleted: function() {
             webView.profile.httpUserAgent = webView.profile.httpUserAgent+' StremioShell/'+Qt.application.version
+
+            // for more info, see
+            // https://github.com/adobe/chromium/blob/master/net/disk_cache/backend_impl.cc - AdjustMaxCacheSize, 
+            // https://github.com/adobe/chromium/blob/master/net/disk_cache/backend_impl.cc#L2094
+            webView.profile.httpCacheMaximumSize = 209715200 // 200 MB
         }
 
         onLoadingChanged: function(loadRequest) {
