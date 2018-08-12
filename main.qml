@@ -270,7 +270,6 @@ ApplicationWindow {
             // we want to revert to the mainUrl in case the URL we were at was the one that caused the crash
             //webView.reload()
             webView.url = webView.mainUrl;
-            webView.backgroundColor = "transparent"
         }
     }
     WebEngineView {
@@ -301,6 +300,9 @@ ApplicationWindow {
         }
 
         onLoadingChanged: function(loadRequest) {
+            // hack for webEngineView changing it's background color on crashes
+            webView.backgroundColor = "transparent"
+
             if (webView.tries > 0) {
                 // show the webview if the loading is failing
                 // can fail because of many reasons, including captive portals
@@ -341,6 +343,10 @@ ApplicationWindow {
 
         onRenderProcessTerminated: function(terminationStatus, exitCode) {
             console.log("render process terminated with code "+exitCode+" and status: "+terminationStatus)
+            
+            // hack for webEngineView changing it's background color on crashes
+            webView.backgroundColor = "black"
+
             retryTimer.restart()
         }
 
