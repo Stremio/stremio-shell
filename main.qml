@@ -291,6 +291,10 @@ ApplicationWindow {
 
         readonly property int maxTries: 20
 
+        Component.onCompleted: function() {
+            webView.profile.httpUserAgent = webView.profile.httpUserAgent+' StremioShell/'+Qt.application.version
+        }
+
         onLoadingChanged: function(loadRequest) {
             if (webView.tries > 0) {
                 // show the webview if the loading is failing
