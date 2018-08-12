@@ -48,9 +48,6 @@ win32{
     INCLUDEPATH += C:/OpenSSL-Win32/include
 }
 
-# qBreakpad 
-include(deps/qBreakpad/qBreakpad.pri)
-
 # Razer Chroma SDK
 win32 {
     include(deps/chroma/chroma.pri)
