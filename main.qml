@@ -7,7 +7,6 @@ import QtQuick.Dialogs 1.2
 import com.stremio.process 1.0
 import com.stremio.screensaver 1.0
 import com.stremio.libmpv 1.0
-import com.stremio.razerchroma 1.0
 import com.stremio.clipboard 1.0
 import QtQml 2.2
 import Qt.labs.platform 1.0
@@ -69,7 +68,7 @@ ApplicationWindow {
                 }
             }
             if (ev === "autoupdater-notif-clicked" && autoUpdater.onNotifClicked) autoUpdater.onNotifClicked()
-            if (ev === "chroma-toggle") { args.enabled ? chroma.enable() : chroma.disable() }
+            //if (ev === "chroma-toggle") { args.enabled ? chroma.enable() : chroma.disable() }
             if (ev === "screensaver-toggle") shouldDisableScreensaver(args.disabled)
         }
 
@@ -89,9 +88,6 @@ ApplicationWindow {
     // Utilities
     function onWindowMode(mode) {
         shouldDisableScreensaver(mode === "player")
-        
-        if (mode === "player") chroma.enable()
-        else chroma.disable()
     }
 
     function remoteControlEventFired() {
@@ -184,11 +180,6 @@ ApplicationWindow {
         interval: 300000
         running: false
         onTriggered: function () { shouldDisableScreensaver(isPlayerPlaying()) }
-    }
-
-    // Razer Chroma SDK - highlight player keys
-    RazerChroma {
-        id: chroma
     }
 
     // Clipboard proxy
