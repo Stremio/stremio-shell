@@ -50,11 +50,12 @@ ApplicationWindow {
             if (ev === "mpv-command" && args && args[0] !== "run") mpv.command(args)
             if (ev === "mpv-set-prop") mpv.setProperty(args[0], args[1])
             if (ev === "mpv-observe-prop") mpv.observeProperty(args)
-            if (ev === "control-event") remoteControlEventFired()
+            if (ev === "control-event") wakeupEvent()
+            if (ev === "wakeup") wakeupEvent()
             if (ev === "set-window-mode") onWindowMode(args)
             if (ev === "open-external") Qt.openUrlExternally(args)
             // TODO: restore this
-	    //if (ev === "balloon-show" && root.notificationsEnabled) trayIcon.showMessage(args.title, args.content)
+            //if (ev === "balloon-show" && root.notificationsEnabled) trayIcon.showMessage(args.title, args.content)
             if (ev === "win-focus") { if (!root.visible) root.show(); root.raise(); root.requestActivate(); }
             if (ev === "win-set-visibility") {
                 root.visibility = args.hasOwnProperty('fullscreen') ? (args.fullscreen ? Window.FullScreen : Window.Windowed) : args.visibility
@@ -90,7 +91,7 @@ ApplicationWindow {
         shouldDisableScreensaver(mode === "player")
     }
 
-    function remoteControlEventFired() {
+    function wakeupEvent() {
         shouldDisableScreensaver(true)
         timerScreensaver.restart()
     }
