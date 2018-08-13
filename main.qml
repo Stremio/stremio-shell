@@ -273,7 +273,8 @@ ApplicationWindow {
         if (args.indexOf("--staging"))
             return "https://staging.strem.io/#"+params
 
-        return "https://app.strem.io/#"+params;
+        // @TODO: dynamic
+        return "https://app.strem.io/shell-v4.4/#"+params;
     }
 
     Timer {
