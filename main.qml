@@ -335,19 +335,19 @@ ApplicationWindow {
                 var injectedJS = "try { "+root.injectedJs+" } " +
                         "catch(e) { setTimeout(function() { throw e }); e.message || JSON.stringify(e) }";
                 webView.runJavaScript(injectedJS, function(err) {
-                    if (! err) {
-                        splashScreen.visible = false
-                        pulseOpacity.running = false
+                    splashScreen.visible = false
+                    pulseOpacity.running = false
+
+                    if (!err) {
                         webView.tries = 0
-                        return
+                    } else {
+                        errorDialog.text = "Error while applying shell JS." +
+                                " Please consider re-installing Stremio from https://www.stremio.com"
+                        errorDialog.detailedText = err
+                        errorDialog.visible = true
+
+                        console.error(err)
                     }
-
-                    errorDialog.text = "Error while applying shell JS." +
-                            " Please consider re-installing Stremio from https://www.stremio.com"
-                    errorDialog.detailedText = err
-                    errorDialog.visible = true
-
-                    console.error(err)
                 });
             }
 
