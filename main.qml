@@ -42,7 +42,7 @@ ApplicationWindow {
         readonly property string shellVersion: Qt.application.version
         property string serverAddress: "http://127.0.0.1:11470" // will be set to something else if server inits on another port
         
-	readonly property bool isFullscreen: root.visibility === Window.FullScreen // just to send the initial state
+        readonly property bool isFullscreen: root.visibility === Window.FullScreen // just to send the initial state
 
         signal event(var ev, var args)
         function onEvent(ev, args) {
@@ -262,6 +262,24 @@ ApplicationWindow {
     //
     // Main UI (via WebEngineView)
     //
+    function getWebUrl() {
+        var params = "?winControls=true&loginFlow=desktop"
+        var args = Qt.application.arguments
+
+        var webuiArg = "--webui-url="
+        for (var i=0; i!=args.length; i++) {
+            if (args[i].indexOf(webuiArg) === 0) return args[i].slice(webuiArg.length)
+        }
+
+        if (args.indexOf("--development") > -1 || debug)
+            return "http://127.0.0.1:11470/#"+params
+
+        if (args.indexOf("--staging"))
+            return "https://staging.strem.io/#"+params
+
+        return "https://app.strem.io/#"+params;
+    }
+
     Timer {
         id: retryTimer
         interval: 1000
@@ -278,11 +296,7 @@ ApplicationWindow {
 
         focus: true
 
-        readonly property string params: "?winControls=true&loginFlow=desktop";
-        readonly property string mainUrl: 
-            Qt.application.arguments.indexOf("--development") > -1 || debug 
-            ? "http://127.0.0.1:11470/#"+webView.params 
-            : "https://app.strem.io/#"+webView.params;
+        readonly property string mainUrl: getWebUrl()
         
         url: webView.mainUrl;
         anchors.fill: parent
@@ -292,6 +306,8 @@ ApplicationWindow {
         readonly property int maxTries: 20
 
         Component.onCompleted: function() {
+            console.log("Loading web UI from URL: "+webView.mainUrl)
+
             webView.profile.httpUserAgent = webView.profile.httpUserAgent+' StremioShell/'+Qt.application.version
 
             // for more info, see
@@ -371,7 +387,10 @@ ApplicationWindow {
 
         // Prevent navigation
         onNavigationRequested: function(req) {
-            if (! req.url.toString().match(/^http(s?):\/\/(127.0.0.1:1147(\d)|app.strem.io|www.strem.io)\//)) {
+            // WARNING: @TODO: perhaps we need a better way to parse URLs here
+            var allowedHost = webView.mainUrl.split('/')[2]
+            var targetHost = req.url.toString().split('/')[2]
+            if (allowedHost != targetHost) {
                  console.log("onNavigationRequested: disallowed URL "+req.url.toString());
                  req.action = WebEngineView.IgnoreRequest;
             }
@@ -465,9 +484,9 @@ ApplicationWindow {
         root.hide()
     }
 
-    // //
-    // // AUTO UPDATER
-    // //
+    //
+    // AUTO UPDATER
+    //
     signal autoUpdaterErr(var msg, var err);
     signal autoUpdaterRestartTimer();
 
