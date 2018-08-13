@@ -7,15 +7,12 @@
 
 #define DESKTOP true
 
-#define BREAKPAD_ENDPOINT "http://ivo_strem_io.bugsplat.com/post/bp/crash/postBP.php"
-
 #ifdef DESKTOP
 #include <QtWidgets/QApplication>
 typedef QApplication Application;
 
 #include <QQmlEngine>
 
-#include <QBreakpadHandler.h>
 #include <QStandardPaths>
 
 #include <QSystemTrayIcon>
@@ -46,18 +43,8 @@ void InitializeParameters(QQmlApplicationEngine& engine, MainApp& app) {
     #endif
 }
 
-void CrashHandler(){
-    QBreakpadInstance.setDumpPath(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
-    //QBreakpadInstance.setUploadUrl(QUrl(BREAKPAD_ENDPOINT));
-    //QBreakpadInstance.sendDumps();
-}
-
 int main(int argc, char **argv)
 {
-    #if defined(DESKTOP) && !defined(QT_DEBUG)
-    CrashHandler();
-    #endif
-
     #ifdef _WIN32
     // Default to ANGLE (DirectX), because that seems to eliminate so many issues on Windows
     // Also, according to the docs here: https://wiki.qt.io/Qt_5_on_Windows_ANGLE_and_OpenGL, ANGLE is also preferrable

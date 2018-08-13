@@ -7,7 +7,6 @@ import QtQuick.Dialogs 1.2
 import com.stremio.process 1.0
 import com.stremio.screensaver 1.0
 import com.stremio.libmpv 1.0
-import com.stremio.razerchroma 1.0
 import com.stremio.clipboard 1.0
 import QtQml 2.2
 import Qt.labs.platform 1.0
@@ -69,7 +68,7 @@ ApplicationWindow {
                 }
             }
             if (ev === "autoupdater-notif-clicked" && autoUpdater.onNotifClicked) autoUpdater.onNotifClicked()
-            if (ev === "chroma-toggle") { args.enabled ? chroma.enable() : chroma.disable() }
+            //if (ev === "chroma-toggle") { args.enabled ? chroma.enable() : chroma.disable() }
             if (ev === "screensaver-toggle") shouldDisableScreensaver(args.disabled)
         }
 
@@ -89,9 +88,6 @@ ApplicationWindow {
     // Utilities
     function onWindowMode(mode) {
         shouldDisableScreensaver(mode === "player")
-        
-        if (mode === "player") chroma.enable()
-        else chroma.disable()
     }
 
     function remoteControlEventFired() {
@@ -186,11 +182,6 @@ ApplicationWindow {
         onTriggered: function () { shouldDisableScreensaver(isPlayerPlaying()) }
     }
 
-    // Razer Chroma SDK - highlight player keys
-    RazerChroma {
-        id: chroma
-    }
-
     // Clipboard proxy
     Clipboard {
         id: clipboard
@@ -235,13 +226,13 @@ ApplicationWindow {
             showStreamingServerErr(error)
        }
     }
-   function showStreamingServerErr(code) {
+    function showStreamingServerErr(code) {
         errorDialog.text = streamingServer.errMessage
         errorDialog.detailedText = 'Stremio streaming server has thrown an error \nQProcess::ProcessError code: ' 
             + code + '\n\n' 
             + streamingServer.getErrBuff();
         errorDialog.visible = true
-   }
+    }
     function launchServer() {
         var node_executable = applicationDirPath + "/node"
         if (Qt.platform.os === "windows") node_executable = applicationDirPath + "/node.exe"
@@ -276,8 +267,9 @@ ApplicationWindow {
         running: false
         onTriggered: function () {
             webView.tries++
-            console.log("failed load, trying backupUrl ("+webView.backupUrl+"), tries: "+webView.tries) 
-            webView.url = webView.backupUrl; // TODO: invalidate all caches
+            // we want to revert to the mainUrl in case the URL we were at was the one that caused the crash
+            //webView.reload()
+            webView.url = webView.mainUrl;
         }
     }
     WebEngineView {
@@ -291,8 +283,6 @@ ApplicationWindow {
             ? "http://127.0.0.1:11470/#"+webView.params 
             : "https://app.strem.io/#"+webView.params;
         
-        readonly property string backupUrl: "http://127.0.0.1:11470/#"+webView.params;
-
         url: webView.mainUrl;
         anchors.fill: parent
         backgroundColor: "transparent";
@@ -300,9 +290,21 @@ ApplicationWindow {
 
         readonly property int maxTries: 20
 
+        Component.onCompleted: function() {
+            webView.profile.httpUserAgent = webView.profile.httpUserAgent+' StremioShell/'+Qt.application.version
+
+            // for more info, see
+            // https://github.com/adobe/chromium/blob/master/net/disk_cache/backend_impl.cc - AdjustMaxCacheSize, 
+            // https://github.com/adobe/chromium/blob/master/net/disk_cache/backend_impl.cc#L2094
+            webView.profile.httpCacheMaximumSize = 209715200 // 200 MB
+        }
+
         onLoadingChanged: function(loadRequest) {
+            // hack for webEngineView changing it's background color on crashes
+            webView.backgroundColor = "transparent"
+
             if (webView.tries > 0) {
-                // show the webview only if we're already on the backupUrl; the first one (network based)
+                // show the webview if the loading is failing
                 // can fail because of many reasons, including captive portals
                 splashScreen.visible = false
                 pulseOpacity.running = false
@@ -329,12 +331,6 @@ ApplicationWindow {
                     errorDialog.visible = true
 
                     console.error(err)
-
-                    // Fallback to local Stremio if we have an error with executing JS
-                    if (webView.url !== webView.backupUrl && !webView.tries) {
-                        console.log("fallbacking to local stremio")
-                        webView.url = webView.backupUrl
-                    }
                 });
             }
 
@@ -347,6 +343,10 @@ ApplicationWindow {
 
         onRenderProcessTerminated: function(terminationStatus, exitCode) {
             console.log("render process terminated with code "+exitCode+" and status: "+terminationStatus)
+            
+            // hack for webEngineView changing it's background color on crashes
+            webView.backgroundColor = "black"
+
             retryTimer.restart()
         }
 
