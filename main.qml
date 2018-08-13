@@ -32,10 +32,6 @@ ApplicationWindow {
     color: "#201f32";
     title: appTitle
 
-    // This is built on the assumption it will be executed twice, at the start and end of the loading stage;
-    // which means everything has to be checked
-    property string injectedJs: "initShellComm()"
-
     // Transport
     QtObject {
         id: transport
@@ -332,7 +328,7 @@ ApplicationWindow {
 
                 // Try-catch to be able to return the error as result, but still throw it in the client context
                 // so it can be caught and reported
-                var injectedJS = "try { "+root.injectedJs+" } " +
+                var injectedJS = "try { initShellComm() } " +
                         "catch(e) { setTimeout(function() { throw e }); e.message || JSON.stringify(e) }";
                 webView.runJavaScript(injectedJS, function(err) {
                     splashScreen.visible = false
