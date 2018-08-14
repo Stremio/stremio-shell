@@ -261,6 +261,7 @@ ApplicationWindow {
     function getWebUrl() {
         var params = "?winControls=true&loginFlow=desktop"
         var args = Qt.application.arguments
+        var shortVer = Qt.application.version.split('.').slice(0, 2).join('.')
 
         var webuiArg = "--webui-url="
         for (var i=0; i!=args.length; i++) {
@@ -273,8 +274,7 @@ ApplicationWindow {
         if (args.indexOf("--staging") > -1)
             return "https://staging.strem.io/#"+params
 
-        // @TODO: dynamic
-        return "https://app.strem.io/shell-v4.4/#"+params;
+        return "https://app.strem.io/shell-v"+shortVer+"/#"+params;
     }
 
     Timer {
@@ -508,6 +508,8 @@ ApplicationWindow {
     // On complete handler
     //
     Component.onCompleted: function() {
+        console.log('Stremio Shell version: '+Qt.application.version)
+
         // Kind of hacky way to ensure there are no Qt bindings going on; otherwise when we go to fullscreen
         // Qt tries to restore original window size
         root.height = root.initialHeight
