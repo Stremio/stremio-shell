@@ -7,7 +7,6 @@ import QtQuick.Dialogs 1.2
 import com.stremio.process 1.0
 import com.stremio.screensaver 1.0
 import com.stremio.libmpv 1.0
-import com.stremio.razerchroma 1.0
 import com.stremio.clipboard 1.0
 import QtQml 2.2
 import Qt.labs.platform 1.0
@@ -28,13 +27,10 @@ ApplicationWindow {
     height: root.initialHeight
 
     property bool notificationsEnabled: true
+    property int alwaysOnTopFlags: 0
 
     color: "#201f32";
     title: appTitle
-
-    // This is built on the assumption it will be executed twice, at the start and end of the loading stage;
-    // which means everything has to be checked
-    property string injectedJs: "initShellComm()"
 
     // Transport
     QtObject {
@@ -42,7 +38,7 @@ ApplicationWindow {
         readonly property string shellVersion: Qt.application.version
         property string serverAddress: "http://127.0.0.1:11470" // will be set to something else if server inits on another port
         
-	readonly property bool isFullscreen: root.visibility === Window.FullScreen // just to send the initial state
+        readonly property bool isFullscreen: root.visibility === Window.FullScreen // just to send the initial state
 
         signal event(var ev, var args)
         function onEvent(ev, args) {
@@ -50,16 +46,26 @@ ApplicationWindow {
             if (ev === "mpv-command" && args && args[0] !== "run") mpv.command(args)
             if (ev === "mpv-set-prop") mpv.setProperty(args[0], args[1])
             if (ev === "mpv-observe-prop") mpv.observeProperty(args)
-            if (ev === "control-event") remoteControlEventFired()
+            if (ev === "control-event") wakeupEvent()
+            if (ev === "wakeup") wakeupEvent()
             if (ev === "set-window-mode") onWindowMode(args)
             if (ev === "open-external") Qt.openUrlExternally(args)
             // TODO: restore this
-	    //if (ev === "balloon-show" && root.notificationsEnabled) trayIcon.showMessage(args.title, args.content)
+            //if (ev === "balloon-show" && root.notificationsEnabled) trayIcon.showMessage(args.title, args.content)
             if (ev === "win-focus") { if (!root.visible) root.show(); root.raise(); root.requestActivate(); }
-            if (ev === "win-set-visibility") root.visibility = args.hasOwnProperty('fullscreen') ?
-                                             (args.fullscreen ? Window.FullScreen : Window.Windowed) : args.visibility
+            if (ev === "win-set-visibility") {
+                root.visibility = args.hasOwnProperty('fullscreen') ? (args.fullscreen ? Window.FullScreen : Window.Windowed) : args.visibility
+                if(root.visibility == Window.FullScreen) {
+                    root.alwaysOnTopFlags = root.flags;
+                    root.flags &= ~Qt.WindowStaysOnTopHint;
+                    systemTray.updateIsOnTop(false);
+                } else {
+                    root.flags = root.alwaysOnTopFlags;
+                    systemTray.updateIsOnTop((root.flags & Qt.WindowStaysOnTopHint) === Qt.WindowStaysOnTopHint);
+                }
+            }
             if (ev === "autoupdater-notif-clicked" && autoUpdater.onNotifClicked) autoUpdater.onNotifClicked()
-            if (ev === "chroma-toggle") { args.enabled ? chroma.enable() : chroma.disable() }
+            //if (ev === "chroma-toggle") { args.enabled ? chroma.enable() : chroma.disable() }
             if (ev === "screensaver-toggle") shouldDisableScreensaver(args.disabled)
         }
 
@@ -79,12 +85,9 @@ ApplicationWindow {
     // Utilities
     function onWindowMode(mode) {
         shouldDisableScreensaver(mode === "player")
-        
-        if (mode === "player") chroma.enable()
-        else chroma.disable()
     }
 
-    function remoteControlEventFired() {
+    function wakeupEvent() {
         shouldDisableScreensaver(true)
         timerScreensaver.restart()
     }
@@ -176,11 +179,6 @@ ApplicationWindow {
         onTriggered: function () { shouldDisableScreensaver(isPlayerPlaying()) }
     }
 
-    // Razer Chroma SDK - highlight player keys
-    RazerChroma {
-        id: chroma
-    }
-
     // Clipboard proxy
     Clipboard {
         id: clipboard
@@ -200,10 +198,10 @@ ApplicationWindow {
         onFinished: function(code, status) { 
             // status -> QProcess::CrashExit is 1
             if (!streamingServer.fastReload && errors < 5 && (code !== 0 || status !== 0)) {
+                transport.queueEvent("server-crash", {"code": code, "log": streamingServer.getErrBuff()});
+
                 errors++
-                errorDialog.text = streamingServer.errMessage
-                errorDialog.detailedText = 'Stremio streaming server has thrown an error \nexit code: ' + code
-                errorDialog.visible = true
+                showStreamingServerErr(code)
             }
 
             if (streamingServer.fastReload) {
@@ -221,11 +219,16 @@ ApplicationWindow {
         onErrorThrown: function (error) {
             if (streamingServer.fastReload && error == 1) return; // inhibit errors during fast reload mode;
                                                                   // we'll unset that after we've restarted the server
-            errorDialog.text = streamingServer.errMessage
-            errorDialog.detailedText =
-                    'Stremio streaming server has thrown an error \nQProcess::ProcessError code: ' + error
-            errorDialog.visible = true
+            transport.queueEvent("server-crash", {"code": error, "log": streamingServer.getErrBuff()});
+            showStreamingServerErr(error)
        }
+    }
+    function showStreamingServerErr(code) {
+        errorDialog.text = streamingServer.errMessage
+        errorDialog.detailedText = 'Stremio streaming server has thrown an error \nQProcess::ProcessError code: ' 
+            + code + '\n\n' 
+            + streamingServer.getErrBuff();
+        errorDialog.visible = true
     }
     function launchServer() {
         var node_executable = applicationDirPath + "/node"
@@ -255,14 +258,33 @@ ApplicationWindow {
     //
     // Main UI (via WebEngineView)
     //
+    function getWebUrl() {
+        var params = "?winControls=true&loginFlow=desktop"
+        var args = Qt.application.arguments
+
+        var webuiArg = "--webui-url="
+        for (var i=0; i!=args.length; i++) {
+            if (args[i].indexOf(webuiArg) === 0) return args[i].slice(webuiArg.length)
+        }
+
+        if (args.indexOf("--development") > -1 || debug)
+            return "http://127.0.0.1:11470/#"+params
+
+        if (args.indexOf("--staging") > -1)
+            return "https://staging.strem.io/#"+params
+
+        return "https://app.strem.io/#"+params;
+    }
+
     Timer {
         id: retryTimer
         interval: 1000
         running: false
         onTriggered: function () {
             webView.tries++
-            console.log("failed load, trying backupUrl ("+webView.backupUrl+"), tries: "+webView.tries) 
-            webView.url = webView.backupUrl; // TODO: invalidate all caches
+            // we want to revert to the mainUrl in case the URL we were at was the one that caused the crash
+            //webView.reload()
+            webView.url = webView.mainUrl;
         }
     }
     WebEngineView {
@@ -270,14 +292,8 @@ ApplicationWindow {
 
         focus: true
 
-        readonly property string params: "?winControls=true&loginFlow=desktop";
-        readonly property string mainUrl: 
-            Qt.application.arguments.indexOf("--development") > -1 || debug 
-            ? "http://127.0.0.1:11470/#"+webView.params 
-            : "https://app.strem.io/#"+webView.params;
+        readonly property string mainUrl: getWebUrl()
         
-        readonly property string backupUrl: "http://127.0.0.1:11470/#"+webView.params;
-
         url: webView.mainUrl;
         anchors.fill: parent
         backgroundColor: "transparent";
@@ -285,9 +301,23 @@ ApplicationWindow {
 
         readonly property int maxTries: 20
 
+        Component.onCompleted: function() {
+            console.log("Loading web UI from URL: "+webView.mainUrl)
+
+            webView.profile.httpUserAgent = webView.profile.httpUserAgent+' StremioShell/'+Qt.application.version
+
+            // for more info, see
+            // https://github.com/adobe/chromium/blob/master/net/disk_cache/backend_impl.cc - AdjustMaxCacheSize, 
+            // https://github.com/adobe/chromium/blob/master/net/disk_cache/backend_impl.cc#L2094
+            webView.profile.httpCacheMaximumSize = 209715200 // 200 MB
+        }
+
         onLoadingChanged: function(loadRequest) {
+            // hack for webEngineView changing it's background color on crashes
+            webView.backgroundColor = "transparent"
+
             if (webView.tries > 0) {
-                // show the webview only if we're already on the backupUrl; the first one (network based)
+                // show the webview if the loading is failing
                 // can fail because of many reasons, including captive portals
                 splashScreen.visible = false
                 pulseOpacity.running = false
@@ -298,27 +328,21 @@ ApplicationWindow {
 
                 // Try-catch to be able to return the error as result, but still throw it in the client context
                 // so it can be caught and reported
-                var injectedJS = "try { "+root.injectedJs+" } " +
+                var injectedJS = "try { initShellComm() } " +
                         "catch(e) { setTimeout(function() { throw e }); e.message || JSON.stringify(e) }";
                 webView.runJavaScript(injectedJS, function(err) {
-                    if (! err) {
-                        splashScreen.visible = false
-                        pulseOpacity.running = false
+                    splashScreen.visible = false
+                    pulseOpacity.running = false
+
+                    if (!err) {
                         webView.tries = 0
-                        return
-                    }
+                    } else {
+                        errorDialog.text = "Error while applying shell JS." +
+                                " Please consider re-installing Stremio from https://www.stremio.com"
+                        errorDialog.detailedText = err
+                        errorDialog.visible = true
 
-                    errorDialog.text = "Error while applying shell JS." +
-                            " Please consider re-installing Stremio from https://www.stremio.com"
-                    errorDialog.detailedText = err
-                    errorDialog.visible = true
-
-                    console.error(err)
-
-                    // Fallback to local Stremio if we have an error with executing JS
-                    if (webView.url !== webView.backupUrl && !webView.tries) {
-                        console.log("fallbacking to local stremio")
-                        webView.url = webView.backupUrl
+                        console.error(err)
                     }
                 });
             }
@@ -332,6 +356,10 @@ ApplicationWindow {
 
         onRenderProcessTerminated: function(terminationStatus, exitCode) {
             console.log("render process terminated with code "+exitCode+" and status: "+terminationStatus)
+            
+            // hack for webEngineView changing it's background color on crashes
+            webView.backgroundColor = "black"
+
             retryTimer.restart()
         }
 
@@ -346,6 +374,7 @@ ApplicationWindow {
         onLinkHovered: webView.hoveredUrl = hoveredUrl
         onNewViewRequested: function(req) { if (req.userInitiated) Qt.openUrlExternally(webView.hoveredUrl) }
 
+        // FIXME: When is this called?
         onFullScreenRequested: function(req) {
             if (req.toggleOn) root.visibility = Window.FullScreen;
             else root.visibility = Window.Windowed;
@@ -354,7 +383,10 @@ ApplicationWindow {
 
         // Prevent navigation
         onNavigationRequested: function(req) {
-            if (! req.url.toString().match(/^http(s?):\/\/(127.0.0.1:1147(\d)|app.strem.io|www.strem.io)\//)) {
+            // WARNING: @TODO: perhaps we need a better way to parse URLs here
+            var allowedHost = webView.mainUrl.split('/')[2]
+            var targetHost = req.url.toString().split('/')[2]
+            if (allowedHost != targetHost) {
                  console.log("onNavigationRequested: disallowed URL "+req.url.toString());
                  req.action = WebEngineView.IgnoreRequest;
             }
@@ -448,9 +480,9 @@ ApplicationWindow {
         root.hide()
     }
 
-    // //
-    // // AUTO UPDATER
-    // //
+    //
+    // AUTO UPDATER
+    //
     signal autoUpdaterErr(var msg, var err);
     signal autoUpdaterRestartTimer();
 

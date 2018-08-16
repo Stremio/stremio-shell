@@ -1,7 +1,3 @@
-[submodule "deps/qBreakpad"]
-	path = deps/qBreakpad
-	url = https://github.com/Ivshti/qBreakpad
-
 [submodule "deps/libmpv"]
 	path = deps/libmpv
 	url = https://github.com/Ivshti/libmpv
