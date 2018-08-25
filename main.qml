@@ -362,6 +362,11 @@ ApplicationWindow {
             webView.backgroundColor = "black"
 
             retryTimer.restart()
+
+            // send an event for the crash, but since the web UI is not working, reset the queue and queue it
+            transport.queued = []
+            transport.queueEvent("render-process-terminated", { exitCode: exitCode, terminationStatus: terminationStatus, url: webView.url })
+
         }
 
         // WARNING: does not work..for some reason: "Scripts may close only the windows that were opened by it."
