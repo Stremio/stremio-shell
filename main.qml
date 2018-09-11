@@ -116,12 +116,12 @@ ApplicationWindow {
     }
 
     function stopStreamingServer() {
-        systemTray.hideIconTray();
         streamingServer.kill();
     }
 
     function quitApp() {
         webView.destroy();
+        systemTray.hideIconTray();
         stopStreamingServer();
         streamingServer.waitForFinished(2000);
         Qt.quit();
