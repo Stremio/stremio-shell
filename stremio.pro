@@ -24,7 +24,6 @@ mac {
 unix:!mac {
     QT_CONFIG -= no-pkg-config
     CONFIG += link_pkgconfig
-    #PKGCONFIG += mpv
     LIBS += -lmpv
 }
 
@@ -37,7 +36,6 @@ INCLUDEPATH += deps/libmpv/include
 
 # OpenSSL
 unix:!mac {
-    #PKGCONFIG += openssl
     LIBS += -lcrypto
 }
 mac {
