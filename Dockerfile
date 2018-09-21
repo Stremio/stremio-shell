@@ -6,7 +6,6 @@ RUN apt-get install -y libmpv-dev
 WORKDIR /build-stremio
 ADD . /build-stremio
 
-ENV QT_SELECT=5
-
-#RUN make -f AppImage.makefile
+RUN make -f AppImage.makefile clean
+RUN make -f AppImage.makefile
 
