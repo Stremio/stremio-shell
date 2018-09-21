@@ -33,7 +33,8 @@ ${DEST_DIR}: ${STREMIO_BIN} ${NODE_BIN} ${FFMPEG_BIN} ${ICON_BIN} ${STREMIO_DESK
 	cp -r ${NSS_DIR} ${DEST_DIR}/lib/
 
 ${APPIMAGE_FILE}: ${SERVER_JS} linuxdeployqt
-	./linuxdeployqt ${DEST_DIR}/stremio -qmldir=. -bundle-non-qt-libs -appimage
+	./linuxdeployqt --appimage-extract
+	./squashfs-root/AppRun ${DEST_DIR}/stremio -qmldir=. -bundle-non-qt-libs -appimage
 	mv Stremio-x86_64.AppImage ${APPIMAGE_FILE}
 
 ${SERVER_JS}: ${DEST_DIR}
