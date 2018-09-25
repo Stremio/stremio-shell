@@ -34,8 +34,8 @@ ${DEST_DIR}: ${STREMIO_BIN} ${NODE_BIN} ${FFMPEG_BIN} ${ICON_BIN} ${STREMIO_DESK
 
 ${APPIMAGE_FILE}: ${SERVER_JS} linuxdeployqt
 	./linuxdeployqt --appimage-extract
+	#This will create  Stremio-x86_64.AppImage
 	./squashfs-root/AppRun ${DEST_DIR}/stremio -qmldir=. -bundle-non-qt-libs -appimage
-	mv Stremio-x86_64.AppImage ${APPIMAGE_FILE}
 
 ${SERVER_JS}: ${DEST_DIR}
 	wget "https://s3-eu-west-1.amazonaws.com/stremio-artifacts/four/v${VERSION}/server.js" -qO ${SERVER_JS} || rm ${SERVER_JS}
