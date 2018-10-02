@@ -2,8 +2,8 @@
 Version=1.0
 Name=Stremio
 Comment=Video organizer for your Movies, TV Shows and TV Channels
-Exec=./stremio %U
-Icon=stremio
+Exec=/opt/stremio/stremio %U
+Icon=/opt/stremio/stremio.svg
 Terminal=false
 Type=Application
 Categories=GNOME;GTK;AudioVideo;
