@@ -8,7 +8,7 @@ These instructions have been tested in Debian Buster (Testing)
 
 ## 2. Install QTCreator
 
-``sudo apt-get install qtcreator qt5-qmake qt5-default``
+``sudo apt-get install qtcreator qt5-qmake qt5-default g++``
 
 ## 3. Generate the Makefiles for Stremio
 
