@@ -8,9 +8,7 @@ These instructions have been tested in Debian 9 (Stretch)
 
 ## 2. Install QTCreator
 
-``sudo apt-get install qtcreator``
-
-``sudo apt-get install qt5-qmake``
+``sudo apt-get install qtcreator qt5-qmake qt5-default``
 
 ## 3. Generate the Makefiles for Stremio
 
