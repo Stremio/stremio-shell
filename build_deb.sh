@@ -1,3 +1,4 @@
 #!/bin/bash
 
-docker run -t "$(docker build -qf ./Ubuntu.dockerfile .)" sh -c 'tar c *.deb | cat' | tar x
+docker run --rm -v "$(pwd):/app" -t "$(docker build -qf ./Ubuntu.dockerfile .)" sh -c 'cp *.deb /app/'
+

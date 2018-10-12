@@ -1,22 +1,20 @@
 
 VERSION := $(shell grep -oPm1 'VERSION=\K.+' stremio.pro)
 
-DEST_DIR := opt/stremio
 BUILD_DIR := build
-INSTALL_DIR := ${PREFIX}/${DEST_DIR}
+INSTALL_DIR := /opt/stremio
 
 ICON_BIN := smartcode-stremio.svg
 
 SERVER_JS := server.js
 STREMIO_DESKTOP := smartcode-stremio.desktop
 
-STREMIO_BIN := ${DEST_DIR}/stremio
+STREMIO_BIN := ${BUILD_DIR}/stremio
 
 ALL: ${STREMIO_BIN} ${SERVER_JS}
 
 install:
-	install -Dm 755 ${DEST_DIR}/stremio ${INSTALL_DIR}/stremio
-	install -Dm 755 ${DEST_DIR}/node ${INSTALL_DIR}/node
+	make -C ${BUILD_DIR} install
 	install -Dm 644 ${SERVER_JS} ${INSTALL_DIR}/server.js
 	./xdg-icons.sh install images/stremio.svg smartcode-stremio
 	xdg-desktop-menu install --mode system ${STREMIO_DESKTOP}
@@ -36,10 +34,9 @@ ${SERVER_JS}:
 
 ${STREMIO_BIN}:
 	mkdir -p ${BUILD_DIR}
-	cd ${BUILD_DIR} && qmake PREFIX=. ..
+	cd ${BUILD_DIR} && qmake ..
 	make -j -C ${BUILD_DIR}
-	make -C ${BUILD_DIR} install
 
 clean:
-	rm -rf ${BUILD_DIR} ${DEST_DIR}
+	rm -rf ${BUILD_DIR} ${SERVER_JS}
 
