@@ -3,10 +3,14 @@ unix:!android {
         qnx {
             target.path = $$PREFIX/tmp/$${TARGET}/bin
         } else {
-            target.path = $$PREFIX/opt/$${TARGET}/bin
+            target.path = $$PREFIX/opt/$${TARGET}
         }
         export(target.path)
     }
+    static.files = node smartcode-stremio.desktop
+    static.path = $$target.path
+    export(static.path)
+    INSTALLS += static
     INSTALLS += target
 }
 
