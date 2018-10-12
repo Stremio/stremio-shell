@@ -1,6 +1,6 @@
 # Build Stremio for Debian GNU/Linux
 
-These instructions have been tested in Debian 9 (Stretch)
+These instructions have been tested in Debian Buster (Testing)
 
 ## 1. Start by cloning the GIT repository:
 
