@@ -1,6 +1,6 @@
 # Build Stremio for Debian GNU/Linux
 
-These instructions have been tested in Debian 9 (Stretch)
+These instructions have been tested in Debian Buster (Testing)
 
 ## 1. Start by cloning the GIT repository:
 
@@ -8,12 +8,12 @@ These instructions have been tested in Debian 9 (Stretch)
 
 ## 2. Install QTCreator
 
-``sudo apt-get install qtcreator``
-``sudo apt-get install qtcreator``
+``sudo apt-get install qtcreator qt5-qmake qt5-default g++ pkgconf libssl-dev``
 
 ## 3. Generate the Makefiles for Stremio
 
 ``cd stremio-shell``
+
 ``qmake``
 
 ## 3.1 Install missing dependencies
@@ -56,9 +56,7 @@ This will create the `stremio' binary.
 
 Upon running the ./stremio binary, stremio should start up as usual. Except it won't start the streaming server, for this you need to have NodeJS installed and server.js, stremio.asar in your working dir, for which you need to do:
 
-$ wget https://dl.strem.io/four/v4.0.17/server.js && wget https://dl.strem.io/four/v4.0.17/stremio.asar
-
-wget https://dl.strem.io/four/v4.4.10/server.js ; wget https://dl.strem.io/four/v4.4.10/stremio.asar
+``wget https://dl.strem.io/four/v4.4.10/server.js ; wget https://dl.strem.io/four/v4.4.10/stremio.asar``
 
 
 ## 6. Install other dependencies
@@ -81,9 +79,7 @@ qrc:/main.qml:12 module "Qt.labs.platform" is not installed
 
 That means you need to install:
 
-``sudo apt-get install qml-module-qtwebchannel``
-``sudo apt-get install qml-module-qt-labs-platform``
-``sudo apt-get install qml-module-qtwebengine``
+``sudo apt-get install qml-module-qtwebchannel qml-module-qt-labs-platform qml-module-qtwebengine qml-module-qtquick-dialogs qml-module-qtquick-controls``
 
 Now you should be able to run it normally.
 
