@@ -1,18 +1,22 @@
 ## Build
 
+### Build instructions for Mac OS X
+
 1. Make sure you have Qt 5.10.x or newer and Qt Creator
 2. Open the project in Qt creator
 3. build it
 4. do ``cp -R /Applications/Stremio.app/Contents/Resources/WCjs/lib/ build-stremio-Desktop_Qt_5_7_0_clang_64bit-Debug/stremio.app/Contents/MacOS/lib``
 
-
-
-## Command line to build:
+#### Command line to build:
 
 ```
 qmake
 make
 ```
+
+### Build instructions for Debian GNU/Linux
+
+Please, refer to [DEBIAN.md](https://github.com/Stremio/stremio-shell/blob/master/DEBIAN.md) for a detailed explanation of how to build the latest Stremio in Debian.
 
 ## Releasing a version
 
