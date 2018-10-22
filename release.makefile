@@ -2,7 +2,7 @@
 VERSION := $(shell grep -oPm1 'VERSION=\K.+' stremio.pro)
 
 BUILD_DIR := build
-INSTALL_DIR := "${PREIFX}/opt/stremio"
+INSTALL_DIR := "${PREFIX}/opt/stremio"
 
 ICON_BIN := smartcode-stremio.svg
 
