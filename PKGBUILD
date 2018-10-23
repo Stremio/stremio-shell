@@ -1,10 +1,10 @@
 # Maintainer: Vladimir Borisov <vladimir@stremio.com>
 _pkgname=stremio
 pkgname=${_pkgname}-git
-pkgver=4.4.10.r36.5886217
+pkgver=4.4.10.r40.7f05671
 pkgrel=1
 pkgdesc="The next generation media center"
-arch=(any)
+arch=($(uname -m))
 url="https://stremio.com"
 license=("unknown")
 groups=()
@@ -15,18 +15,21 @@ conflicts=("${_pkgname}")
 replaces=()
 backup=()
 options=()
+
+cat <(echo 'post_install() {') postinstall-pak <(echo '}') <(echo 'pre_remove() {') preremove-pak <(echo '}') > stremio.install
+
 install=stremio.install
 
 # TODO: change back to master/remove the #fragment
-source=("${_pkgname}::git+https://github.com/Stremio/stremio-shell.git#branch=debian" "server.js::https://s3-eu-west-1.amazonaws.com/stremio-artifacts/four/master/server.js")
+source=()
 noextract=()
-md5sums=("SKIP" "SKIP")
+md5sums=()
 
 # Please refer to the 'USING git SOURCES' section of the PKGBUILD man page for
 # a description of each element in the source array.
 
 pkgver() {
-	cd "$srcdir/${_pkgname}"
+	cd "$startdir"
 # Git, tags available
 	printf "%s" "$(git describe --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')"
 
@@ -35,17 +38,18 @@ pkgver() {
 }
 
 prepare() {
-	cd "$srcdir/${_pkgname}"
-	git submodule update --init 
+	cd "$startdir"
+	git submodule update --init
+	make -f release.makefile clean
 }
 
 build() {
-	cd "$srcdir/${_pkgname}"
+	cd "$startdir"
 	make -f release.makefile PREFIX="$pkgdir"
 }
 
 package() {
-	cd "$srcdir/${_pkgname}"
+	cd "$startdir"
 	export PREFIX="$pkgdir";
 	make -f release.makefile install
 }
