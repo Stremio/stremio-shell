@@ -7,7 +7,7 @@ unix:!android {
         }
         export(target.path)
     }
-    static.files = node smartcode-stremio.desktop
+    static.files = smartcode-stremio.desktop
     static.path = $$target.path
     export(static.path)
     INSTALLS += static
