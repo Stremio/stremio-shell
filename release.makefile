@@ -1,8 +1,8 @@
 
-VERSION := $(shell grep -oPm1 'VERSION=\K.+' stremio.pro)
+VERSION := ${shell grep -oPm1 'VERSION=\K.+' stremio.pro}
 
 BUILD_DIR := build
-INSTALL_DIR := "${PREFIX}/opt/stremio"
+INSTALL_DIR := ${PREFIX}/opt/stremio
 
 ICON_BIN := smartcode-stremio.svg
 
@@ -16,13 +16,11 @@ install:
 	make -C ${BUILD_DIR} install
 	install -Dm 644 ${SERVER_JS} "${INSTALL_DIR}/server.js"
 	cp -r icons "${INSTALL_DIR}/"
+	ln -s "${shell which node}" "${INSTALL_DIR}/node"
 
-uninstall: ${INSTALL_DIR}
+uninstall:
 	rm -f /usr/bin/stremio
 	rm -fr "${INSTALL_DIR}"
-
-deb:
-	checkinstall --default --install=no --fstrans=yes --pkgname stremio --pkgversion 4.4.10 --pkggroup video --pkglicense="MIT" --nodoc --pkgarch=$(dpkg --print-architecture) --requires="nodejs,libmpv1 \(\>=0.27.2\),qml-module-qt-labs-platform \(\>=5.9.5\),qml-module-qtquick-controls \(\>=5.9.5\),qml-module-qtquick-dialogs \(\>=5.9.5\),qml-module-qtwebchannel \(\>=5.9.5\),qml-module-qtwebengine \(\>=5.9.5\)" make -f release.makefile install
 
 icons:
 	mkdir -p "$@"
