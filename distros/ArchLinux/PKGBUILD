@@ -1,7 +1,7 @@
 # Maintainer: Vladimir Borisov <vladimir@stremio.com>
 _pkgname=stremio
 pkgname=${_pkgname}-git
-pkgver=4.4.10.r43.d4c0fa5
+pkgver=4.4.10.r46.c8b5e95
 pkgrel=1
 pkgdesc="The next generation media center"
 arch=($(uname -m))
@@ -18,7 +18,7 @@ options=()
 
 install=stremio.install
 
-source=("${_pkgname}::git+https://github.com/Stremio/stremio-shell.git#branch=master")
+source=("${_pkgname}::git+https://github.com/Stremio/stremio-shell.git#branch=debian")
 noextract=()
 md5sums=("SKIP")
 

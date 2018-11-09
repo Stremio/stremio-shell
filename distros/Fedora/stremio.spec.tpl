@@ -20,7 +20,6 @@ Requires:       qt5-qtquickcontrols
 Requires:       qt5-qtquickcontrols2
 
 %description
-The next generation media center
 
 %global debug_package %{nil}
 
@@ -50,41 +49,10 @@ make -f release.makefile PREFIX="%{buildroot}" install
 
 
 %post
-ln -s /opt/stremio/stremio /usr/bin/stremio
-
-xdg-desktop-menu install --mode system /opt/stremio/smartcode-stremio.desktop
-
-cd /opt/stremio/icons || exit 1
-regex="([^_]+)_([0-9]+).png$"
-for file in *.png
-do
-	if [[ $file  =~ $regex ]]
-	then
-		icon="${BASH_REMATCH[1]##*/}"
-		size="${BASH_REMATCH[2]}"
-		xdg-icon-resource install --context apps --size "$size" "$file" "$icon"
-	fi
-done
 
 
-$preun
+%preun
 test $1 = 0 || exit 0
-
-rm -f /usr/bin/stremio
-
-xdg-desktop-menu uninstall --mode system /opt/stremio/smartcode-stremio.desktop
-
-cd /opt/stremio/icons || exit 1
-regex="([^_]+)_([0-9]+).png$"
-for file in *.png
-do
-	if [[ $file  =~ $regex ]]
-	then
-		icon="${BASH_REMATCH[1]##*/}"
-		size="${BASH_REMATCH[2]}"
-		xdg-icon-resource uninstall --context apps --size "$size" "$icon"
-	fi
-done
 
 
 %changelog

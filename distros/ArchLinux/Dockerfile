@@ -9,10 +9,11 @@ WORKDIR /home/builduser
 # Import the required files
 ADD PKGBUILD .
 ADD stremio.install .
+ADD package.sh .
 
 # Install package dependencies
 RUN pacman -Syu --noconfirm
 RUN pacman -S --needed --noconfirm sudo git wget librsvg
 
 # Build Stremio package
-RUN su builduser -c 'makepkg --syncdeps --noconfirm'
+RUN su builduser -c './package.sh'

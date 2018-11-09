@@ -12,8 +12,7 @@ WORKDIR /home/builduser
 
 # Import the required files
 ADD stremio.spec .
+ADD package.sh .
 
 # Build Stremio package
-RUN su builduser -c 'rpmdev-setuptree'
-RUN su builduser -c 'spectool --get-files -R stremio.spec'
-RUN su builduser -c 'rpmbuild -ba stremio.spec'
+RUN su builduser -c './package.sh'
