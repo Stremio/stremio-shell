@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=Stremio
+Comment=Video organizer for your Movies, TV Shows and TV Channels
+Exec=stremio %U
+Icon=/opt/stremio/stremio.svg
+Terminal=false
+Type=Application
+Categories=AudioVideo;Video;Player;TV;
+MimeType=application/x-bittorrent;x-scheme-handler/magnet;x-scheme-handler/stremio;video/avi;video/msvideo;video/x-msvideo;video/mp4;video/x-matroska;

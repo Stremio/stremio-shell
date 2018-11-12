@@ -18,6 +18,15 @@ make
 
 Please, refer to [DEBIAN.md](https://github.com/Stremio/stremio-shell/blob/master/DEBIAN.md) for a detailed explanation of how to build the latest Stremio in Debian.
 
+### Build instructions for Docker builds of supported Linux distros
+
+There are Docker files and setup scripts for supported Linux distributions (Debian, Fedora, Arch), located in the `./distros` directory.
+
+There is also an automated build script located in `./dist-utils/build-package.sh`.
+
+For more information refer to the [DOCKER.md](DOCKER.md) file.
+
+
 ## Releasing a version
 
 1. Bump the version in the `stremio.pro` file
