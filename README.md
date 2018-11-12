@@ -20,7 +20,7 @@ Please, refer to [DEBIAN.md](https://github.com/Stremio/stremio-shell/blob/maste
 
 ### Build instructions for Docker builds of supported Linux distros
 
-There are Docker files and setup scripts for supported Linux distributions, located in the `./distros` directory.
+There are Docker files and setup scripts for supported Linux distributions (Debian, Fedora, Arch), located in the `./distros` directory.
 
 There is also an automated build script located in `./dist-utils/build-package.sh`.
 
