@@ -19,7 +19,7 @@ Here's an example of how to build a Fedora rpm package in `/tmp/stremio-fedora` 
 stremio-4.4.10-1.fc29.x86_64.rpm
 ```
 
-If you don't want to use Docker, check out the `disttros/your-distro/` directory. This is usefull if your machine is not x86_64 architecture for example.
+If you don't want to use Docker, check out the `disttros/your-distro/` directory. This is useful if your machine is not x86_64 architecture for example.
 
 For every distro there are at least three files there:
 
