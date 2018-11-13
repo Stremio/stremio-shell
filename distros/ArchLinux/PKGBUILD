@@ -18,7 +18,7 @@ options=()
 
 install=stremio.install
 
-source=("${_pkgname}::git+https://github.com/Stremio/stremio-shell.git#branch=debian")
+source=("${_pkgname}::git+https://github.com/Stremio/stremio-shell.git#branch=master")
 noextract=()
 md5sums=("SKIP")
 

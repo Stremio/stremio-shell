@@ -5,7 +5,7 @@ Summary:        Stremio is a one-stop hub for video content aggregation. Discove
 License:        MIT
 
 URL:            https://www.stremio.com
-Source0:        https://github.com/Stremio/stremio-shell/archive/debian.zip
+Source0:        https://github.com/Stremio/stremio-shell/archive/master.zip
 
 BuildRequires: qt5-devel
 BuildRequires: ImageMagick
@@ -24,13 +24,12 @@ Requires:       qt5-qtquickcontrols2
 %global debug_package %{nil}
 
 %prep
-%autosetup -n stremio-shell-debian
+%autosetup -n stremio-shell-master
 
 git init
 git remote add origin https://github.com/Stremio/stremio-shell.git
 git fetch --all
-git reset --hard origin/debian
-git checkout debian
+git reset --hard origin/master
 git submodule update --init
 make -f release.makefile clean
 
