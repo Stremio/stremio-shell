@@ -2,7 +2,6 @@
 
 git clone https://github.com/Stremio/stremio-shell.git
 cd stremio-shell
-git checkout debian
 git submodule update --init
 
 cp dist-utils/common/description ./description-pak
