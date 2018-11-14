@@ -50,22 +50,17 @@ ApplicationWindow {
             if (ev === "wakeup") wakeupEvent()
             if (ev === "set-window-mode") onWindowMode(args)
             if (ev === "open-external") Qt.openUrlExternally(args)
-            // TODO: restore this
-            //if (ev === "balloon-show" && root.notificationsEnabled) trayIcon.showMessage(args.title, args.content)
             if (ev === "win-focus") { if (!root.visible) root.show(); root.raise(); root.requestActivate(); }
             if (ev === "win-set-visibility") {
                 root.visibility = args.hasOwnProperty('fullscreen') ? (args.fullscreen ? Window.FullScreen : Window.Windowed) : args.visibility
                 if(root.visibility == Window.FullScreen) {
                     root.alwaysOnTopFlags = root.flags;
                     root.flags &= ~Qt.WindowStaysOnTopHint;
-                    systemTray.updateIsOnTop(false);
                 } else {
                     root.flags = root.alwaysOnTopFlags;
-                    systemTray.updateIsOnTop((root.flags & Qt.WindowStaysOnTopHint) === Qt.WindowStaysOnTopHint);
                 }
             }
             if (ev === "autoupdater-notif-clicked" && autoUpdater.onNotifClicked) autoUpdater.onNotifClicked()
-            //if (ev === "chroma-toggle") { args.enabled ? chroma.enable() : chroma.disable() }
             if (ev === "screensaver-toggle") shouldDisableScreensaver(args.disabled)
         }
 
@@ -121,48 +116,9 @@ ApplicationWindow {
 
     function quitApp() {
         webView.destroy();
-        systemTray.hideIconTray();
         stopStreamingServer();
         streamingServer.waitForFinished(2000);
         Qt.quit();
-    }
-
-    /* With help Connections object
-     * set connections with System tray class
-     * */
-    Connections {
-        target: systemTray
-        onSignalShow: {
-            if(root.visible) {
-                root.hide();
-            } else {
-                root.show();
-                root.raise();
-                root.requestActivate();
-            }
-        }
-
-        onSignalAlwaysOnTop: {
-            root.show()
-            root.raise()
-            if(root.flags & Qt.WindowStaysOnTopHint) {
-                root.flags &= ~Qt.WindowStaysOnTopHint;
-            } else {
-                root.flags |= Qt.WindowStaysOnTopHint;
-            }
-        }
- 
-        // The signal - close the application by ignoring the check-box
-        onSignalQuit: {
-            quitApp();
-        }
- 
-        // Minimize / maximize the window by clicking on the default system tray
-        onSignalIconActivated: {
-            root.show()
-            root.raise()
-            root.requestActivate()
-       }
     }
 
     // Screen saver - enable & disable
@@ -462,8 +418,6 @@ ApplicationWindow {
     }
 
     onVisibilityChanged: {
-        systemTray.updateIsOnTop((root.flags & Qt.WindowStaysOnTopHint) === Qt.WindowStaysOnTopHint);
-        systemTray.updateVisibleAction(root.visible);
         transport.event("win-visibility-changed", { visible: root.visible, visibility: root.visibility,
                             isFullscreen: root.visibility === Window.FullScreen })
     }
@@ -482,8 +436,7 @@ ApplicationWindow {
     }
 
     onClosing: function(event){
-        event.accepted = false
-        root.hide()
+        quitApp();
     }
 
     //
