@@ -27,7 +27,6 @@ ApplicationWindow {
     height: root.initialHeight
 
     property bool notificationsEnabled: true
-    property int alwaysOnTopFlags: 0
 
     color: "#201f32";
     title: appTitle
@@ -51,18 +50,18 @@ ApplicationWindow {
             if (ev === "set-window-mode") onWindowMode(args)
             if (ev === "open-external") Qt.openUrlExternally(args)
             // TODO: restore this
-            //if (ev === "balloon-show" && root.notificationsEnabled) trayIcon.showMessage(args.title, args.content)
+            if (ev === "balloon-show" && root.notificationsEnabled) systemTray.showMessage(args.title, args.content)
             if (ev === "win-focus") { if (!root.visible) root.show(); root.raise(); root.requestActivate(); }
             if (ev === "win-set-visibility") {
-                root.visibility = args.hasOwnProperty('fullscreen') ? (args.fullscreen ? Window.FullScreen : Window.Windowed) : args.visibility
-                if(root.visibility == Window.FullScreen) {
-                    root.alwaysOnTopFlags = root.flags;
-                    root.flags &= ~Qt.WindowStaysOnTopHint;
-                    systemTray.updateIsOnTop(false);
-                } else {
-                    root.flags = root.alwaysOnTopFlags;
-                    systemTray.updateIsOnTop((root.flags & Qt.WindowStaysOnTopHint) === Qt.WindowStaysOnTopHint);
+                if(args.hasOwnProperty('fullscreen')) {
+                    root.visibility = args.fullscreen ? Window.FullScreen : Window.Windowed;
                 }
+		if(root.visibility == Window.FullScreen) {
+			root.flags &= ~Qt.WindowStaysOnTopHint;
+			systemTray.alwaysOnTopEnabled(false);
+		} else {
+			systemTray.alwaysOnTopEnabled(true);
+		}
             }
             if (ev === "autoupdater-notif-clicked" && autoUpdater.onNotifClicked) autoUpdater.onNotifClicked()
             //if (ev === "chroma-toggle") { args.enabled ? chroma.enable() : chroma.disable() }
@@ -132,6 +131,12 @@ ApplicationWindow {
      * */
     Connections {
         target: systemTray
+
+        onSignalIconMenuAboutToShow: {
+            systemTray.updateIsOnTop((root.flags & Qt.WindowStaysOnTopHint) === Qt.WindowStaysOnTopHint);
+	    systemTray.updateVisibleAction(root.visible);
+        }
+
         onSignalShow: {
             if(root.visible) {
                 root.hide();
@@ -143,7 +148,6 @@ ApplicationWindow {
         }
 
         onSignalAlwaysOnTop: {
-            root.show()
             root.raise()
             if(root.flags & Qt.WindowStaysOnTopHint) {
                 root.flags &= ~Qt.WindowStaysOnTopHint;
@@ -462,8 +466,6 @@ ApplicationWindow {
     }
 
     onVisibilityChanged: {
-        systemTray.updateIsOnTop((root.flags & Qt.WindowStaysOnTopHint) === Qt.WindowStaysOnTopHint);
-        systemTray.updateVisibleAction(root.visible);
         transport.event("win-visibility-changed", { visible: root.visible, visibility: root.visibility,
                             isFullscreen: root.visibility === Window.FullScreen })
     }

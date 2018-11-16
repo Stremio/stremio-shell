@@ -19,6 +19,7 @@
      
         /* to connect the signals clicks on menu items to the appropriate signals for QML.
          * */
+        connect(trayIconMenu, &QMenu::aboutToShow, this, &SystemTray::signalIconMenuAboutToShow);
         connect(viewWindowAction, &QAction::triggered, this, &SystemTray::signalShow);
         connect(alwaysOnTopAction, &QAction::triggered, this, &SystemTray::signalAlwaysOnTop);
         connect(quitAction, &QAction::triggered, this, &SystemTray::signalQuit);
@@ -26,7 +27,8 @@
         trayIconMenu->addAction(viewWindowAction);
         trayIconMenu->addAction(alwaysOnTopAction);
         trayIconMenu->addAction(quitAction);
-     
+
+
         /* Initialize the tray icon, icon set, and specify the tooltip
          * */
         trayIcon = new QSystemTrayIcon();
@@ -41,7 +43,7 @@
         connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
                 this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
     }
-     
+
     /* The method that handles click on the application icon in the system tray
      * */
     void SystemTray::iconActivated(QSystemTrayIcon::ActivationReason reason)
@@ -71,4 +73,9 @@
     void SystemTray::updateIsOnTop(bool isOnTop)
     {
         alwaysOnTopAction->setChecked(isOnTop);
+    }
+
+    void SystemTray::alwaysOnTopEnabled(bool enabled)
+    {
+        alwaysOnTopAction->setEnabled(enabled);
     }
