@@ -41,8 +41,6 @@ ApplicationWindow {
         } else {
             root.visibility = root.previousVisibility;
             root.wasFullScreen = false;
-            // Just test
-            systemTray.showMessage("Hahah", "Exit Full Screen");
         }
     }
 
