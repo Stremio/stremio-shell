@@ -13,6 +13,3 @@ WORKDIR /home/builduser
 # Import the required files
 ADD stremio.spec .
 ADD package.sh .
-
-# Build Stremio package
-RUN su builduser -c './package.sh'

@@ -25,4 +25,4 @@ fi
 cd "$DISTROS_DIR/$DISTRO" &> /dev/null || usage
 
 source mkconfig.sh
-docker run --rm -v "$DEST_DIR:/app" -t "$(docker build -q .)" sh -c "$COPY_CMD"
+docker run --privileged --rm -v "$DEST_DIR:/app" -t "$(docker build -q .)" sh -c "(su builduser -c './package.sh') && $COPY_CMD"

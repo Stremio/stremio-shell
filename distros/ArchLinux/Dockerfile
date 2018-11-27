@@ -14,6 +14,3 @@ ADD package.sh .
 # Install package dependencies
 RUN pacman -Syu --noconfirm
 RUN pacman -S --needed --noconfirm sudo git wget librsvg
-
-# Build Stremio package
-RUN su builduser -c './package.sh'
