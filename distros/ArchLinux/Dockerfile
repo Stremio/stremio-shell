@@ -1,5 +1,9 @@
 FROM base/devel
 
+# Install package dependencies
+RUN pacman -Syu --noconfirm
+RUN pacman -S --needed --noconfirm sudo git wget librsvg
+
 # Setting up new user
 RUN useradd builduser -m
 RUN passwd -d builduser
@@ -10,7 +14,3 @@ WORKDIR /home/builduser
 ADD PKGBUILD .
 ADD stremio.install .
 ADD package.sh .
-
-# Install package dependencies
-RUN pacman -Syu --noconfirm
-RUN pacman -S --needed --noconfirm sudo git wget librsvg
