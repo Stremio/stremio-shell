@@ -79,7 +79,7 @@ ApplicationWindow {
             if (ev === "set-window-mode") onWindowMode(args)
             if (ev === "open-external") Qt.openUrlExternally(args)
             // TODO: restore this
-            if (ev === "balloon-show" && root.notificationsEnabled) systemTray.showMessage(args.title, args.content)
+            //if (ev === "balloon-show" && root.notificationsEnabled) systemTray.showMessage(args.title, args.content)
             if (ev === "win-focus" && !root.visible) {
                 showWindow();
             }
