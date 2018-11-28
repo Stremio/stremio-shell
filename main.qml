@@ -31,6 +31,35 @@ ApplicationWindow {
     color: "#201f32";
     title: appTitle
 
+    property var previousVisibility: Window.Windowed
+    property bool wasFullScreen: false
+
+    function setFullScreen(fullscreen) {
+        if(fullscreen) {
+            root.visibility = Window.FullScreen;
+            root.wasFullScreen = true;
+        } else {
+            root.visibility = root.previousVisibility;
+            root.wasFullScreen = false;
+        }
+    }
+
+    function showWindow() {
+            if(root.wasFullScreen) {
+                root.visibility = Window.FullScreen;
+            } else {
+                root.visibility = root.previousVisibility;
+            }
+            root.raise();
+            root.requestActivate();
+    }
+
+    function updatePreviousVisibility() {
+        if(root.visible && root.visibility != Window.FullScreen) {
+            root.previousVisibility = root.visibility;
+        }
+    }
+
     // Transport
     QtObject {
         id: transport
@@ -51,19 +80,17 @@ ApplicationWindow {
             if (ev === "open-external") Qt.openUrlExternally(args)
             // TODO: restore this
             if (ev === "balloon-show" && root.notificationsEnabled) systemTray.showMessage(args.title, args.content)
-            if (ev === "win-focus") { if (!root.visible) root.show(); root.raise(); root.requestActivate(); }
+            if (ev === "win-focus" && !root.visible) {
+                showWindow();
+            }
             if (ev === "win-set-visibility") {
                 if(args.hasOwnProperty('fullscreen')) {
-                    root.visibility = args.fullscreen ? Window.FullScreen : Window.Windowed;
+                    setFullScreen(args.fullscreen);
                 }
-		if(root.visibility == Window.FullScreen) {
-			root.flags &= ~Qt.WindowStaysOnTopHint;
-			systemTray.alwaysOnTopEnabled(false);
-		} else {
-			systemTray.alwaysOnTopEnabled(true);
-		}
             }
-            if (ev === "autoupdater-notif-clicked" && autoUpdater.onNotifClicked) autoUpdater.onNotifClicked()
+            if (ev === "autoupdater-notif-clicked" && autoUpdater.onNotifClicked) {
+                autoUpdater.onNotifClicked();
+            }
             //if (ev === "chroma-toggle") { args.enabled ? chroma.enable() : chroma.disable() }
             if (ev === "screensaver-toggle") shouldDisableScreensaver(args.disabled)
         }
@@ -104,8 +131,8 @@ ApplicationWindow {
     // Received external message
     function onAppMessageReceived(instance, message) {
         message = message.toString(); // cause it may be QUrl
-        if (message == "SHOW") { root.show(); root.raise(); root.requestActivate() }
-        else onAppOpenMedia(message)
+        if (message == "SHOW") showWindow();
+        else onAppOpenMedia(message);
     }
 
     // May be called from a message (from another app instance) or when app is initialized with an arg
@@ -141,9 +168,7 @@ ApplicationWindow {
             if(root.visible) {
                 root.hide();
             } else {
-                root.show();
-                root.raise();
-                root.requestActivate();
+                showWindow();
             }
         }
 
@@ -163,9 +188,7 @@ ApplicationWindow {
  
         // Minimize / maximize the window by clicking on the default system tray
         onSignalIconActivated: {
-            root.show()
-            root.raise()
-            root.requestActivate()
+           showWindow();
        }
     }
 
@@ -386,8 +409,7 @@ ApplicationWindow {
 
         // FIXME: When is this called?
         onFullScreenRequested: function(req) {
-            if (req.toggleOn) root.visibility = Window.FullScreen;
-            else root.visibility = Window.Windowed;
+            setFullScreen(req.toggleOn);
             req.accept();
         }
 
@@ -462,10 +484,18 @@ ApplicationWindow {
     // Binding window -> app events
     //
     onWindowStateChanged: function(state) {
+        updatePreviousVisibility();
         transport.event("win-state-changed", { state: state })
     }
 
     onVisibilityChanged: {
+        var enabledAlwaysOnTop = root.visible && root.visibility != Window.FullScreen;
+        systemTray.alwaysOnTopEnabled(enabledAlwaysOnTop);
+        if(!enabledAlwaysOnTop) {
+            root.flags &= ~Qt.WindowStaysOnTopHint;
+        }
+
+        updatePreviousVisibility();
         transport.event("win-visibility-changed", { visible: root.visible, visibility: root.visibility,
                             isFullscreen: root.visibility === Window.FullScreen })
     }
