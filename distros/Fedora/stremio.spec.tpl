@@ -1,5 +1,5 @@
 Name:           stremio
-Version:        4.4.10
+Version:        PKG_VER
 Release:        1%{?dist}
 Summary:        Stremio is a one-stop hub for video content aggregation. Discover, organize and watch video from all kind of sources on any device that you own.
 License:        MIT
