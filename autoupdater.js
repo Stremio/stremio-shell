@@ -111,7 +111,7 @@
                     streamingServer.fastReload = true
                     streamingServer.terminate()
                 }
-            } else if (Qt.platform.os === "osx" && firstFile.match(".dmg$")) {
+            } else if (Qt.platform.os === "osx" && firstFile && firstFile.match(".dmg$")) {
                 // 
                 // Prepare macOS auto-update (extract from .dmg)
                 //
@@ -145,7 +145,7 @@
                     autoUpdater.executeCmd("/bin/sh", ["-c", "sleep 5; open -n /Applications/Stremio.app"], true)
                     quitApp();
                 }
-            } else if ( Qt.platform.os === "windows" && firstFile.match(".exe") ) {
+            } else if ( Qt.platform.os === "windows" && firstFile && firstFile.match(".exe") ) {
                 // 
                 // Prepare launch-based auto-update (launch new installer/appimage on Windows)
                 //
@@ -154,7 +154,7 @@
                     Qt.openUrlExternally("file:///"+firstFile.replace(/\\/g,'/'))
                     quitApp();
                 }
-            } else if (Qt.platform.os === "linux" && firstFile.match(".appimage")) {
+            } else if (Qt.platform.os === "linux" && firstFile && firstFile.match(".appimage")) {
                 // 
                 // Prepare AppImage-based update (put in home dir and launch)
                 //
