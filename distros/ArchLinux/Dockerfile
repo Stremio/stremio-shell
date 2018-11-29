@@ -14,3 +14,4 @@ WORKDIR /home/builduser
 ADD PKGBUILD .
 ADD stremio.install .
 ADD package.sh .
+RUN chown builduser:builduser *

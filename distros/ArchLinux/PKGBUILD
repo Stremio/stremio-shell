@@ -1,7 +1,7 @@
 # Maintainer: Vladimir Borisov <vladimir@stremio.com>
 _pkgname=stremio
 pkgname=${_pkgname}-git
-pkgver=4.4.10.r46.c8b5e95
+pkgver=4.4.21.r1.4005521
 pkgrel=1
 pkgdesc="The next generation media center"
 arch=($(uname -m))
