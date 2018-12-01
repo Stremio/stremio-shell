@@ -53,7 +53,7 @@ int main(int argc, char **argv)
     #endif
 
     // This is really broken on Linux
-    #ifndef __linux__
+    #ifndef Q_OS_LINUX
     Application::setAttribute(Qt::AA_EnableHighDpiScaling);
     #endif
 
