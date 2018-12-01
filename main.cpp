@@ -63,6 +63,7 @@ int main(int argc, char **argv)
     Application::setOrganizationDomain("stremio.com");
 
     MainApp app(argc, argv, true);
+    #ifndef Q_OS_MACOS
     if( app.isSecondary() ) {
         if( app.arguments().count() > 1)
             app.sendMessage( app.arguments().at(1).toUtf8() );
@@ -71,6 +72,7 @@ int main(int argc, char **argv)
         //app.sendMessage( app.arguments().join(' ').toUtf8() );
         return 0;
     }
+    #endif
 
     app.setWindowIcon(QIcon(":/images/stremio_window.png"));
 
@@ -97,7 +99,9 @@ int main(int argc, char **argv)
 
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
+    #ifndef Q_OS_MACOS
     QObject::connect( &app, &SingleApplication::receivedMessage, &app, &MainApp::processMessage );
+    #endif
     QObject::connect( &app, SIGNAL(receivedMessage(QVariant, QVariant)), engine.rootObjects().value(0),
                       SLOT(onAppMessageReceived(QVariant, QVariant)) );
 
