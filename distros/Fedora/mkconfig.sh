@@ -2,7 +2,7 @@
 
 TMPL_FILE=stremio.spec.tpl
 DEST_FILE=stremio.spec
-VERSION="$(git describe --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')"
+VERSION="$(grep -oPm1 'VERSION=\K.+' stremio.pro)"
 
 sed '/^%description$/r../../dist-utils/common/description' "$TMPL_FILE" > "$DEST_FILE"
 sed -i '/^%post$/r../../dist-utils/common/postinstall' "$DEST_FILE"
