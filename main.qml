@@ -55,7 +55,7 @@ ApplicationWindow {
     }
 
     function updatePreviousVisibility() {
-        if(root.visible && root.visibility != Window.FullScreen) {
+        if(root.visible && root.visibility != Window.FullScreen && root.visibility != Window.Minimized) {
             root.previousVisibility = root.visibility;
         }
     }
