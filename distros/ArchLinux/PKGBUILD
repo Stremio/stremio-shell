@@ -1,7 +1,7 @@
 # Maintainer: Vladimir Borisov <vladimir@stremio.com>
 _pkgname=stremio
-pkgname=${_pkgname}-git
-pkgver=4.4.21.r1.4005521
+pkgname=${_pkgname}
+pkgver=4.4.25
 pkgrel=1
 pkgdesc="The next generation media center"
 arch=($(uname -m))
@@ -12,7 +12,7 @@ depends=("nodejs" "ffmpeg" "qt5-webengine" "qt5-webchannel" "qt5-declarative" "q
 makedepends=("git" "wget" "qt5-tools" "librsvg" "imagemagick")
 provides=("${_pkgname}")
 conflicts=("${_pkgname}")
-replaces=()
+replaces=("stremio-git")
 backup=()
 options=()
 
@@ -27,11 +27,9 @@ md5sums=("SKIP")
 
 pkgver() {
 	cd "$srcdir/${_pkgname}"
-# Git, tags available
-	printf "%s" "$(git describe --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')"
-
-# Git, no tags available
-#	printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+	grep -oPm1 'VERSION=\K.+' stremio.pro
+	# Git, tags available
+	#printf "%s" "$(git describe --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')"
 }
 
 prepare() {
