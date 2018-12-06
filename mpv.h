@@ -1,5 +1,6 @@
 #ifndef MPVRENDERER_H_
 #define MPVRENDERER_H_
+#define MPV_ENABLE_DEPRECATED 0
 
 #include <QtQuick/QQuickFramebufferObject>
 
