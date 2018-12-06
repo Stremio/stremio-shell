@@ -143,6 +143,11 @@ MpvObject::MpvObject(QQuickItem * parent)
     // Don't stop on audio output issues
     mpv::qt::set_property(mpv, "audio-fallback-to-null", "yes");
 
+    // User-visible application name used by some audio APIs (at least PulseAudio).
+    mpv::qt::set_property(mpv, "audio-client-name", QCoreApplication::applicationName());
+    // User-visible stream title used by some audio APIs (at least PulseAudio and wasapi).
+    mpv::qt::set_property(mpv, "title", QCoreApplication::applicationName());
+
     // Setup the callback that will make QtQuick update and redraw if there
     // is a new video frame. Use a queued connection: this makes sure the
     // doUpdate() function is run on the GUI thread.
@@ -183,7 +188,7 @@ void MpvObject::command(const QVariant& params)
 
 void MpvObject::setProperty(const QString& name, const QVariant& value)
 {
-    mpv::qt::set_property_variant(mpv, name, value);
+    mpv::qt::set_property(mpv, name, value);
 }
 
 void MpvObject::observeProperty(const QString& name)
