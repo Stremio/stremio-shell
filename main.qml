@@ -424,7 +424,8 @@ ApplicationWindow {
 
         // Prevent ctx menu
         onContextMenuRequested: function(request) {
-            request.accepted = true
+            // Allow menu inside editalbe objects
+            request.accepted = !request.isContentEditable;
         }
 
         Action {
