@@ -439,6 +439,11 @@ ApplicationWindow {
                 transport.event("dragdrop", args.urls)
             }
         }
+        webChannel: wChannel
+    }
+
+    WebChannel {
+        id: wChannel
     }
 
     //
