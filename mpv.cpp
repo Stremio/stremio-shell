@@ -84,7 +84,7 @@ class MpvRenderer : public QQuickFramebufferObject::Renderer
         obj->window()->resetOpenGLState();
 
         QOpenGLFramebufferObject *fbo = framebufferObject();
-        mpv_opengl_fbo mpfbo{.fbo = static_cast<int>(fbo->handle()), .w = fbo->width(), .h = fbo->height(), .internal_format = 0};
+        mpv_opengl_fbo mpfbo{static_cast<int>(fbo->handle()), fbo->width(), fbo->height(), 0};
         int flip_y{0};
 
         mpv_render_param params[] = {
