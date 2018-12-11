@@ -34,6 +34,10 @@ pkgver() {
 
 prepare() {
 	cd "$srcdir/${_pkgname}"
+	if [ -n "$BRANCH" ]; then
+		git checkout "$BRANCH"
+	fi
+
 	git submodule update --init
 	make -f release.makefile clean
 }
