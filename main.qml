@@ -2,7 +2,7 @@ import QtQuick 2.7
 import QtWebEngine 1.4
 import QtWebChannel 1.0
 import QtQuick.Window 2.2 // for Window instead of ApplicationWindow; also for Screen
-import QtQuick.Controls 1.4 // for ApplicationWindow
+import QtQuick.Controls 2.3 // for ApplicationWindow
 import QtQuick.Dialogs 1.2
 import com.stremio.process 1.0
 import com.stremio.screensaver 1.0
@@ -159,7 +159,7 @@ ApplicationWindow {
 
         onSignalIconMenuAboutToShow: {
             systemTray.updateIsOnTop((root.flags & Qt.WindowStaysOnTopHint) === Qt.WindowStaysOnTopHint);
-	    systemTray.updateVisibleAction(root.visible);
+	        systemTray.updateVisibleAction(root.visible);
         }
 
         onSignalShow: {
@@ -422,10 +422,49 @@ ApplicationWindow {
             }
         }
 
+        Menu {
+            id: ctxMenu
+            MenuItem {
+                text: "Undo"
+                shortcut: StandardKey.Undo
+                onTriggered: webView.triggerWebAction(WebEngineView.Undo)
+            }
+            MenuItem {
+                text: "Redo"
+                shortcut: StandardKey.Redo
+                onTriggered: webView.triggerWebAction(WebEngineView.Redo)
+            }
+            MenuSeparator { }
+            MenuItem {
+                text: "Cut"
+                shortcut: StandardKey.Cut
+                onTriggered: webView.triggerWebAction(WebEngineView.Cut)
+            }
+            MenuItem {
+                text: "Copy"
+                shortcut: StandardKey.Copy
+                onTriggered: webView.triggerWebAction(WebEngineView.Copy)
+            }
+            MenuItem {
+                text: "Paste"
+                shortcut: StandardKey.Paste
+                onTriggered: webView.triggerWebAction(WebEngineView.Paste)
+            }
+            MenuSeparator { }
+            MenuItem {
+                text: "Select All"
+                shortcut: StandardKey.SelectAll
+                onTriggered: webView.triggerWebAction(WebEngineView.SelectAll)
+            }
+        }
+
         // Prevent ctx menu
         onContextMenuRequested: function(request) {
+            request.accepted = true;
             // Allow menu inside editalbe objects
-            request.accepted = !request.isContentEditable;
+            if(request.isContentEditable) {
+                ctxMenu.open();
+            }
         }
 
         Action {
