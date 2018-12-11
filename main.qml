@@ -2,7 +2,7 @@ import QtQuick 2.7
 import QtWebEngine 1.4
 import QtWebChannel 1.0
 import QtQuick.Window 2.2 // for Window instead of ApplicationWindow; also for Screen
-import QtQuick.Controls 1.4 // for ApplicationWindow
+import QtQuick.Controls 2.3 // for ApplicationWindow
 import QtQuick.Dialogs 1.2
 import com.stremio.process 1.0
 import com.stremio.screensaver 1.0
@@ -159,7 +159,7 @@ ApplicationWindow {
 
         onSignalIconMenuAboutToShow: {
             systemTray.updateIsOnTop((root.flags & Qt.WindowStaysOnTopHint) === Qt.WindowStaysOnTopHint);
-	    systemTray.updateVisibleAction(root.visible);
+	        systemTray.updateVisibleAction(root.visible);
         }
 
         onSignalShow: {
@@ -439,6 +439,11 @@ ApplicationWindow {
                 transport.event("dragdrop", args.urls)
             }
         }
+        webChannel: wChannel
+    }
+
+    WebChannel {
+        id: wChannel
     }
 
     //
