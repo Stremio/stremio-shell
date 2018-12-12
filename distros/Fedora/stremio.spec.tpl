@@ -30,6 +30,9 @@ git init
 git remote add origin https://github.com/Stremio/stremio-shell.git
 git fetch --all
 git reset --hard origin/master
+if [ -n "$BRANCH" ]; then
+        git checkout "$BRANCH"
+fi
 git submodule update --init
 make -f release.makefile clean
 
