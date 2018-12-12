@@ -6,7 +6,7 @@ In the `distros` directory you can find OS-specific docker files and scripts to 
 
 For a list of the supported distros, you can peek at the `distros` directory or just run `./dist-utils/build-package.sh` without any arguments.
 
-To build a package, you have to run the `./dist-utils/build-package.sh` with first argument - the distro name and second, optional, argument - the output path.
+To build a package, you have to run the `./dist-utils/build-package.sh` with the distro name for argument. You can also set the output path via `--dest-dir` parameter and the version you wish to build against with `--tag` parameter.
 
 Only the **x86_64** architecture is supported.
 
@@ -16,7 +16,7 @@ Here's an example of how to build a Fedora rpm package in the `/tmp/stremio-fedo
 
 ```
 [stremio-shell]$ mkdir -p /tmp/stremio-fedora
-[stremio-shell]$ ./dist-utils/build-package.sh Fedora /tmp/stremio-fedora
+[stremio-shell]$ ./dist-utils/build-package.sh Fedora --dest-dir=/tmp/stremio-fedora
 [stremio-shell]$ ls /tmp/stremio-fedora/
 stremio-4.4.10-1.fc29.x86_64.rpm
 ```
@@ -67,6 +67,6 @@ So the local build process is as follows:
 1. Go to the directory of your distro.
 2. Install all the required tools and libraries described in the `Dockerfile`. Bare in mind that if you are using unsupported architecture or for some other reasons, the library names may differ. It's your responsibility to figure it out and install the correct ones.
 3. Run the `./mkconfig.sh` to set up the build configuration.
-4. Run the `./package.sh` script and wait for the build process to finish.
+4. Run the `./package.sh` script and wait for the build process to finish. The `./package.sh` script accepts an optional argument a tag or branch you wish to build against.
 
 **If you've created a build scripts for any other distro, don't hesitate to submit a pull request.** 
