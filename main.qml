@@ -129,8 +129,10 @@ ApplicationWindow {
     // Received external message
     function onAppMessageReceived(instance, message) {
         message = message.toString(); // cause it may be QUrl
-        if (message == "SHOW") showWindow();
-        else onAppOpenMedia(message);
+        showWindow();
+        if (message !== "SHOW") {
+                onAppOpenMedia(message);
+        }
     }
 
     // May be called from a message (from another app instance) or when app is initialized with an arg
