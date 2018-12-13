@@ -418,7 +418,7 @@ ApplicationWindow {
             // WARNING: @TODO: perhaps we need a better way to parse URLs here
             var allowedHost = webView.mainUrl.split('/')[2]
             var targetHost = req.url.toString().split('/')[2]
-            if (false && allowedHost != targetHost) {
+            if (allowedHost != targetHost) {
                  console.log("onNavigationRequested: disallowed URL "+req.url.toString());
                  req.action = WebEngineView.IgnoreRequest;
             }
