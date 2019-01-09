@@ -10,4 +10,4 @@ sed -i '/^test/r../../dist-utils/common/preremove' "$DEST_FILE"
 sed -i '2,${/^#!/d}' "$DEST_FILE"
 sed -i "s/PKG_VER/$VERSION/" "$DEST_FILE"
 
-export COPY_CMD='cp rpmbuild/RPMS/*/*.rpm /app/'
+export COPY_CMD='chmod 644 rpmbuild/RPMS/*/* && cp rpmbuild/RPMS/*/*.rpm /app/'
