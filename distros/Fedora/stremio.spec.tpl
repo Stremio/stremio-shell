@@ -8,7 +8,7 @@ URL:            https://www.stremio.com
 Source0:        https://github.com/Stremio/stremio-shell/archive/master.zip
 
 BuildRequires: qt5-devel
-BuildRequires: ImageMagick
+BuildRequires: librsvg2-tools
 BuildRequires: qt5-qtwebengine-devel
 BuildRequires: openssl-devel
 BuildRequires: mpv-libs-devel
