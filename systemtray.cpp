@@ -33,7 +33,8 @@
          * */
         trayIcon = new QSystemTrayIcon();
         trayIcon->setContextMenu(trayIconMenu);
-        QIcon icon = QIcon(":/images/stremio_tray_white.png");
+
+        QIcon icon = QIcon::fromTheme("smartcode-stremio-tray", QIcon(":/images/stremio_tray_white.png"));
         icon.setIsMask(true);
         trayIcon->setIcon(icon);
         trayIcon->show();
