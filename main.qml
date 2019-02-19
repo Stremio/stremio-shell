@@ -129,8 +129,10 @@ ApplicationWindow {
     // Received external message
     function onAppMessageReceived(instance, message) {
         message = message.toString(); // cause it may be QUrl
-        if (message == "SHOW") showWindow();
-        else onAppOpenMedia(message);
+        showWindow();
+        if (message !== "SHOW") {
+                onAppOpenMedia(message);
+        }
     }
 
     // May be called from a message (from another app instance) or when app is initialized with an arg
@@ -159,7 +161,7 @@ ApplicationWindow {
 
         onSignalIconMenuAboutToShow: {
             systemTray.updateIsOnTop((root.flags & Qt.WindowStaysOnTopHint) === Qt.WindowStaysOnTopHint);
-	    systemTray.updateVisibleAction(root.visible);
+	        systemTray.updateVisibleAction(root.visible);
         }
 
         onSignalShow: {
@@ -422,9 +424,49 @@ ApplicationWindow {
             }
         }
 
+        Menu {
+            id: ctxMenu
+            MenuItem {
+                text: "Undo"
+                shortcut: StandardKey.Undo
+                onTriggered: webView.triggerWebAction(WebEngineView.Undo)
+            }
+            MenuItem {
+                text: "Redo"
+                shortcut: StandardKey.Redo
+                onTriggered: webView.triggerWebAction(WebEngineView.Redo)
+            }
+            MenuSeparator { }
+            MenuItem {
+                text: "Cut"
+                shortcut: StandardKey.Cut
+                onTriggered: webView.triggerWebAction(WebEngineView.Cut)
+            }
+            MenuItem {
+                text: "Copy"
+                shortcut: StandardKey.Copy
+                onTriggered: webView.triggerWebAction(WebEngineView.Copy)
+            }
+            MenuItem {
+                text: "Paste"
+                shortcut: StandardKey.Paste
+                onTriggered: webView.triggerWebAction(WebEngineView.Paste)
+            }
+            MenuSeparator { }
+            MenuItem {
+                text: "Select All"
+                shortcut: StandardKey.SelectAll
+                onTriggered: webView.triggerWebAction(WebEngineView.SelectAll)
+            }
+        }
+
         // Prevent ctx menu
         onContextMenuRequested: function(request) {
-            request.accepted = true
+            request.accepted = true;
+            // Allow menu inside editalbe objects
+            if(request.isContentEditable) {
+                ctxMenu.open();
+            }
         }
 
         Action {
@@ -439,6 +481,11 @@ ApplicationWindow {
                 transport.event("dragdrop", args.urls)
             }
         }
+        webChannel: wChannel
+    }
+
+    WebChannel {
+        id: wChannel
     }
 
     //
