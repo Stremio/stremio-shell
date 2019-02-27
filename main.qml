@@ -286,7 +286,7 @@ ApplicationWindow {
     // Main UI (via WebEngineView)
     //
     function getWebUrl() {
-        var params = "?winControls=true&loginFlow=desktop"
+        var params = "?loginFlow=desktop"
         var args = Qt.application.arguments
         var shortVer = Qt.application.version.split('.').slice(0, 2).join('.')
 
