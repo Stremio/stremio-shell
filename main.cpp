@@ -79,10 +79,10 @@ int main(int argc, char **argv)
     // Qt sets the locale in the QGuiApplication constructor, but libmpv
     // requires the LC_NUMERIC category to be set to "C", so change it back.
     std::setlocale(LC_NUMERIC, "C");
-    
+
     qmlRegisterType<Process>("com.stremio.process", 1, 0, "Process");
     qmlRegisterType<ScreenSaver>("com.stremio.screensaver", 1, 0, "ScreenSaver");
-    qmlRegisterType<MpvObject>("com.stremio.libmpv", 1, 0, "MpvObject");
+    qmlRegisterType<MpvVideo>("com.stremio.libmpv", 1, 0, "MpvVideo");
     qmlRegisterType<ClipboardProxy>("com.stremio.clipboard", 1, 0, "Clipboard");
 
     QQmlApplicationEngine engine;

@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>stremio-shell.js</file>
         <file>autoupdater.js</file>
         <file alias="/images/stremio.png">./images/stremio.png</file>
         <file alias="/images/stremio_window.png">./images/stremio_window.png</file>

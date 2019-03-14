@@ -65,31 +65,108 @@ ApplicationWindow {
         id: transport
         readonly property string shellVersion: Qt.application.version
         property string serverAddress: "http://127.0.0.1:11470" // will be set to something else if server inits on another port
-        
         readonly property bool isFullscreen: root.visibility === Window.FullScreen // just to send the initial state
+        WebChannel.id: 'transport'
+        signal event(var name, var data)
+        function dispatch(args) {
+            if (Array.isArray(args)) {
+                switch (args[0]) {
+                    case 'app-ready': {
+                        transport.flushQueue();
+                        return;
+                    }
+                    case 'control-event': {
+                        wakeupEvent();
+                        return;
+                    }
+                    case 'wakeup': {
+                        wakeupEvent();
+                        return;
+                    }
+                    case 'set-window-mode': {
+                        onWindowMode(args[1]);
+                        return;
+                    }
+                    case 'open-external': {
+                        Qt.openUrlExternally(args[1]);
+                        return;
+                    }
+                    case 'win-focus': {
+                        if (!root.visible) {
+                            showWindow();
+                        }
 
-        signal event(var ev, var args)
-        function onEvent(ev, args) {
-            if (ev === "app-ready") transport.flushQueue()
-            if (ev === "mpv-command" && args && args[0] !== "run") mpv.command(args)
-            if (ev === "mpv-set-prop") mpv.setProperty(args[0], args[1])
-            if (ev === "mpv-observe-prop") mpv.observeProperty(args)
-            if (ev === "control-event") wakeupEvent()
-            if (ev === "wakeup") wakeupEvent()
-            if (ev === "set-window-mode") onWindowMode(args)
-            if (ev === "open-external") Qt.openUrlExternally(args)
-            if (ev === "win-focus" && !root.visible) {
-                showWindow();
-            }
-            if (ev === "win-set-visibility") {
-                if(args.hasOwnProperty('fullscreen')) {
-                    setFullScreen(args.fullscreen);
+                        return;
+                    }
+                    case 'win-set-visibility': {
+                        setFullScreen(args[1]);
+                        return;
+                    }
+                    case 'autoupdater-notif-clicked': {
+                        if (autoUpdater.onNotifClicked) {
+                            autoUpdater.onNotifClicked();
+                        }
+
+                        return;
+                    }
+                    case 'screensaver-toggle': {
+                        shouldDisableScreensaver(args[1]);
+                        return;
+                    }
+                    case 'mpv': {
+                        switch(args[1]) {
+                            case 'createChannel': {
+                                mpvVideo.channelId = args[2];
+                                return;
+                            }
+                            case 'setOption': {
+                                if (mpvVideo.channelId === args[2]) {
+                                    mpvVideo.setOption(args[3], args[4]);
+                                }
+
+                                return;
+                            }
+                            case 'observeProp': {
+                                if (mpvVideo.channelId === args[2]) {
+                                    mpvVideo.observeProperty(args[3]);
+                                }
+
+                                return;
+                            }
+                            case 'getProp': {
+                                if (mpvVideo.channelId === args[2]) {
+                                    return mpvVideo.getProperty(args[3]);
+                                }
+
+                                return;
+                            }
+                            case 'setProp': {
+                                if (mpvVideo.channelId === args[2]) {
+                                    mpvVideo.setProperty(args[3], args[4]);
+                                }
+
+                                return;
+                            }
+                            case 'command': {
+                                if (mpvVideo.channelId === args[2]) {
+                                    mpvVideo.command(args.slice(3, args.length));
+                                }
+
+                                return;
+                            }
+                        }
+
+                        break;
+                    }
                 }
             }
-            if (ev === "autoupdater-notif-clicked" && autoUpdater.onNotifClicked) {
-                autoUpdater.onNotifClicked();
-            }
-            if (ev === "screensaver-toggle") shouldDisableScreensaver(args.disabled)
+
+            return {
+                error: {
+                    code: 999,
+                    message: 'Invalid dispatch call: ' + args.map(String)
+                }
+            };
         }
 
         // events that we want to wait for the app to initialize
@@ -122,7 +199,7 @@ ApplicationWindow {
     }
 
     function isPlayerPlaying() {
-        return root.visible && typeof(mpv.getProperty("path"))==="string" && !mpv.getProperty("pause")
+        return root.visible && typeof(mpvVideo.getProperty("path"))==="string" && !mpvVideo.getProperty("pause")
     }
 
     // Received external message
@@ -272,13 +349,17 @@ ApplicationWindow {
         onTriggered: function () { root.launchServer() }
     }
 
-    //
-    // Player
-    //
-    MpvObject {
-        id: mpv
+    MpvVideo {
+        id: mpvVideo
+        property var channelId: null;
         anchors.fill: parent
-        onMpvEvent: function(ev, args) { transport.event(ev, args) }
+        onChannelIdChanged: {
+            unobserveAllProperties();
+            onMpvEvent('channelIdChanged', channelId);
+        }
+        onMpvEvent: function(name, data) {
+            transport.event('mpv:' + name, data);
+        }
     }
 
     //
@@ -350,28 +431,10 @@ ApplicationWindow {
                 pulseOpacity.running = false
             }
 
-            if (loadRequest.status == WebEngineView.LoadSucceededStatus) { 
-                webView.webChannel.registerObject( 'transport', transport );
-
-                // Try-catch to be able to return the error as result, but still throw it in the client context
-                // so it can be caught and reported
-                var injectedJS = "try { initShellComm() } " +
-                        "catch(e) { setTimeout(function() { throw e }); e.message || JSON.stringify(e) }";
-                webView.runJavaScript(injectedJS, function(err) {
-                    splashScreen.visible = false
-                    pulseOpacity.running = false
-
-                    if (!err) {
-                        webView.tries = 0
-                    } else {
-                        errorDialog.text = "Error while applying shell JS." +
-                                " Please consider re-installing Stremio from https://www.stremio.com"
-                        errorDialog.detailedText = err
-                        errorDialog.visible = true
-
-                        console.error(err)
-                    }
-                });
+            if (loadRequest.status == WebEngineView.LoadSucceededStatus) {
+                splashScreen.visible = false
+                pulseOpacity.running = false
+                webView.tries = 0
             }
 
             var shouldRetry = loadRequest.status == WebEngineView.LoadFailedStatus ||
@@ -467,11 +530,11 @@ ApplicationWindow {
                 ctxMenu.open();
             }
         }
-
+        
         Action {
             shortcut: StandardKey.Paste
             onTriggered: webView.triggerWebAction(WebEngineView.Paste)
-        }
+        } 
 
         DropArea {
             anchors.fill: parent
@@ -480,11 +543,9 @@ ApplicationWindow {
                 transport.event("dragdrop", args.urls)
             }
         }
-        webChannel: wChannel
-    }
-
-    WebChannel {
-        id: wChannel
+        webChannel: WebChannel {
+            registeredObjects: [transport]
+        }
     }
 
     //
@@ -543,7 +604,7 @@ ApplicationWindow {
         transport.event("win-visibility-changed", { visible: root.visible, visibility: root.visibility,
                             isFullscreen: root.visibility === Window.FullScreen })
     }
-    
+
     property int appState: Qt.application.state;
     onAppStateChanged: {
         // WARNING: we should load the app through https to avoid MITM attacks on the clipboard
@@ -584,7 +645,7 @@ ApplicationWindow {
         running: false
         onTriggered: function() { } // empty, set if auto-updater is enabled in initAutoUpdater()
     }
-
+  
     //
     // On complete handler
     //
@@ -594,7 +655,7 @@ ApplicationWindow {
         // Kind of hacky way to ensure there are no Qt bindings going on; otherwise when we go to fullscreen
         // Qt tries to restore original window size
         root.height = root.initialHeight
-        root.width = root.initialWidth
+        root.width = root.initialWidth  
 
         // Start streaming server
         var args = Qt.application.arguments
