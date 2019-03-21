@@ -1,6 +1,7 @@
 new QWebChannel(window.qt.webChannelTransport, function(channel) {
     var events = {};
     window.shell = Object.freeze({
+        errors: channel.objects.transport.errors,
         on: function(eventName, listener) {
             events[eventName] = events[eventName] || [];
             if (events[eventName].indexOf(listener) === -1) {

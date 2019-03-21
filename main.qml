@@ -66,6 +66,20 @@ ApplicationWindow {
         readonly property string shellVersion: Qt.application.version
         property string serverAddress: "http://127.0.0.1:11470" // will be set to something else if server inits on another port
         readonly property bool isFullscreen: root.visibility === Window.FullScreen // just to send the initial state
+        readonly property var errors: {
+            'dispatch_call_invalid': {
+                'code': 300,
+                'message': 'Invalid shell dispatch call'
+            },
+            'mpv_channel_id_in_use': {
+                'code': 600,
+                'message': 'MPV channel id is already in use'
+            },
+            'mpv_channel_id_expired': {
+                'code': 601,
+                'message': 'Expired MPV channel id'
+            }
+        }
         WebChannel.id: 'transport'
         signal event(var name, var data)
         function dispatch(args) {
@@ -116,43 +130,63 @@ ApplicationWindow {
                     case 'mpv': {
                         switch(args[1]) {
                             case 'createChannel': {
-                                mpvVideo.channelId = args[2];
-                                return;
+                                if (mpvVideo.channelId !== args[2]) {
+                                    mpvVideo.channelId = args[2];
+                                    return;
+                                }
+
+                                return {
+                                    error: errors.mpv_channel_id_in_use
+                                };
                             }
                             case 'setOption': {
                                 if (mpvVideo.channelId === args[2]) {
                                     mpvVideo.setOption(args[3], args[4]);
+                                    return;
                                 }
 
-                                return;
+                                return {
+                                    error: errors.mpv_channel_id_expired
+                                };
                             }
                             case 'observeProp': {
                                 if (mpvVideo.channelId === args[2]) {
                                     mpvVideo.observeProperty(args[3]);
+                                    return;
                                 }
 
-                                return;
+                                return {
+                                    error: errors.mpv_channel_id_expired
+                                };
                             }
                             case 'getProp': {
                                 if (mpvVideo.channelId === args[2]) {
                                     return mpvVideo.getProperty(args[3]);
                                 }
 
-                                return;
+                                return {
+                                    error: errors.mpv_channel_id_expired
+                                };
                             }
                             case 'setProp': {
                                 if (mpvVideo.channelId === args[2]) {
                                     mpvVideo.setProperty(args[3], args[4]);
+                                    return;
                                 }
 
-                                return;
+                                return {
+                                    error: errors.mpv_channel_id_expired
+                                };
                             }
                             case 'command': {
                                 if (mpvVideo.channelId === args[2]) {
                                     mpvVideo.command(args.slice(3, args.length));
+                                    return;
                                 }
 
-                                return;
+                                return {
+                                    error: errors.mpv_channel_id_expired
+                                };
                             }
                         }
 
@@ -163,8 +197,8 @@ ApplicationWindow {
 
             return {
                 error: {
-                    code: 999,
-                    message: 'Invalid dispatch call: ' + args.map(String)
+                    code: errors.dispatch_call_invalid.code,
+                    message: errors.dispatch_call_invalid.message + ':' + args.map(String)
                 }
             };
         }
@@ -355,10 +389,12 @@ ApplicationWindow {
         anchors.fill: parent
         onChannelIdChanged: {
             unobserveAllProperties();
-            onMpvEvent('channelIdChanged', channelId);
         }
-        onMpvEvent: function(name, data) {
-            transport.event('mpv:' + name, data);
+        onMpvEvent: function(name, data) {            
+            transport.event('mpvEvent', Object.assign({}, data, {
+                channelId: channelId,
+                eventName: name
+            }));
         }
     }
 
