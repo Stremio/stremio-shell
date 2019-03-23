@@ -18,6 +18,10 @@ make
 
 Please, refer to [DEBIAN.md](https://github.com/Stremio/stremio-shell/blob/master/DEBIAN.md) for a detailed explanation of how to build the latest Stremio in Debian.
 
+### Build instructions for OpenSuseLeap 15.0
+
+Please, refer to [OpenSuseLeap.md](https://github.com/Stremio/stremio-shell/blob/master/OpenSuseLeap.md) for a detailed explanation of how to build the latest Stremio in OpenSuseLeap 15.0
+
 ### Build instructions for Docker builds of supported Linux distros
 
 There are Docker files and setup scripts for supported Linux distributions (Debian, Fedora, Arch), located in the `./distros` directory.
