@@ -93,4 +93,5 @@ if ! cd "$DISTROS_DIR/$DISTRO" &> /dev/null; then
 fi
 
 source mkconfig.sh
-docker run --privileged --rm -v "$DEST_DIR:/app" -t "$(docker build -q .)" sh -c "(su builduser -c \"./package.sh $BRANCH\") && $COPY_CMD"
+IMAGE_HASH=$(docker build  . | tee >(cat >&2) | tail -n 1 | cut -d " " -f 3)
+docker run --privileged --rm -v "$DEST_DIR:/app" -t "$IMAGE_HASH" sh -c "(su builduser -c \"./package.sh $BRANCH\") && $COPY_CMD"
