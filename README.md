@@ -30,6 +30,11 @@ There is also an automated build script located in `./dist-utils/build-package.s
 
 For more information refer to the [DOCKER.md](DOCKER.md) file.
 
+## Third-party install scripts
+
+There are repositories for third-party install scripts that may be useful for you, most notably: https://github.com/alexandru-balan/Stremio-Install-Scripts 
+
+We give no guarantees about their correctness or security. 
 
 ## Releasing a version
 
