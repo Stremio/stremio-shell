@@ -77,7 +77,7 @@
             // Display the error only if it's not QNetworkReply::HostNotFound (3) and not QNetworkReply::TimeoutError (4)
             // - this usually happens when we are not connected; sometimes autoupdater.isOnline() reports wrong
             if (err !== 3 && err !== 4) {
-                errorDialog.text = "Auto updater error"
+                errorDialog.text = "Auto updater error: " + err
                 errorDialog.detailedText = msg
                 errorDialog.visible = true
             }
