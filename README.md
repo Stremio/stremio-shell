@@ -56,3 +56,5 @@ We give no guarantees about their correctness or security.
 ``--autoupdater-force-full``: would force the auto-updater to always perform a full update (rather than partial)
 
 ``--autoupdater-endpoint=``: would override the default checking endpoints for the autoupdater
+
+To test the autoupdater, you can use a command like: `./stremio --autoupdater-force --autoupdater-endpoint="https://www.stremio.com/updater/check?force=true"`; `force=true` passed to the update endpoint would cause it to always return the latest descriptor
