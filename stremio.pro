@@ -40,8 +40,8 @@ unix:!mac {
     LIBS += -lcrypto
 }
 mac {
-    LIBS += -L/usr/local/opt/openssl/lib -lcrypto
-    INCLUDEPATH += /usr/local/opt/openssl/include
+    LIBS += -L/usr/local/opt/openssl@1.1/lib -lcrypto
+    INCLUDEPATH += /usr/local/opt/openssl@1.1/include
 }
 win32{
     # First one is the convention for builds at slproweb.com, the other at www.npcglib.org (used by AppVeyor)
