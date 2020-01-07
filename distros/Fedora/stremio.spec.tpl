@@ -8,7 +8,7 @@ URL:            https://www.stremio.com
 Source0:        https://github.com/Stremio/stremio-shell/archive/master.zip
 
 BuildRequires: qt5-devel
-BuildRequires: ImageMagick
+BuildRequires: librsvg2-tools
 BuildRequires: qt5-qtwebengine-devel
 BuildRequires: openssl-devel
 BuildRequires: mpv-libs-devel
@@ -30,6 +30,9 @@ git init
 git remote add origin https://github.com/Stremio/stremio-shell.git
 git fetch --all
 git reset --hard origin/master
+if [ -n "$BRANCH" ]; then
+        git checkout "$BRANCH"
+fi
 git submodule update --init
 make -f release.makefile clean
 

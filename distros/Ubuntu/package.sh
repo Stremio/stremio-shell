@@ -2,6 +2,9 @@
 
 git clone https://github.com/Stremio/stremio-shell.git
 cd stremio-shell
+if [ -n "$1" ]; then
+	git checkout "$1"
+fi
 git submodule update --init
 
 cp dist-utils/common/description ./description-pak

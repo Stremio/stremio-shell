@@ -1,5 +1,6 @@
 #include <QQmlApplicationEngine>
 #include <QtWebEngine>
+#include <QSysInfo>
 
 #include <clocale>
 
@@ -49,7 +50,12 @@ int main(int argc, char **argv)
     // Default to ANGLE (DirectX), because that seems to eliminate so many issues on Windows
     // Also, according to the docs here: https://wiki.qt.io/Qt_5_on_Windows_ANGLE_and_OpenGL, ANGLE is also preferrable
     // We do not need advanced OpenGL features but we need more universal support
+
     Application::setAttribute(Qt::AA_UseOpenGLES);
+    auto winVer = QSysInfo::windowsVersion();
+    if(winVer <= QSysInfo::WV_WINDOWS7 && winVer != QSysInfo::WV_None) {
+        qputenv("QT_ANGLE_PLATFORM", "d3d9");
+    }
     #endif
 
     // This is really broken on Linux
