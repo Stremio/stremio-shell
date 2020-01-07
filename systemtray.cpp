@@ -1,7 +1,7 @@
     #include "systemtray.h"
     #include <QMenu>
     #include <QSystemTrayIcon>
-    #include <QSysInfo>
+    #include <QOperatingSystemVersion>
     SystemTray::SystemTray(QObject *parent) : QObject(parent)
     {
      
@@ -9,13 +9,13 @@
         QMenu *trayIconMenu = new QMenu();
 
 
-        viewWindowAction = new QAction(trUtf8("Show window"), this);
+        viewWindowAction = new QAction(tr("Show window"), this);
         viewWindowAction->setCheckable(true);
 
-        alwaysOnTopAction = new QAction(trUtf8("Always on top"), this);
+        alwaysOnTopAction = new QAction(tr("Always on top"), this);
         alwaysOnTopAction->setCheckable(true);
         
-        QAction * quitAction = new QAction(trUtf8("Quit"), this);
+        QAction * quitAction = new QAction(tr("Quit"), this);
 
         /* to connect the signals clicks on menu items to the appropriate signals for QML.
          * */
@@ -36,8 +36,7 @@
 
         QIcon icon;
 
-        auto winVer = QSysInfo::windowsVersion();
-        if(winVer <= QSysInfo::WV_WINDOWS7 && winVer != QSysInfo::WV_None) {
+        if(QOperatingSystemVersion::current() <= QOperatingSystemVersion::Windows7) {
             icon = QIcon(":/images/stremio_window.png");
         } else {
             icon = QIcon::fromTheme("smartcode-stremio-tray", QIcon(":/images/stremio_tray_white.png"));
