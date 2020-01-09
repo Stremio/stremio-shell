@@ -17,7 +17,8 @@ mac {
     LIBS += -framework CoreFoundation
     QMAKE_RPATHDIR += @executable_path/../Frameworks
     QMAKE_RPATHDIR += @executable_path/lib
-    LIBS += -L $$PWD/deps/libmpv/mac/lib -lmpv
+    #LIBS += -L $$PWD/deps/libmpv/mac/lib -lmpv
+    LIBS += -L /usr/local/opt/mpv/lib -lmpv
 }
 
 # pkg-config way of linking with mpv works perfectly on the mac distribution process, because macdeployqt will also ship all libraries
