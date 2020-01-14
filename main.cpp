@@ -69,7 +69,6 @@ int main(int argc, char **argv)
     Application::setOrganizationDomain("stremio.com");
 
     MainApp app(argc, argv, true);
-    QtWebEngine::initialize();
     #ifndef Q_OS_MACOS
     if( app.isSecondary() ) {
         if( app.arguments().count() > 1)
@@ -96,6 +95,7 @@ int main(int argc, char **argv)
 
     QQmlApplicationEngine engine;
     InitializeParameters(engine, app);
+    QtWebEngine::initialize();
  
     SystemTray * systemTray = new SystemTray();
     QQmlContext * context = engine.rootContext();
