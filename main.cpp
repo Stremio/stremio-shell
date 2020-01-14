@@ -68,8 +68,8 @@ int main(int argc, char **argv)
     Application::setOrganizationName("Smart Code ltd");
     Application::setOrganizationDomain("stremio.com");
 
-    QtWebEngine::initialize();
     MainApp app(argc, argv, true);
+    QtWebEngine::initialize();
     #ifndef Q_OS_MACOS
     if( app.isSecondary() ) {
         if( app.arguments().count() > 1)
