@@ -17,8 +17,8 @@ ApplicationWindow {
     id: root
     visible: true
 
-    minimumWidth: 1000
-    minimumHeight: 650
+    minimumWidth: 200
+    minimumHeight: 150
 
     readonly property int initialWidth: Math.max(root.minimumWidth, Math.min(1600, Screen.desktopAvailableWidth * 0.8))
     readonly property int initialHeight: Math.max(root.minimumHeight, Math.min(1000, Screen.desktopAvailableHeight * 0.8))
