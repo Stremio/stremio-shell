@@ -15,6 +15,8 @@ hdiutil create -srcfolder "${source}" -volname "${title}" -fs HFS+ -fsargs "-c c
 
 device=$(hdiutil attach -readwrite -noverify -noautoopen $tempDMGName | egrep '^/dev/' | sed 1q | awk '{print $1}')
 
+# Wati for image to be mounted
+while [ ! -f "/Volumes/$title/.VolumeIcon.icns" ]; do sleep 1; done
 SetFile -c icnC "/Volumes/$title/.VolumeIcon.icns"
 
 echo device
