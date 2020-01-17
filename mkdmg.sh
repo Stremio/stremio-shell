@@ -18,7 +18,7 @@ device=$(hdiutil attach -readwrite -noverify -noautoopen $tempDMGName | egrep '^
 SetFile -c icnC "/Volumes/$title/.VolumeIcon.icns"
 
 echo device
-read -r bgW bgH <<<$(file images/osx-inst.png  | perl -ne '/,\s*(\d+)\s*x\s*(\d+),/; print "$1 $2"')
+read -r bgW bgH <<<$(file /Volumes/$title/.background/osx-inst.png  | perl -ne '/,\s*(\d+)\s*x\s*(\d+),/; print "$1 $2"')
 echo '
    tell application "Finder"
      tell disk "'${title}'"
