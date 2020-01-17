@@ -1,6 +1,6 @@
 {
   "title": "Stremio",
-  "icon": "images/stremio.icns",
+  "icon": "images/stremio-icon-dmg.icns",
   "background": "images/osx-inst.png",
   "contents": [
     { "x": 142, "y": 212, "type": "file", "path": "stremio.app" },
