@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-VERSION=4.4.8
+VERSION=4.4.77
 
 DEFINES += STREMIO_SHELL_VERSION=\\\"$$VERSION\\\"
 
@@ -24,11 +24,11 @@ mac {
 unix:!mac {
     QT_CONFIG -= no-pkg-config
     CONFIG += link_pkgconfig
-    PKGCONFIG += mpv
+    LIBS += -lmpv
 }
 
 win32 {
-    RC_ICONS = ../src/images/stremio.ico
+    RC_ICONS = $$PWD/images/stremio.ico
     LIBS += $$PWD/deps/libmpv/win32/mpv.lib
 }
 
@@ -36,7 +36,7 @@ INCLUDEPATH += deps/libmpv/include
 
 # OpenSSL
 unix:!mac {
-    PKGCONFIG += openssl
+    LIBS += -lcrypto
 }
 mac {
     LIBS += -L/usr/local/opt/openssl/lib -lcrypto

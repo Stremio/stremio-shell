@@ -27,10 +27,38 @@ ApplicationWindow {
     height: root.initialHeight
 
     property bool notificationsEnabled: true
-    property int alwaysOnTopFlags: 0
 
     color: "#201f32";
     title: appTitle
+
+    property var previousVisibility: Window.Windowed
+    property bool wasFullScreen: false
+
+    function setFullScreen(fullscreen) {
+        if(fullscreen) {
+            root.visibility = Window.FullScreen;
+            root.wasFullScreen = true;
+        } else {
+            root.visibility = root.previousVisibility;
+            root.wasFullScreen = false;
+        }
+    }
+
+    function showWindow() {
+            if(root.wasFullScreen) {
+                root.visibility = Window.FullScreen;
+            } else {
+                root.visibility = root.previousVisibility;
+            }
+            root.raise();
+            root.requestActivate();
+    }
+
+    function updatePreviousVisibility() {
+        if(root.visible && root.visibility != Window.FullScreen && root.visibility != Window.Minimized) {
+            root.previousVisibility = root.visibility;
+        }
+    }
 
     // Transport
     QtObject {
@@ -50,21 +78,17 @@ ApplicationWindow {
             if (ev === "wakeup") wakeupEvent()
             if (ev === "set-window-mode") onWindowMode(args)
             if (ev === "open-external") Qt.openUrlExternally(args)
-            // TODO: restore this
-            //if (ev === "balloon-show" && root.notificationsEnabled) trayIcon.showMessage(args.title, args.content)
-            if (ev === "win-focus") { if (!root.visible) root.show(); root.raise(); root.requestActivate(); }
+            if (ev === "win-focus" && !root.visible) {
+                showWindow();
+            }
             if (ev === "win-set-visibility") {
-                root.visibility = args.hasOwnProperty('fullscreen') ? (args.fullscreen ? Window.FullScreen : Window.Windowed) : args.visibility
-                if(root.visibility == Window.FullScreen) {
-                    root.alwaysOnTopFlags = root.flags;
-                    root.flags &= ~Qt.WindowStaysOnTopHint;
-                    systemTray.updateIsOnTop(false);
-                } else {
-                    root.flags = root.alwaysOnTopFlags;
-                    systemTray.updateIsOnTop((root.flags & Qt.WindowStaysOnTopHint) === Qt.WindowStaysOnTopHint);
+                if(args.hasOwnProperty('fullscreen')) {
+                    setFullScreen(args.fullscreen);
                 }
             }
-            if (ev === "autoupdater-notif-clicked" && autoUpdater.onNotifClicked) autoUpdater.onNotifClicked()
+            if (ev === "autoupdater-notif-clicked" && autoUpdater.onNotifClicked) {
+                autoUpdater.onNotifClicked();
+            }
             //if (ev === "chroma-toggle") { args.enabled ? chroma.enable() : chroma.disable() }
             if (ev === "screensaver-toggle") shouldDisableScreensaver(args.disabled)
         }
@@ -105,8 +129,10 @@ ApplicationWindow {
     // Received external message
     function onAppMessageReceived(instance, message) {
         message = message.toString(); // cause it may be QUrl
-        if (message == "SHOW") { root.show(); root.raise(); root.requestActivate() }
-        else onAppOpenMedia(message)
+        showWindow();
+        if (message !== "SHOW") {
+                onAppOpenMedia(message);
+        }
     }
 
     // May be called from a message (from another app instance) or when app is initialized with an arg
@@ -116,12 +142,12 @@ ApplicationWindow {
     }
 
     function stopStreamingServer() {
-        systemTray.hideIconTray();
         streamingServer.kill();
     }
 
     function quitApp() {
         webView.destroy();
+        systemTray.hideIconTray();
         stopStreamingServer();
         streamingServer.waitForFinished(2000);
         Qt.quit();
@@ -132,18 +158,21 @@ ApplicationWindow {
      * */
     Connections {
         target: systemTray
+
+        onSignalIconMenuAboutToShow: {
+            systemTray.updateIsOnTop((root.flags & Qt.WindowStaysOnTopHint) === Qt.WindowStaysOnTopHint);
+	        systemTray.updateVisibleAction(root.visible);
+        }
+
         onSignalShow: {
             if(root.visible) {
                 root.hide();
             } else {
-                root.show();
-                root.raise();
-                root.requestActivate();
+                showWindow();
             }
         }
 
         onSignalAlwaysOnTop: {
-            root.show()
             root.raise()
             if(root.flags & Qt.WindowStaysOnTopHint) {
                 root.flags &= ~Qt.WindowStaysOnTopHint;
@@ -159,9 +188,7 @@ ApplicationWindow {
  
         // Minimize / maximize the window by clicking on the default system tray
         onSignalIconActivated: {
-            root.show()
-            root.raise()
-            root.requestActivate()
+           showWindow();
        }
     }
 
@@ -259,8 +286,9 @@ ApplicationWindow {
     // Main UI (via WebEngineView)
     //
     function getWebUrl() {
-        var params = "?winControls=true&loginFlow=desktop"
+        var params = "?loginFlow=desktop"
         var args = Qt.application.arguments
+        var shortVer = Qt.application.version.split('.').slice(0, 2).join('.')
 
         var webuiArg = "--webui-url="
         for (var i=0; i!=args.length; i++) {
@@ -273,7 +301,7 @@ ApplicationWindow {
         if (args.indexOf("--staging") > -1)
             return "https://staging.strem.io/#"+params
 
-        return "https://app.strem.io/#"+params;
+        return "https://app.strem.io/shell-v"+shortVer+"/#"+params;
     }
 
     Timer {
@@ -361,6 +389,11 @@ ApplicationWindow {
             webView.backgroundColor = "black"
 
             retryTimer.restart()
+
+            // send an event for the crash, but since the web UI is not working, reset the queue and queue it
+            transport.queued = []
+            transport.queueEvent("render-process-terminated", { exitCode: exitCode, terminationStatus: terminationStatus, url: webView.url })
+
         }
 
         // WARNING: does not work..for some reason: "Scripts may close only the windows that were opened by it."
@@ -376,8 +409,7 @@ ApplicationWindow {
 
         // FIXME: When is this called?
         onFullScreenRequested: function(req) {
-            if (req.toggleOn) root.visibility = Window.FullScreen;
-            else root.visibility = Window.Windowed;
+            setFullScreen(req.toggleOn);
             req.accept();
         }
 
@@ -392,9 +424,49 @@ ApplicationWindow {
             }
         }
 
+        Menu {
+            id: ctxMenu
+            MenuItem {
+                text: "Undo"
+                shortcut: StandardKey.Undo
+                onTriggered: webView.triggerWebAction(WebEngineView.Undo)
+            }
+            MenuItem {
+                text: "Redo"
+                shortcut: StandardKey.Redo
+                onTriggered: webView.triggerWebAction(WebEngineView.Redo)
+            }
+            MenuSeparator { }
+            MenuItem {
+                text: "Cut"
+                shortcut: StandardKey.Cut
+                onTriggered: webView.triggerWebAction(WebEngineView.Cut)
+            }
+            MenuItem {
+                text: "Copy"
+                shortcut: StandardKey.Copy
+                onTriggered: webView.triggerWebAction(WebEngineView.Copy)
+            }
+            MenuItem {
+                text: "Paste"
+                shortcut: StandardKey.Paste
+                onTriggered: webView.triggerWebAction(WebEngineView.Paste)
+            }
+            MenuSeparator { }
+            MenuItem {
+                text: "Select All"
+                shortcut: StandardKey.SelectAll
+                onTriggered: webView.triggerWebAction(WebEngineView.SelectAll)
+            }
+        }
+
         // Prevent ctx menu
         onContextMenuRequested: function(request) {
-            request.accepted = true
+            request.accepted = true;
+            // Allow menu inside editalbe objects
+            if(request.isContentEditable) {
+                ctxMenu.open();
+            }
         }
 
         Action {
@@ -409,6 +481,11 @@ ApplicationWindow {
                 transport.event("dragdrop", args.urls)
             }
         }
+        webChannel: wChannel
+    }
+
+    WebChannel {
+        id: wChannel
     }
 
     //
@@ -452,12 +529,18 @@ ApplicationWindow {
     // Binding window -> app events
     //
     onWindowStateChanged: function(state) {
+        updatePreviousVisibility();
         transport.event("win-state-changed", { state: state })
     }
 
     onVisibilityChanged: {
-        systemTray.updateIsOnTop((root.flags & Qt.WindowStaysOnTopHint) === Qt.WindowStaysOnTopHint);
-        systemTray.updateVisibleAction(root.visible);
+        var enabledAlwaysOnTop = root.visible && root.visibility != Window.FullScreen;
+        systemTray.alwaysOnTopEnabled(enabledAlwaysOnTop);
+        if(!enabledAlwaysOnTop) {
+            root.flags &= ~Qt.WindowStaysOnTopHint;
+        }
+
+        updatePreviousVisibility();
         transport.event("win-visibility-changed", { visible: root.visible, visibility: root.visibility,
                             isFullscreen: root.visibility === Window.FullScreen })
     }
@@ -507,6 +590,8 @@ ApplicationWindow {
     // On complete handler
     //
     Component.onCompleted: function() {
+        console.log('Stremio Shell version: '+Qt.application.version)
+
         // Kind of hacky way to ensure there are no Qt bindings going on; otherwise when we go to fullscreen
         // Qt tries to restore original window size
         root.height = root.initialHeight

@@ -3,6 +3,7 @@
         <file>main.qml</file>
         <file>autoupdater.js</file>
         <file alias="/images/stremio.png">./images/stremio.png</file>
+        <file alias="/images/stremio_window.png">./images/stremio_window.png</file>
         <file alias="/images/stremio_tray_white.png">./images/stremio_tray_white.png</file>
         <file alias="/images/stremio_tray_black.png">./images/stremio_tray_black.png</file>
     </qresource>

@@ -3,13 +3,18 @@
 #include "singleapplication.h"
 #include "autoupdater.h"
 
+#ifdef Q_OS_MACOS
+#define APP_TYPE QApplication
+#else
+#define APP_TYPE SingleApplication
+#endif
 
-class MainApp : public SingleApplication 
+class MainApp : public APP_TYPE
 {
     Q_OBJECT
 
   public: 
-    MainApp(int &argc, char **argv, bool unique) : SingleApplication(argc, argv, unique) {
+    MainApp(int &argc, char **argv, bool unique) : APP_TYPE(argc, argv, unique) {
       autoupdater = new AutoUpdater();
       autoupdater->moveToThread(&autoupdaterThread);
       autoupdaterThread.start();

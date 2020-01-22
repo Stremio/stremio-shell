@@ -207,7 +207,18 @@ void MpvObject::handle_mpv_event(mpv_event *event) {
             break;
         }
         case MPV_EVENT_END_FILE: {
+            mpv_event_end_file *endFile = (mpv_event_end_file *)event->data;
+            switch (endFile->reason) {
+                case MPV_END_FILE_REASON_ERROR:
+                    eventJson["error"] = mpv_error_string(endFile->error);
+                    break;
+                case MPV_END_FILE_REASON_STOP:
+                    break;
+                default:
+                    break;
+            }
             Q_EMIT mpvEvent("mpv-event-ended", eventJson);
+
             break;
         }
         default: {

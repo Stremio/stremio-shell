@@ -12,6 +12,7 @@
         explicit SystemTray(QObject *parent = 0);
      
     signals:
+        void signalIconMenuAboutToShow();
         void signalIconActivated();
         void signalShow();
         void signalAlwaysOnTop();
@@ -26,6 +27,7 @@
         void hideIconTray();
         void updateVisibleAction(bool isVisible);
         void updateIsOnTop(bool isOnTop);
+	void alwaysOnTopEnabled(bool enabled);
      
     private:
         /* Declare the object of future applications for the tray icon*/
