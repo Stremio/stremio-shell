@@ -53,7 +53,7 @@ jobs:
 
       - name: Add binaries
         run: |
-          cp ./ffmpeg $DEST_DIR/
+          cp ./mac/ffmpeg $DEST_DIR/
           cp $(which node) $DEST_DIR/
           chmod +w $DEST_DIR/ffmpeg
           chmod +w $DEST_DIR/node
