@@ -94,7 +94,7 @@ jobs:
       - name: Pack
         run: |
           ditto -c -k --rsrc --keepParent Stremio.app Stremio.app.zip
-          sed -ie 's/"title": "Stremio.*"/"title": "Stremio '$SHELL_VERSION'"/' appdmg.json
+          sed -ie 's/"title": "Stremio.*"/"title": "Stremio '$SHELL_VERSION'"/' ./mac/appdmg.json
           appdmg ./mac/appdmg.json "$DMG_PATH"
 
       # - name: Sign Dmg
