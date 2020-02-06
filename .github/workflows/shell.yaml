@@ -20,9 +20,6 @@ jobs:
         with:
           node-version: '8.x'
 
-      - name: Setup keychain
-        run: ./mac/keychain.sh
-
       - name: Submodules
         run: |
           git checkout $TAG
@@ -82,6 +79,9 @@ jobs:
 
       - name: Rename the app
         run: mv ./stremio.app ./Stremio.app
+
+      - name: Setup keychain
+        run: ./mac/keychain.sh
 
       - name: Sign App
         run: |
