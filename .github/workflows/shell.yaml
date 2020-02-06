@@ -26,7 +26,7 @@ jobs:
       - name: Prepare environment
         run: |
           SHELL_VERSION=$(grep -E '\bVERSION=' ./stremio.pro | cut -d= -f 2)
-          DMG_PATH="Stremio $S-HELL_VERSION.dmg"
+          DMG_PATH="Stremio $SHELL_VERSION.dmg"
           node -e 'process.stdout.write("::set-env name=CURRENT_BRANCH::"+process.env.GITHUB_REF.replace(/^refs\/(heads|tags)\//, "")+"\n")'
           echo ::set-env name=SHELL_VERSION::$SHELL_VERSION
           echo ::set-env name=DMG_PATH::$DMG_PATH
