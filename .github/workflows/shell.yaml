@@ -15,15 +15,14 @@ jobs:
       TAG: mpv029
     steps:
       - uses: actions/checkout@v2
-
+        with:
+          ref: ${{ env.TAG }}
       - uses: actions/setup-node@v1
         with:
           node-version: '8.x'
 
       - name: Submodules
-        run: |
-          git checkout $TAG
-          git submodule update --init --recursive
+        run: git submodule update --init --recursive
 
       - name: Prepare environment
         run: |
