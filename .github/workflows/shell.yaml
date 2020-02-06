@@ -24,8 +24,9 @@ jobs:
         run: ./mac/keychain.sh
 
       - name: Submodules
-        run: git checkout $TAG
-        run: git submodule update --init --recursive
+        run: |
+          git checkout $TAG
+          git submodule update --init --recursive
 
       - name: Prepare environment
         run: |
