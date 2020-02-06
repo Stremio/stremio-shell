@@ -70,7 +70,7 @@ jobs:
       - name: Fix dependencies
         run: |
           cp ./iina/deps/lib/* ./stremio.app/Contents/Frameworks
-          ./fix_osx_deps.sh "./stremio.app/Contents/Frameworks" "@executable_path/../Frameworks"
+          ./mac/fix_osx_deps.sh "./stremio.app/Contents/Frameworks" "@executable_path/../Frameworks"
 
       - name: Testdrive
         run: ( $DEST_DIR/stremio & sleep 10 && STREMIO_PID=$! && kill $STREMIO_PID )
