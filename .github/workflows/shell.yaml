@@ -91,7 +91,7 @@ jobs:
         env:
           NOTARIZATION_PWD: ${{ secrets.NOTARIZATION_PWD }}
         run: |
-          ./notarizer.sh Stremio.app "ci@stremio.com" "$NOTARIZATION_PWD"
+          ./mac/notarizer.sh Stremio.app "ci@stremio.com" "$NOTARIZATION_PWD"
 
       - name: Pack
         run: |
