@@ -11,6 +11,7 @@ environment:
     secure: X/MRT0y7Yb8tnzdcQ8Lq+A+/Yc5Ad2KWFYpaydFz0zDSaq8PxZ8XbFseDxjKYo6c
 
 install:
+  - git submodule update --init --recursive
   # Set the OS private key, so we can authenticate for the repos
   - ps: $fileContent = "-----BEGIN RSA PRIVATE KEY-----`n"
   - ps: $fileContent += $env:priv_key.Replace(' ', "`n")
