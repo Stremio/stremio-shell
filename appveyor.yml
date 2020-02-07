@@ -22,7 +22,11 @@ install:
   - ps: Start-Process "Win32OpenSSL-1_1_0L.exe" -ArgumentList "/silent /verysilent /sp- /suppressmsgboxes" -Wait
   - del "Win32OpenSSL-1_1_0L.exe"
   - set OPENSSL_BIN_PATH=C:\OpenSSL-Win32\bin
-  
+
+  # Temp debugging
+  - echo BUILD_DIR %BUILD_DIR%
+  - ps: pwd; ls
+
   # All the *_BIN_PATH variables are used by the gulp deploy-windows task to generate the installer exe
   - set MPV_BIN_PATH=%BUILD_DIR%\mpv
   - mkdir %MPV_BIN_PATH%
