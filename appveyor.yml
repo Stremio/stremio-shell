@@ -25,19 +25,14 @@ install:
   - set OPENSSL_BIN_PATH=C:\OpenSSL-Win32\bin
 
   # Temp debugging
-  - ps: $env:BUILD_DIR = "."
-  - echo BUILD_DIR %BUILD_DIR%
+  - ps: $env:DLL_DIR = "windows"
+  - echo DLL_DIR %DLL_DIR%
 
   # All the *_BIN_PATH variables are used by the gulp deploy-windows task to generate the installer exe
-  - set MPV_BIN_PATH=%BUILD_DIR%\mpv
-  - mkdir %MPV_BIN_PATH%
-  - move windows\mpv-1.dll %MPV_BIN_PATH%
-
+  - set MPV_BIN_PATH=%DLL_DIR%
+  
   # For DS.exe  
-  - set DS_BIN_PATH=%BUILD_DIR%\DS
-  - mkdir %DS_BIN_PATH%
-  - move windows\DS\DS.exe %DS_BIN_PATH%
-  - move windows\DS\Microsoft.Search.Interop.dll %DS_BIN_PATH%
+  - set DS_BIN_PATH=%DLL_DIR%\DS
   
   # Get FFmpeg and set FFMPEG_BIN_PATH
   - ps: Start-FileDownload "http://ffmpeg.zeranoe.com/builds/win32/static/ffmpeg-3.3.4-win32-static.zip"
@@ -59,9 +54,7 @@ install:
   - move windows\NsProcess\Plugin\x86-unicode\nsProcess.dll "%NSISDIR%\Plugins\x86-unicode"
   
   # Install VCRedist 2015 x86
-  - set MSVC_BIN_PATH=%BUILD_DIR%\msvc
-  - mkdir %MSVC_BIN_PATH%
-  - move windows\msvcr120.dll %MSVC_BIN_PATH%
+  - set MSVC_BIN_PATH=%DLL_DIR%
   
   # Prepare the environment by installing Node and setting VC utils in the PATH
   - ps: Install-Product node $env:nodejs_version
@@ -81,9 +74,6 @@ test_script:
   # Use "master" as a tag for nightly builds (will take latest built server.js/stremio.asar)
   - ps: echo "> building from TAG $env:TAG, version $env:package_version"
   - ps: Add-AppveyorMessage "building from TAG $env:TAG, version $env:package_version"
-  - mkdir -p dist\final\server
-  - appveyor DownloadFile https://s3-eu-west-1.amazonaws.com/stremio-artifacts/four/%TAG%/server.js -FileName dist\final\server.js
-  - appveyor DownloadFile https://s3-eu-west-1.amazonaws.com/stremio-artifacts/four/%TAG%/stremio.asar -FileName dist\final\stremio.asar
 
   # Very basic integration test
   - ps: $serverProc = Start-Process "$env:COMSPEC" "/c `"$env:NODE_BIN_PATH\node.exe`" dist\final\server.js > server-log.txt 2>&1" -PassThru
@@ -100,8 +90,43 @@ test_script:
   - if exist shell/deps/qBreakpad ( cd shell/deps/qBreakpad/handler && qmake && nmake && cd ../../../.. )
   - qmake .
   - nmake
-  - node .\node_modules\gulp\bin\gulp gulp-deploy
-  - ps: move *.exe ..
+  #- node .\node_modules\gulp\bin\gulp gulp-deploy
+
+  - mkdir dist-win
+  # copy-windows-mpv
+  - copy %MPV_BIN_PATH%\mpv-1.dll dist-win
+  # copy-windows-openssl
+  - copy %OPENSSL_BIN_PATH%\libcrypto-1_1.dll dist-win
+  - copy %OPENSSL_BIN_PATH%\msvcr120.dll dist-win
+  - copy %OPENSSL_BIN_PATH%\ssleay32.dll dist-win
+  - copy %OPENSSL_BIN_PATH%\libeay32.dll dist-win
+  # copy-windows-ffmpeg
+  - copy %FFMPEG_BIN_PATH%\ffmpeg.exe dist-win
+  # copy-windows-node
+  - copy %NODE_BIN_PATH%\node.exe dist-win
+  # copy-windows-server
+  - appveyor DownloadFile https://s3-eu-west-1.amazonaws.com/stremio-artifacts/four/%TAG%/server.js -FileName dist-win\server.js
+  # copy-windows-msvc
+  - copy %MSVC_BIN_PATH%\msvcr120.dll dist-win
+  # copy-windows-ds
+  - copy %DS_BIN_PATH%\DS.exe dist-win
+  - copy %DS_BIN_PATH%\Microsoft.Search.Interop.dll dist-win
+  # copy-windows-vcredist
+  - copy %VCREDIST_BIN_PATH%\msvcp140.dll dist-win
+  - copy %VCREDIST_BIN_PATH%\vccorlib140.dll dist-win
+  - copy %VCREDIST_BIN_PATH%\vcruntime140.dll dist-win
+  # copy-windows-qtshell
+  - copy release\*.dll dist-win
+  - copy release\*.exe dist-win
+  # prepare-windows-qt
+  - windeployqt --release --no-compiler-runtime --qmldir=. ./dist-win/stremio.exe
+
+  # sign-windows-files
+  #- SignTool sign /f ./helpers/smartcode-20181204-20211204.pfx /p %CERT_PASS%  ./dist-win/stremio.exe
+  #- SignTool sign /f ./helpers/smartcode-20181204-20211204.pfx /p %CERT_PASS%  ./dist-win/ffmpeg.exe
+
+  # build-windows-installer
+  - makensis -V2 ./windows/installer/windows-installer.nsi
 
   # TODO: test if stremio.exe starts properly; because the missing DLLs errors are handled at run-time, we cannot catch them sanely
   # we can mix that with the server integration test, then we'd be able to detect some sanity
