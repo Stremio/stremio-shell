@@ -83,26 +83,26 @@ test_script:
 
   - mkdir dist-win
   # copy-windows-mpv
-  - copy %MPV_BIN_PATH%\mpv-1.dll dist-win
+  - copy "%MPV_BIN_PATH%\mpv-1.dll" dist-win
   # copy-windows-openssl
-  - copy %OPENSSL_BIN_PATH%\libcrypto-1_1.dll dist-win
-  - copy %OPENSSL_BIN_PATH%\ssleay32.dll dist-win
-  - copy %OPENSSL_BIN_PATH%\libeay32.dll dist-win
+  - copy "%OPENSSL_BIN_PATH%\libcrypto-1_1.dll" dist-win
+  - copy "%OPENSSL_BIN_PATH%\ssleay32.dll" dist-win
+  - copy "%OPENSSL_BIN_PATH%\libeay32.dll" dist-win
   # copy-windows-ffmpeg
-  - copy %FFMPEG_BIN_PATH%\ffmpeg.exe dist-win
+  - copy "%FFMPEG_BIN_PATH%\ffmpeg.exe" dist-win
   # copy-windows-node
-  - copy %NODE_BIN_PATH%\node.exe dist-win
+  - copy "%NODE_BIN_PATH%\node.exe" dist-win
   # copy-windows-server
   - appveyor DownloadFile https://s3-eu-west-1.amazonaws.com/stremio-artifacts/four/%TAG%/server.js -FileName dist-win\server.js
   # copy-windows-msvc
-  - copy %MSVC_BIN_PATH%\msvcr120.dll dist-win
+  - copy "%MSVC_BIN_PATH%\msvcr120.dll" dist-win
   # copy-windows-ds
-  - copy %DS_BIN_PATH%\DS.exe dist-win
-  - copy %DS_BIN_PATH%\Microsoft.Search.Interop.dll dist-win
+  - copy "%DS_BIN_PATH%\DS.exe" dist-win
+  - copy "%DS_BIN_PATH%\Microsoft.Search.Interop.dll" dist-win
   # copy-windows-vcredist
-  - copy %VCREDIST_BIN_PATH%\msvcp140.dll dist-win
-  - copy %VCREDIST_BIN_PATH%\vccorlib140.dll dist-win
-  - copy %VCREDIST_BIN_PATH%\vcruntime140.dll dist-win
+  - copy "%VCREDIST_BIN_PATH%\msvcp140.dll" dist-win
+  - copy "%VCREDIST_BIN_PATH%\vccorlib140.dll" dist-win
+  - copy "%VCREDIST_BIN_PATH%\vcruntime140.dll" dist-win
   # copy-windows-qtshell
   - copy release\*.dll dist-win
   - copy release\*.exe dist-win
