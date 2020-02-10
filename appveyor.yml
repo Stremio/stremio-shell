@@ -104,8 +104,9 @@ test_script:
   - copy "%VCREDIST_BIN_PATH%\vccorlib140.dll" dist-win
   - copy "%VCREDIST_BIN_PATH%\vcruntime140.dll" dist-win
   # copy-windows-qtshell
-  - copy release\*.dll dist-win
-  - copy release\*.exe dist-win
+  - ps: ls release
+  - ps: cp release\*.dll dist-win
+  - ps: cp release\*.exe dist-win
 
   # Very basic integration test
   - ps: $serverProc = Start-Process "$env:COMSPEC" "/c node.exe dist-win\server.js > server-log.txt 2>&1" -PassThru
