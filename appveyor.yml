@@ -86,7 +86,6 @@ test_script:
   - copy %MPV_BIN_PATH%\mpv-1.dll dist-win
   # copy-windows-openssl
   - copy %OPENSSL_BIN_PATH%\libcrypto-1_1.dll dist-win
-  - copy %OPENSSL_BIN_PATH%\msvcr120.dll dist-win
   - copy %OPENSSL_BIN_PATH%\ssleay32.dll dist-win
   - copy %OPENSSL_BIN_PATH%\libeay32.dll dist-win
   # copy-windows-ffmpeg
