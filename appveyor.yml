@@ -75,17 +75,6 @@ test_script:
   - ps: echo "> building from TAG $env:TAG, version $env:package_version"
   - ps: Add-AppveyorMessage "building from TAG $env:TAG, version $env:package_version"
 
-  # Very basic integration test
-  - ps: $serverProc = Start-Process "$env:COMSPEC" "/c `"$env:NODE_BIN_PATH\node.exe`" dist\final\server.js > server-log.txt 2>&1" -PassThru
-  - ps: Start-Sleep 8
-  - ps: Try { $serverStatusCode = wget 127.0.0.1:11470/stats.json | % {$_.StatusCode} } Catch { cat server-log.txt; Throw $_ }
-  - ps: if ($serverStatusCode -ne 200) { throw 'stremio server is not reachable' }
-  - ps: Stop-Process $serverProc.Id
-  - ps: echo "> server status code was $serverStatusCode"
-
-  - ps: $mpvExists = Test-Path $env:MPV_BIN_PATH\mpv-1.dll
-  - ps: if (!$mpvExists) { throw 'mpv-1.dll does not exist' }
-
   - ps: echo "> building shell"
   - if exist shell/deps/qBreakpad ( cd shell/deps/qBreakpad/handler && qmake && nmake && cd ../../../.. )
   - qmake .
@@ -118,6 +107,18 @@ test_script:
   # copy-windows-qtshell
   - copy release\*.dll dist-win
   - copy release\*.exe dist-win
+
+  # Very basic integration test
+  - ps: $serverProc = Start-Process "$env:COMSPEC" "/c `"$env:NODE_BIN_PATH\node.exe`" dist\final\server.js > server-log.txt 2>&1" -PassThru
+  - ps: Start-Sleep 8
+  - ps: Try { $serverStatusCode = wget 127.0.0.1:11470/stats.json | % {$_.StatusCode} } Catch { cat server-log.txt; Throw $_ }
+  - ps: if ($serverStatusCode -ne 200) { throw 'stremio server is not reachable' }
+  - ps: Stop-Process $serverProc.Id
+  - ps: echo "> server status code was $serverStatusCode"
+
+  - ps: $mpvExists = Test-Path $env:MPV_BIN_PATH\mpv-1.dll
+  - ps: if (!$mpvExists) { throw 'mpv-1.dll does not exist' }
+
   # prepare-windows-qt
   - windeployqt --release --no-compiler-runtime --qmldir=. ./dist-win/stremio.exe
 
