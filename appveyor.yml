@@ -46,7 +46,7 @@ install:
   - set VSCDIR=C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC
   - set NSISDIR=C:\Program Files (x86)\NSIS
   - set PATH=%PATH%;%QTDIR%\bin;%VSCDIR%\bin;%NSISDIR%
-  - ps: $env:NODE_BIN_PATH=(Get-Command node.exe).Path
+  - ps: $env:NODE_BIN_PATH=(Get-Command node.exe | Split-Path)
 
   # Install NsProcess NSIS Plugin
   - move windows\NsProcess\Include\nsProcess.nsh "%NSISDIR%\Include"
