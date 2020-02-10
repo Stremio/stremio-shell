@@ -138,15 +138,15 @@ test_script:
 artifacts:
   - path: "*.exe"
 
-deploy:
-  provider: S3
-  access_key_id: $(aws_key)
-  secret_access_key: $(aws_secret)
-  bucket: stremio-artifacts
-  region: eu-west-1
-  set_public: true
-  folder: win/$(TAG)
-  max_error_retry: 1
+# deploy:
+#   provider: S3
+#   access_key_id: $(aws_key)
+#   secret_access_key: $(aws_secret)
+#   bucket: stremio-artifacts
+#   region: eu-west-1
+#   set_public: true
+#   folder: win/$(TAG)
+#   max_error_retry: 1
 
 # We need to customize the Slack notification so we add messages and links to artifacts
 notifications:
