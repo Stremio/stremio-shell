@@ -14,6 +14,7 @@ SetDatablockOptimize on
 
 !define APP_NAME "Stremio"
 !define PRODUCT_VERSION "$%package_version%"
+!searchparse "${PRODUCT_VERSION}" `` VERSION_MAJOR `.` VERSION_MINOR `.` VERSION_REVISION
 !define APP_URL "https://www.stremio.com"
 !define DATA_FOLDER "stremio"
 
@@ -33,7 +34,7 @@ VIAddVersionKey "FileDescription" "${APP_NAME} ${PRODUCT_VERSION} Installer"
 VIAddVersionKey "FileVersion" "${PRODUCT_VERSION}"
 VIAddVersionKey "CompanyName" "${COMPANY_NAME}"
 VIAddVersionKey "LegalCopyright" "${APP_URL}"
-VIProductVersion "${PRODUCT_VERSION_CLEAN}.0"
+VIProductVersion "${PRODUCT_VERSION}.0"
 OutFile "../../${APP_NAME} ${PRODUCT_VERSION}.exe"
 ShowInstDetails "nevershow"
 ShowUninstDetails "nevershow"
