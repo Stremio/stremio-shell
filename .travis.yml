@@ -24,15 +24,17 @@ jobs:
         - secure: "R9IDvyVJ8mQ5gpcqMu2XSv02AQVDcTla0S85NfQJ0jJU+rmOYwdUO4nT9a2nMN3bwtcRUpSi4AUiYZ7oiN/Aia/0SCiM0gfU3gQ3umuaRuIJ82C4ILkF/1ez021koF5pNDqFhw6YrL5lXi2RwpUDaAhfZO93kM4/e9y4r8jAEwU8NN+p6fSH8FQLuam7LSVDTLZaEdgBZfMEczPvGq+MztI6Kg4qtpHNC3fgzlXDwUjlHlQU6dqf5fuhMbhthcDTCWYND0A+Tc3sT9m3rRfXQvSbiXExzgA7+rra73CKT5jcZ2q2u8PihfH9HWzjrNBjNxey2NdHYI/i2C2mTM4+bX3C8BtlS9eTmeodRfXbw5dRtLh04d7i2qnzvZTzi7N04O6w0sgIGlnWI/GPm6c+6uJ4KoOi04OmPqER7+u+PRWTv1jiD3u3qe9cBHpdy9YHZswjqSpZKXkw+jBstEUz/rrL+tMTJZTGPj9Mmw25Zx+6SkTwQKTR3ysAV67L43W8ZHw7Tt8qOMfwCjCyAWBA9aVKUW+NZDb5ZGb5XVue8v3XKPXm4crICtX1nqOR2qHyvIaIKIzKtvcpIhOmIYEREyfrI1PRVixZluDTad6+yK+ISFH+Wxbbsi714e/V1M0GWKq349sRDqb52uW6+h3Nro99KT31L8/+XkTX2WpP86Y="
         # AWS_SECRET
         - secure: "QGmS8su1Nj8E/uZaqUhzxIVGbbl2E9m9ZUsmHCGXLH1dGgzevP9ag8x/FleJSMtWn7nRCH+ZRhWx1MTvd2XIXRckT5ezj1MTbrApVr9p6R4QhPTSokSwz5YAy0rTnc3JvqEtahklKHLBlUO5YGrqp4g90/OflmYEler8+w7Hb4qDSCWjmyBHdHZ0WR8jq08j+/u6bMc3G4TAngOXQf3OU3+WnNqN/NGNBNmSIw9fATEkC58g6ZEccbEQfaZtZQXHiD6QDzvWlfoX/EN2z2nlGz9vad0yjcmMbUVjbBcwtIdJdgyq76ThbiA7tXe/hLc4qkOPhexWGYq8HNNIPZ+7ZNoFmq9RydgwYxncQu9SZXkyJeBVXC7NmMI95lQpHVg882uVx7C8SExEAbWCpN+gzV/XdrIfSJ+0+eI8bJGKzKJR8kOiLfzv2OVbP3fCTfURFUiiaXpDKA4w8U9QRGrLbyxFTz1ejfHCposFOuPLY2idppV6t4udMb9EN2zZtPdx+CxeaEg3Hqp8DTPa6Naxg1NPbA2N1jfhLwj33n+HaoxE7GaGGIOeJhtk3PZC9CrK+ahTGdsn3/ssUBUOXTbuOZqz3WYX+KZth7sr3RJXSpBR1rf7RbDctjTdABP2MiV9lX0zLVMWa6/qPiL/PxxxF+Ubwedxd583P31TFxSlYTo="
- 
+
+before_install:
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install p7zip awscli grep; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then npm -g install appdmg; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then source ./mac/keychain_profile; fi
+
 install:
   - echo "Nothing to do for install"
   
 script:
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install p7zip awscli grep; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then npm -g install appdmg; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then source ./mac/keychain.sh; fi
   - export NODE_BIN_PATH=$(dirname `which node`)
   # Set environment
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then source mac/mac_profile; fi
