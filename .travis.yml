@@ -46,8 +46,6 @@ script:
   - echo "> building from TAG $TAG"
   - echo "> Using node $(node --version)"
   # - git checkout $TAG
-  - VERSION=$(git grep -hoP '^\s*VERSION\s*=\s*\K.*$' HEAD -- stremio.pro)
-  - echo "> building from TAG $TAG, version $VERSION"
 
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export DISTROS=`ls distros`; for i in $DISTROS; do echo "Building for distro $i..." && ./dist-utils/build-package.sh $i -d $DESTDIR -t $TAG; done fi
 
