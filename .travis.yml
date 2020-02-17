@@ -45,15 +45,14 @@ script:
   - VERSION=$(git grep -hoP '^\s*VERSION\s*=\s*\K.*$' HEAD -- stremio.pro)
   - echo "> building from TAG $TAG, version $VERSION"
 
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export DISTROS=`ls distros`; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then /bin/bash -c 'for i in $DISTROS; do echo "Building for distro $i..." && ./dist-utils/build-package.sh $i -d $DESTDIR -t $TAG; done' fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export DISTROS=`ls distros`; for i in $DISTROS; do echo "Building for distro $i..." && ./dist-utils/build-package.sh $i -d $DESTDIR -t $TAG; done fi
 
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ( qmake shell && make ); fi
 
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./mac/finalize.sh; fi
 
   # Test if the app launches
-  - ( ./dist-osx/stremio.app/Contents/MacOS/stremio & sleep 10 && STREMIO_PID=$! && kill $STREMIO_PID )
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ( ./dist-osx/stremio.app/Contents/MacOS/stremio & sleep 10 && STREMIO_PID=$! && kill $STREMIO_PID ); fi
 
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./mac/pack.sh; fi
 
