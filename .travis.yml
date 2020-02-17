@@ -24,17 +24,18 @@ jobs:
       # AWS_SECRET
       - secure: "QGmS8su1Nj8E/uZaqUhzxIVGbbl2E9m9ZUsmHCGXLH1dGgzevP9ag8x/FleJSMtWn7nRCH+ZRhWx1MTvd2XIXRckT5ezj1MTbrApVr9p6R4QhPTSokSwz5YAy0rTnc3JvqEtahklKHLBlUO5YGrqp4g90/OflmYEler8+w7Hb4qDSCWjmyBHdHZ0WR8jq08j+/u6bMc3G4TAngOXQf3OU3+WnNqN/NGNBNmSIw9fATEkC58g6ZEccbEQfaZtZQXHiD6QDzvWlfoX/EN2z2nlGz9vad0yjcmMbUVjbBcwtIdJdgyq76ThbiA7tXe/hLc4qkOPhexWGYq8HNNIPZ+7ZNoFmq9RydgwYxncQu9SZXkyJeBVXC7NmMI95lQpHVg882uVx7C8SExEAbWCpN+gzV/XdrIfSJ+0+eI8bJGKzKJR8kOiLfzv2OVbP3fCTfURFUiiaXpDKA4w8U9QRGrLbyxFTz1ejfHCposFOuPLY2idppV6t4udMb9EN2zZtPdx+CxeaEg3Hqp8DTPa6Naxg1NPbA2N1jfhLwj33n+HaoxE7GaGGIOeJhtk3PZC9CrK+ahTGdsn3/ssUBUOXTbuOZqz3WYX+KZth7sr3RJXSpBR1rf7RbDctjTdABP2MiV9lX0zLVMWa6/qPiL/PxxxF+Ubwedxd583P31TFxSlYTo="
  
-    before_install:
+    install:
+      - echo "Nothing to do for install"
+      
+    script:
       - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi
       - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install p7zip awscli; fi
       - if [ "$TRAVIS_OS_NAME" = "osx" ]; then npm -g install appdmg; fi
       - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./mac/keychain.sh; fi
-    install:
       - export NODE_BIN_PATH=$(dirname `which node`)
       # Set environment
       - if [ "$TRAVIS_OS_NAME" = "osx" ]; then source mac/mac_profile; fi
-      
-    script:
+
       - mkdir -p packages
       - export DESTDIR=`realpath packages`
       - export TAG=${TAG:-master}
