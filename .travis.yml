@@ -1,0 +1,72 @@
+language: node_js
+
+jobs:
+  - os: linux
+    dist: xenial
+    sudo: required
+    services:
+      - docker
+    env:
+      global:
+      - BUILD_OS: "linux"
+      # AWS_SECRET
+      - secure: "JDnPmHdEh+EyW8WtIw9b1rZ21bGjYACZ7C63JUcG38tYCoxGE95zjm17q3z5+CTsR6SJT9szgS2A5MTSjyEcKn6r4rFHZGUjnG03exMEUUBS9KQrh1lFM5GDGubfJzMQ89BobnmL9kVdMDDaU2W+IWbS8dJ4cXQnnDIqNpGMLdP3VuT8SzUetAM+mA+gV9vrlCAwWgwkobq0+3zmZ+bVYUVDKiRsvnOsAVNeOB2Rt+fg42HRNnrcHGCe0fiVi/DhtE5/Ein7/YlQKZqv6u/storkxBuTNuHnuufZW9O25tF06aItGUChdsLj9o26vw3fPAWGoCeTvFnXKFzIwyevBCKvdT7TlNs8KJa0YdGU2tf5RQSvhmcSZyfHFu1/6Y2X5uEsXThL86kj/eKYTyK7NY2IpUb6UpnYmULWpuzGzsjdj1AJ3g+IsW3uWSKkIUEze2BS2d/wGl3DveWmohd6AN75QZvlAZN0hbEaOX+T/ta0bzv2kS/5K/dvMmI4+yGK9f0iU+/kVHewVBOHYsYJ199BXmkfpLGELa8Gle/hMu3Jq9kluUCX/6DkkB9PyL2haiR0hnmpM9DH4JnX4WYjmh7qB/eOKXeqOZAzHFbQvEzHYsPHGntIAAlVjfXcE5LKddKKGVY7BX6RAbc4P5imDIP9sZHK2yRBw3QjYrYCpoc="
+        
+  - os: osx
+    compiler: clang
+    osx_image: xcode8.3 # build with older OSX
+    env:
+      global:
+      - BUILD_OS: "osx"
+      - APP_IDENTITY: "C2E24BC6719F81C54FAD02B8B4E3535B330794B8"
+      # CERT_PASS
+      - secure: "R9IDvyVJ8mQ5gpcqMu2XSv02AQVDcTla0S85NfQJ0jJU+rmOYwdUO4nT9a2nMN3bwtcRUpSi4AUiYZ7oiN/Aia/0SCiM0gfU3gQ3umuaRuIJ82C4ILkF/1ez021koF5pNDqFhw6YrL5lXi2RwpUDaAhfZO93kM4/e9y4r8jAEwU8NN+p6fSH8FQLuam7LSVDTLZaEdgBZfMEczPvGq+MztI6Kg4qtpHNC3fgzlXDwUjlHlQU6dqf5fuhMbhthcDTCWYND0A+Tc3sT9m3rRfXQvSbiXExzgA7+rra73CKT5jcZ2q2u8PihfH9HWzjrNBjNxey2NdHYI/i2C2mTM4+bX3C8BtlS9eTmeodRfXbw5dRtLh04d7i2qnzvZTzi7N04O6w0sgIGlnWI/GPm6c+6uJ4KoOi04OmPqER7+u+PRWTv1jiD3u3qe9cBHpdy9YHZswjqSpZKXkw+jBstEUz/rrL+tMTJZTGPj9Mmw25Zx+6SkTwQKTR3ysAV67L43W8ZHw7Tt8qOMfwCjCyAWBA9aVKUW+NZDb5ZGb5XVue8v3XKPXm4crICtX1nqOR2qHyvIaIKIzKtvcpIhOmIYEREyfrI1PRVixZluDTad6+yK+ISFH+Wxbbsi714e/V1M0GWKq349sRDqb52uW6+h3Nro99KT31L8/+XkTX2WpP86Y="
+      # AWS_SECRET
+      - secure: "QGmS8su1Nj8E/uZaqUhzxIVGbbl2E9m9ZUsmHCGXLH1dGgzevP9ag8x/FleJSMtWn7nRCH+ZRhWx1MTvd2XIXRckT5ezj1MTbrApVr9p6R4QhPTSokSwz5YAy0rTnc3JvqEtahklKHLBlUO5YGrqp4g90/OflmYEler8+w7Hb4qDSCWjmyBHdHZ0WR8jq08j+/u6bMc3G4TAngOXQf3OU3+WnNqN/NGNBNmSIw9fATEkC58g6ZEccbEQfaZtZQXHiD6QDzvWlfoX/EN2z2nlGz9vad0yjcmMbUVjbBcwtIdJdgyq76ThbiA7tXe/hLc4qkOPhexWGYq8HNNIPZ+7ZNoFmq9RydgwYxncQu9SZXkyJeBVXC7NmMI95lQpHVg882uVx7C8SExEAbWCpN+gzV/XdrIfSJ+0+eI8bJGKzKJR8kOiLfzv2OVbP3fCTfURFUiiaXpDKA4w8U9QRGrLbyxFTz1ejfHCposFOuPLY2idppV6t4udMb9EN2zZtPdx+CxeaEg3Hqp8DTPa6Naxg1NPbA2N1jfhLwj33n+HaoxE7GaGGIOeJhtk3PZC9CrK+ahTGdsn3/ssUBUOXTbuOZqz3WYX+KZth7sr3RJXSpBR1rf7RbDctjTdABP2MiV9lX0zLVMWa6/qPiL/PxxxF+Ubwedxd583P31TFxSlYTo="
+ 
+    before_install:
+      - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi
+      - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install p7zip awscli; fi
+      - if [ "$TRAVIS_OS_NAME" = "osx" ]; then npm -g install appdmg; fi
+      - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./mac/keychain.sh; fi
+    install:
+      - export NODE_BIN_PATH=$(dirname `which node`)
+      # Set environment
+      - if [ "$TRAVIS_OS_NAME" = "osx" ]; then source mac/mac_profile; fi
+      
+    script:
+      - mkdir -p packages
+      - export DESTDIR=`realpath packages`
+      - export TAG=${TAG:-master}
+      - echo "> building from TAG $TAG"
+      - echo "> Using node $(node --version)"
+      - git checkout $TAG
+      - VERSION=$(git grep -hoP '^\s*VERSION\s*=\s*\K.*$' HEAD -- stremio.pro)
+      - echo "> building from TAG $TAG, version $VERSION"
+
+      - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export DISTROS=`ls distros`; fi
+      - if [ "$TRAVIS_OS_NAME" = "linux" ]; then /bin/bash -c 'for i in $DISTROS; do echo "Building for distro $i..." && ./dist-utils/build-package.sh $i -d $DESTDIR -t $TAG; done' fi
+
+      - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ( qmake shell && make ); fi
+
+      - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./mac/finalize.sh; fi
+
+      # Test if the app launches
+      - ( ./dist-osx/stremio.app/Contents/MacOS/stremio & sleep 10 && STREMIO_PID=$! && kill $STREMIO_PID )
+
+      - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./mac/pack.sh; fi
+    
+      # # Upload artifacts MAC
+      # - shasum -a 256 ./dist-osx/*.dmg
+      # - export AWS_ACCESS_KEY_ID="AKIAJWBFLU34IVITPLHA"
+      # - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET
+      # - export AWS_DEFAULT_REGION=eu-west-1
+      # - aws s3 cp --acl public-read --cache-control max-age=7200,public ./dist-osx/*.dmg s3://stremio-artifacts/mac/$TAG/
+
+      # notifications:
+      #   slack: 
+      #     rooms:
+      #       - stremio:74vRvYUJbhcl3IrYCbOIvTo3#installer-ci
+      #     template: |
+      #       %{repository}@%{branch}: build <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) by %{author} %{result} in %{duration}
+      #       %{message} - %{commit_message}"
