@@ -3,6 +3,9 @@
 set -e
 
 SHELL_VERSION=$(git grep -hoP '^\s*VERSION\s*=\s*\K.*$' HEAD -- stremio.pro)
+
+echo "Packing with SHELL_VERSION $SHELL_VERSION"
+
 DMG_PATH="Stremio $SHELL_VERSION.dmg"
 
 mv ./stremio.app ./Stremio.app
