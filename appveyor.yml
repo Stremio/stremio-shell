@@ -76,6 +76,8 @@ test_script:
   - ps: Add-AppveyorMessage "building from TAG $env:TAG, version $env:package_version"
 
   - ps: echo "> building shell"
+  # Manually add a path to RC.exe
+  - set PATH=C:\Program Files (x86)\Windows Kits\8.1\bin\x86\;%PATH%
   - if exist shell/deps/qBreakpad ( cd shell/deps/qBreakpad/handler && qmake && nmake && cd ../../../.. )
   - qmake .
   - nmake
