@@ -2,7 +2,7 @@
 
 set -e
 
-SHELL_VERSION=$(git grep -hoP '^\s*VERSION\s*=\s*\K.*$' HEAD -- stremio.pro)
+SHELL_VERSION=$(git grep -hP '^\s*VERSION\s*=\s*\K.*$' HEAD -- stremio.pro | sed 's/^\s*VERSION\s*=\s*//')
 
 echo "Packing with SHELL_VERSION $SHELL_VERSION"
 
