@@ -38,10 +38,11 @@ script:
 
   - mkdir -p packages
   - export DESTDIR=`realpath packages`
-  - export TAG=${TAG:-master}
+  # - export TAG=${TAG:-master}
+  - export TAG=$(git rev-parse --abbrev-ref HEAD)
   - echo "> building from TAG $TAG"
   - echo "> Using node $(node --version)"
-  - git checkout $TAG
+  # - git checkout $TAG
   - VERSION=$(git grep -hoP '^\s*VERSION\s*=\s*\K.*$' HEAD -- stremio.pro)
   - echo "> building from TAG $TAG, version $VERSION"
 
