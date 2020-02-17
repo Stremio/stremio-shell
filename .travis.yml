@@ -49,7 +49,7 @@ script:
 
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export DISTROS=`ls distros`; for i in $DISTROS; do echo "Building for distro $i..." && ./dist-utils/build-package.sh $i -d $DESTDIR -t $TAG; done fi
 
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ( qmake shell && make ); fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ( qmake . && make ); fi
 
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./mac/finalize.sh; fi
 
