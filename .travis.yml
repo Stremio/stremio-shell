@@ -54,12 +54,12 @@ script:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./mac/finalize.sh; fi
 
   # Test if the app launches
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ( ./dist-osx/stremio.app/Contents/MacOS/stremio & sleep 10 && STREMIO_PID=$! && kill $STREMIO_PID ); fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ( ./stremio.app/Contents/MacOS/stremio & sleep 10 && STREMIO_PID=$! && kill $STREMIO_PID ); fi
 
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./mac/pack.sh; fi
 
   # # Upload artifacts MAC
-  # - shasum -a 256 ./dist-osx/*.dmg
+  # - shasum -a 256 ./*.dmg
   # - export AWS_ACCESS_KEY_ID="AKIAJWBFLU34IVITPLHA"
   # - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET
   # - export AWS_DEFAULT_REGION=eu-west-1
