@@ -1,11 +1,11 @@
 # credits to https://github.com/LRFLEW/OpenRCT2Launcher/blob/af9be273df102c6e4971c6600a8a260a9708d767/qt5-mac.sh
 
-QT5_VERS=140
-QT5_MAJOR=14
-QT5_MINOR=0
+QT5_VERS=95
+QT5_MAJOR=9
+QT5_MINOR=5
 QT5_PATCH=0
 
-QT5_OSX_VERSION=13
+QT5_OSX_VERSION=10
 
 if (( $# < 2 )); then
   echo "Usage: <destination> <component> [component...]"
@@ -58,6 +58,5 @@ echo "Prefix=.." >> $QT_PATH/bin/qt.conf
 
 # Why does Qt default to Enterprise Licence?
 sed -i "" -E 's/^[[:space:]]*QT_EDITION[[:space:]]*=.*$/QT_EDITION = OpenSource/' $QT_PATH/mkspecs/qconfig.pri
-sed -ie 's/^\([[:space:]]*QT_LICHECK[[:space:]]*=\).*$/\1/' $QT_PATH/mkspecs/qconfig.pri
 
 echo $QT_PATH/bin
