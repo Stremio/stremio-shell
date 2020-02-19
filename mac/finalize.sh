@@ -2,6 +2,8 @@
 
 set -e
 
+TAG=$1
+
 DEST_DIR=./stremio.app/Contents/MacOS
 
 cp ./mac/ffmpeg $DEST_DIR/

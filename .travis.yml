@@ -41,8 +41,8 @@ script:
 
   - mkdir -p packages
   - export DESTDIR=`realpath packages`
-  # - export TAG=${TAG:-master}
-  - export TAG=$(git rev-parse --abbrev-ref HEAD)
+  - export TAG=${TAG:-master}
+  # - export TAG=$(git rev-parse --abbrev-ref HEAD)
   - echo "> building from TAG $TAG"
   - echo "> Using node $(node --version)"
   # - git checkout $TAG
@@ -51,7 +51,7 @@ script:
 
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ( qmake . && make ); fi
 
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./mac/finalize.sh; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./mac/finalize.sh "$TAG"; fi
 
   # Test if the app launches
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ( ./stremio.app/Contents/MacOS/stremio & sleep 10 && STREMIO_PID=$! && kill $STREMIO_PID ); fi
