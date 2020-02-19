@@ -2,7 +2,7 @@
 
 set -e
 
-TAG=$1
+TAG=${1:-master}
 
 DEST_DIR=./stremio.app/Contents/MacOS
 
