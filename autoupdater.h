@@ -50,7 +50,7 @@ class AutoUpdater : public QObject
 
     public slots:
     bool isInstalled();
-    void checkForUpdates(QString);
+    void checkForUpdates(QString, QString);
     void updateFromVersionDesc(QUrl, QByteArray);
 
     void abort();
@@ -69,7 +69,7 @@ class AutoUpdater : public QObject
     private slots:
     void abortPerform();
 
-    void checkForUpdatesPerform(QString);
+    void checkForUpdatesPerform(QString, QString);
     void checkForUpdatesFinished();
 
     void updateFromVersionDescPerform(QUrl, QByteArray);
