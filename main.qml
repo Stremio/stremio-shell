@@ -611,6 +611,6 @@ ApplicationWindow {
 
         // Check for updates
         console.info(" **** Completed. Loading Autoupdater ***")
-        Autoupdater.initAutoUpdater(autoUpdater, root.autoUpdaterErr, autoUpdaterShortTimer, autoUpdaterLongTimer, autoUpdaterRestartTimer);
+        Autoupdater.initAutoUpdater(autoUpdater, root.autoUpdaterErr, autoUpdaterShortTimer, autoUpdaterLongTimer, autoUpdaterRestartTimer, webView.profile.httpUserAgent);
     }
 }

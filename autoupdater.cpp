@@ -36,10 +36,10 @@ bool AutoUpdater::isInstalled() {
 }
 
 // WRAPPERS for public slots to make sure we execute on our thread
-void AutoUpdater::checkForUpdates(QString endpoint) {
+void AutoUpdater::checkForUpdates(QString endpoint, QString userAgent) {
     if (inProgress) return;
     inProgress = true; 
-    QMetaObject::invokeMethod(this, "checkForUpdatesPerform", Qt::QueuedConnection, Q_ARG(QString, endpoint));
+    QMetaObject::invokeMethod(this, "checkForUpdatesPerform", Qt::QueuedConnection, Q_ARG(QString, endpoint), Q_ARG(QString, userAgent));
 }
 void AutoUpdater::updateFromVersionDesc(QUrl versionDesc, QByteArray base64Sig) {
     if (inProgress) return;
@@ -95,7 +95,7 @@ bool AutoUpdater::isOnline() {
 }
 
 // CHECK FOR UPDATES
-void AutoUpdater::checkForUpdatesPerform(QString endpoint)
+void AutoUpdater::checkForUpdatesPerform(QString endpoint, QString userAgent)
 {
     if (! manager) manager = new QNetworkAccessManager(this);
 
@@ -110,8 +110,9 @@ void AutoUpdater::checkForUpdatesPerform(QString endpoint)
     query.addQueryItem("shellVersion", QCoreApplication::applicationVersion());
 
     url.setQuery(query);
-
-    currentCheck = manager->get(QNetworkRequest(QUrl(url)));
+    auto request = QNetworkRequest(QUrl(url));
+    request.setRawHeader("User-Agent", userAgent.toUtf8());
+    currentCheck = manager->get(request);
     QObject::connect(currentCheck, &QNetworkReply::finished, this, &AutoUpdater::checkForUpdatesFinished);
 }
 
