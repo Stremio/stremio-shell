@@ -85,11 +85,11 @@ jobs:
         run: |
           codesign --deep --force -v -s $APP_IDENTITY ./Stremio.app
 
-      # - name: Notarizing
-      #   env:
-      #     NOTARIZATION_PWD: ${{ secrets.NOTARIZATION_PWD }}
-      #   run: |
-      #     ./mac/notarizer.sh Stremio.app "ci@stremio.com" "$NOTARIZATION_PWD"
+      - name: Notarizing
+        env:
+          NOTARIZATION_PWD: ${{ secrets.NOTARIZATION_PWD }}
+        run: |
+          ./mac/notarizer.sh Stremio.app "ci@stremio.com" "$NOTARIZATION_PWD"
 
       - name: Pack
         run: |
