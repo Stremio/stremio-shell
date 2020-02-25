@@ -63,8 +63,13 @@ int main(int argc, char **argv)
     Application::setAttribute(Qt::AA_EnableHighDpiScaling);
     #endif
 
+    QString version = STREMIO_SHELL_VERSION;
+    version.append(" (");
+    version.append(QSysInfo::prettyProductName());
+    version.append(")");
+
     Application::setApplicationName("Stremio");
-    Application::setApplicationVersion(STREMIO_SHELL_VERSION);
+    Application::setApplicationVersion(version);
     Application::setOrganizationName("Smart Code ltd");
     Application::setOrganizationDomain("stremio.com");
 
