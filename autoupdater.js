@@ -3,7 +3,7 @@
     //
     // signal autoUpdaterErr(var msg, var err);
     // signal autoUpdaterRestartTimer();
-    function initAutoUpdater(autoUpdater, autoUpdaterErr, shortTimer, longTimer, restartTimer) {
+    function initAutoUpdater(autoUpdater, autoUpdaterErr, shortTimer, longTimer, restartTimer, userAgent) {
         var endpoints = ["https://www.strem.io/updater/check", "https://www.stremio.com/updater/check",
                          "https://www.stremio.net/updater/check"];
         var fallbackSite = "https://www.stremio.com/?fromFailedAutoupdate=true";
@@ -36,7 +36,7 @@
             if (autoUpdater.isOnline()) {
                 console.log("Auto-updater: checking for new version")
                 autoUpdater.abort()
-                autoUpdater.checkForUpdates(autoUpdater.endpoint())
+                autoUpdater.checkForUpdates(autoUpdater.endpoint(), userAgent)
 
             } else {
                 console.log("Auto-update: skip check because we're not online")
