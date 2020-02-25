@@ -6,6 +6,10 @@ DEFINES += STREMIO_SHELL_VERSION=\\\"$$VERSION\\\"
 
 ICON = images/stremio.icns
 
+QMAKE_TARGET_BUNDLE_PREFIX = com.smartcodeltd
+
+QMAKE_INFO_PLIST = Info.plist
+
 QT += qml quick network
 CONFIG += c++11
 

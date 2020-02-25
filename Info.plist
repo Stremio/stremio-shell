@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+    <key>CFBundleIconFile</key>
+    <string>@ICON@</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleGetInfoString</key>
+    <string>Stremio from Smart Code LTD @2019</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>CFBundleExecutable</key>
+    <string>@EXECUTABLE@</string>
+    <key>CFBundleIdentifier</key>
+    <string>@BUNDLEIDENTIFIER@</string>
+    <key>NOTE</key>
+    <string>Watch Instantly All the Video Content You Enjoy in One Place</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>(c) 2019 Smart Code LTD</string>
+    <key>CFBundleVersion</key>
+    <string>@FULL_VERSION@</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+      <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Viewer</string>
+        <key>CFBundleURLIconFile</key>
+        <string>stremio</string>
+        <key>CFBundleURLName</key>
+        <string>Stremio URL</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>stremio</string>
+        </array>
+      </dict>
+      <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Viewer</string>
+        <key>CFBundleURLIconFile</key>
+        <string>stremio</string>
+        <key>CFBundleURLName</key>
+        <string>BitTorrent Magnet URL</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>magnet</string>
+        </array>
+      </dict>
+    </array>
+    <key>CFBundleDocumentTypes</key>
+    <array>
+      <dict>
+        <key>CFBundleTypeExtensions</key>
+        <array>
+          <string>torrent</string>
+        </array>
+        <key>CFBundleTypeIconFile</key>
+        <string>stremio</string>
+        <key>CFBundleTypeName</key>
+        <string>BitTorrent Document</string>
+        <key>CFBundleTypeRole</key>
+        <string>Viewer</string>
+        <key>LSTypeIsPackage</key>
+        <false/>
+        <key>NSPersistentStoreTypeKey</key>
+        <string>XML</string>
+      </dict>
+    </array>
+    <key>NSSupportsAutomaticGraphicsSwitching</key>
+    <true/>
+  </dict>
+</plist>
