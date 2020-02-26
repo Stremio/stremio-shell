@@ -41,6 +41,9 @@ rm "$ZIP_PATH"
 echo Waiting for notarization...
 sleep 200
 
+echo Check the notarization status...
+xcrun altool --notarization-info "$REQUEST" -u "$USER" -p "$PASS"
+
 echo Stapling the app...
 xcrun stapler staple "$APP_PATH"
 echo Done.
