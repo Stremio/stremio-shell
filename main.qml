@@ -70,6 +70,7 @@ ApplicationWindow {
 
         signal event(var ev, var args)
         function onEvent(ev, args) {
+            if (ev === "quit") quitApp()
             if (ev === "app-ready") transport.flushQueue()
             if (ev === "mpv-command" && args && args[0] !== "run") mpv.command(args)
             if (ev === "mpv-set-prop") mpv.setProperty(args[0], args[1])
