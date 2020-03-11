@@ -13,6 +13,10 @@
 qmake
 make
 ```
+### Build instructions for Windows
+
+Please, refer to [WINDOWS.md](https://github.com/Stremio/stremio-shell/blob/master/WINDOWS.md) for a detailed explanation of how to build the latest Stremio in Windows.
+
 
 ### Build instructions for Debian GNU/Linux
 
@@ -32,9 +36,9 @@ For more information refer to the [DOCKER.md](DOCKER.md) file.
 
 ## Third-party install scripts
 
-There are repositories for third-party install scripts that may be useful for you, most notably: https://github.com/alexandru-balan/Stremio-Install-Scripts 
+There are repositories for third-party install scripts that may be useful for you, most notably: https://github.com/alexandru-balan/Stremio-Install-Scripts
 
-We give no guarantees about their correctness or security. 
+We give no guarantees about their correctness or security.
 
 ## Releasing a version
 
