@@ -34,7 +34,7 @@ Other version may also work.
 
 Download MPV from here https://mpv.srsfckn.biz/mpv-dev-20170212.7z
 
-Download stremio-server from here https://s3-eu-west-1.amazonaws.com/stremio-artifacts/four/master/from the
+Download stremio-server from here https://s3-eu-west-1.amazonaws.com/stremio-artifacts/four/master/server.js
 
 Open command prompt and run the following commands:
 
