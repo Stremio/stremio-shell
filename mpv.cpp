@@ -20,58 +20,98 @@
 #pragma comment (lib, "dwmapi.lib")
 #endif
 
+namespace
+{
+void on_mpv_redraw(void *ctx)
+{
+    MpvObject::on_update(ctx);
+}
+
+static void *get_proc_address_mpv(void *ctx, const char *name)
+{
+    Q_UNUSED(ctx)
+
+    QOpenGLContext *glctx = QOpenGLContext::currentContext();
+    if (!glctx)
+        return nullptr;
+
+    return reinterpret_cast<void *>(glctx->getProcAddress(QByteArray(name)));
+}
+
+} // namespace
+
+
 class MpvRenderer : public QQuickFramebufferObject::Renderer
 {
-    static void *get_proc_address(void *ctx, const char *name) {
-        (void)ctx;
-        QOpenGLContext *glctx = QOpenGLContext::currentContext();
-        if (!glctx)
-            return NULL;
-        return (void *)glctx->getProcAddress(QByteArray(name));
-    }
+    MpvObject *obj;
 
-    mpv::qt::Handle mpv;
-    QQuickWindow *window;
-    mpv_opengl_cb_context *mpv_gl;
-public:
-    MpvRenderer(const MpvObject *obj)
-        : mpv(obj->mpv), window(obj->window()), mpv_gl(obj->mpv_gl)
+    public:
+    MpvRenderer(MpvObject *new_obj)
+        : obj{new_obj}
     {
         // Qt sets the locale in the QGuiApplication constructor, but libmpv
         // requires the LC_NUMERIC category to be set to "C", so change it back.
         std::setlocale(LC_NUMERIC, "C");
-        
-        int r = mpv_opengl_cb_init_gl(mpv_gl, NULL, get_proc_address, NULL);
-        if (r < 0)
-            throw std::runtime_error("could not initialize OpenGL");
     }
 
     virtual ~MpvRenderer()
     {
-        // Until this call is done, we need to make sure the player remains
-        // alive. This is done implicitly with the mpv::qt::Handle instance
-        // in this class.
-        mpv_opengl_cb_uninit_gl(mpv_gl);
+    }
+
+    // This function is called when a new FBO is needed.
+    // This happens on the initial frame.
+    QOpenGLFramebufferObject *createFramebufferObject(const QSize &size)
+    {
+        // init mpv_gl:
+        if (!obj->mpv_gl)
+        {
+            mpv_opengl_init_params gl_init_params{get_proc_address_mpv, nullptr, nullptr};
+            mpv_render_param params[]{
+                {MPV_RENDER_PARAM_API_TYPE, const_cast<char *>(MPV_RENDER_API_TYPE_OPENGL)},
+                {MPV_RENDER_PARAM_OPENGL_INIT_PARAMS, &gl_init_params},
+                {MPV_RENDER_PARAM_INVALID, nullptr}};
+
+            if (mpv_render_context_create(&obj->mpv_gl, obj->mpv, params) < 0)
+                throw std::runtime_error("failed to initialize mpv GL context");
+            mpv_render_context_set_update_callback(obj->mpv_gl, on_mpv_redraw, obj);
+        }
+
+        return QQuickFramebufferObject::Renderer::createFramebufferObject(size);
     }
 
     void render()
     {
+        obj->window()->resetOpenGLState();
+
         QOpenGLFramebufferObject *fbo = framebufferObject();
-        window->resetOpenGLState();
-        mpv_opengl_cb_draw(mpv_gl, fbo->handle(), fbo->width(), fbo->height());
-        window->resetOpenGLState();
-    }
+        mpv_opengl_fbo mpfbo{static_cast<int>(fbo->handle()), fbo->width(), fbo->height(), 0};
+        int flip_y{0};
+
+        mpv_render_param params[] = {
+            // Specify the default framebuffer (0) as target. This will
+            // render onto the entire screen. If you want to show the video
+            // in a smaller rectangle or apply fancy transformations, you'll
+            // need to render into a separate FBO and draw it manually.
+            {MPV_RENDER_PARAM_OPENGL_FBO, &mpfbo},
+            // Flip rendering (needed due to flipped GL coordinate system).
+            {MPV_RENDER_PARAM_FLIP_Y, &flip_y},
+            {MPV_RENDER_PARAM_INVALID, nullptr}};
+        // See render_gl.h on what OpenGL environment mpv expects, and
+        // other API details.
+        mpv_render_context_render(obj->mpv_gl, params);
+
+        obj->window()->resetOpenGLState();
+     }
 };
 
 MpvObject::MpvObject(QQuickItem * parent)
-    : QQuickFramebufferObject(parent), mpv_gl(0)
+    : QQuickFramebufferObject(parent), mpv{mpv_create()}, mpv_gl(nullptr)
 {
 #ifdef Q_OS_WIN32
   // Request Multimedia Class Schedule Service.
   DwmEnableMMCSS(TRUE);
 #endif
     
-    mpv = mpv::qt::Handle::FromRawHandle(mpv_create());
     if (!mpv)
         throw std::runtime_error("could not create mpv context");
 
@@ -83,10 +123,10 @@ MpvObject::MpvObject(QQuickItem * parent)
         throw std::runtime_error("could not initialize mpv context");
 
     // Make use of the MPV_SUB_API_OPENGL_CB API.
-    mpv::qt::set_property(mpv, "vo", "opengl-cb");
+    mpv::qt::set_property(mpv, "vo", "libmpv");
 
     // Enable opengl-hwdec-interop so we can set hwdec at runtime
-    mpv::qt::set_property(mpv, "opengl-hwdec-interop", "auto");
+    mpv::qt::set_property(mpv, "gpu-hwdec-interop", "auto");
 
     // No need to set, will be auto-detected
     //mpv::qt::set_property(mpv, "opengl-backend", "angle");
@@ -103,24 +143,29 @@ MpvObject::MpvObject(QQuickItem * parent)
     // Don't stop on audio output issues
     mpv::qt::set_property(mpv, "audio-fallback-to-null", "yes");
 
+    // User-visible application name used by some audio APIs (at least PulseAudio).
+    mpv::qt::set_property(mpv, "audio-client-name", QCoreApplication::applicationName());
+    // User-visible stream title used by some audio APIs (at least PulseAudio and wasapi).
+    mpv::qt::set_property(mpv, "title", QCoreApplication::applicationName());
+
     // Setup the callback that will make QtQuick update and redraw if there
     // is a new video frame. Use a queued connection: this makes sure the
     // doUpdate() function is run on the GUI thread.
-    mpv_gl = (mpv_opengl_cb_context *)mpv_get_sub_api(mpv, MPV_SUB_API_OPENGL_CB);
-    if (!mpv_gl)
-        throw std::runtime_error("OpenGL not compiled in");
-    mpv_opengl_cb_set_update_callback(mpv_gl, MpvObject::on_update, (void *)this);
     connect(this, &MpvObject::onUpdate, this, &MpvObject::doUpdate,
             Qt::QueuedConnection);
 
-    // Setup handling events from MPV
+    // // Setup handling events from MPV
     mpv_set_wakeup_callback(mpv, wakeup, this);
 }
 
 MpvObject::~MpvObject()
 {
-    if (mpv_gl)
-        mpv_opengl_cb_set_update_callback(mpv_gl, NULL, NULL);
+    if (mpv_gl) // only initialized if something got drawn
+    {
+        mpv_render_context_free(mpv_gl);
+    }
+
+    mpv_terminate_destroy(mpv);
 }
 
 void MpvObject::on_update(void *ctx)
@@ -143,7 +188,7 @@ void MpvObject::command(const QVariant& params)
 
 void MpvObject::setProperty(const QString& name, const QVariant& value)
 {
-    mpv::qt::set_property_variant(mpv, name, value);
+    mpv::qt::set_property(mpv, name, value);
 }
 
 void MpvObject::observeProperty(const QString& name)
@@ -234,5 +279,5 @@ QQuickFramebufferObject::Renderer *MpvObject::createRenderer() const
 {
     window()->setPersistentOpenGLContext(true);
     window()->setPersistentSceneGraph(true);
-    return new MpvRenderer(this);
+    return new MpvRenderer(const_cast<MpvObject *>(this));
 }
