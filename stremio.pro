@@ -28,9 +28,10 @@ mac {
 # pkg-config way of linking with mpv works perfectly on the mac distribution process, because macdeployqt will also ship all libraries
 # however, we want to hardcode specific *.dylibs, because (1) includes are hardcoded, (2) installing mpv with brew is slow 
 unix:!mac {
+    QMAKE_RPATHDIR += '$ORIGIN'
     QT_CONFIG -= no-pkg-config
     CONFIG += link_pkgconfig
-    LIBS += -lmpv
+    LIBS += -L$$PWD/../mpv-build/mpv/build -lmpv
 }
 
 win32 {

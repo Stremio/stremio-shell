@@ -15,6 +15,9 @@ install:
 	install -Dm 644 ${SERVER_JS} "${INSTALL_DIR}/server.js"
 	cp -r icons "${INSTALL_DIR}/"
 	ln -s "${shell which node}" "${INSTALL_DIR}/node"
+ifneq ("$(wildcard ../mpv-build/mpv/build)","")
+	cp ../mpv-build/mpv/build/libmpv.so* "${INSTALL_DIR}/"
+endif
 
 uninstall:
 	rm -f /usr/bin/stremio
