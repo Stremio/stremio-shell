@@ -17,18 +17,21 @@ include(deps/singleapplication/singleapplication.pri)
 DEFINES += QAPPLICATION_CLASS=QApplication
 
 mac {
+    QMAKE_LFLAGS_SONAME  = -Wl,-install_name,@executable_path/../Frameworks/
     LIBS += -framework CoreFoundation
     QMAKE_RPATHDIR += @executable_path/../Frameworks
     QMAKE_RPATHDIR += @executable_path/lib
-    LIBS += -L $$PWD/deps/libmpv/mac/lib -lmpv
+    #LIBS += -L $$PWD/deps/libmpv/mac/lib -lmpv
+    LIBS += -L${MPV_BIN_PATH}/lib -lmpv
 }
 
 # pkg-config way of linking with mpv works perfectly on the mac distribution process, because macdeployqt will also ship all libraries
 # however, we want to hardcode specific *.dylibs, because (1) includes are hardcoded, (2) installing mpv with brew is slow 
 unix:!mac {
+    QMAKE_RPATHDIR += '$ORIGIN'
     QT_CONFIG -= no-pkg-config
     CONFIG += link_pkgconfig
-    LIBS += -lmpv
+    LIBS += -L$$PWD/../mpv-build/mpv/build -lmpv
 }
 
 win32 {
@@ -43,8 +46,8 @@ unix:!mac {
     LIBS += -lcrypto
 }
 mac {
-    LIBS += -L/usr/local/opt/openssl/lib -lcrypto
-    INCLUDEPATH += /usr/local/opt/openssl/include
+    LIBS += -L${OPENSSL_BIN_PATH}/lib -lcrypto
+    INCLUDEPATH += ${OPENSSL_BIN_PATH}/include
 }
 win32{
     # First one is the convention for builds at slproweb.com, the other at www.npcglib.org (used by AppVeyor)
@@ -60,7 +63,7 @@ win32 {
 QT += widgets
 
 # TODO: if def WEBENGINE
-QT += webengine
+QT += webengine webchannel
 WEBENGINE_CONFIG+=use_proprietary_codecs
 
 SOURCES += main.cpp \
