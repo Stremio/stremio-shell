@@ -27,7 +27,7 @@ jobs:
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install p7zip awscli; brew upgrade openssl@1.1; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install p7zip awscli; ln -s $(brew --prefix openssl)/include/openssl /usr/local/include/openssl; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then npm -g install appdmg; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then source ./mac/keychain_profile; fi
 
