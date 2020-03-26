@@ -34,7 +34,7 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
-          version: 5.9.5
+          version: 5.12.1
           modules: qtwebengine qtwebglplugin
 
       - name: Dependencies
