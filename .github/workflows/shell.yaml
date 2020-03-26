@@ -7,18 +7,18 @@ jobs:
     strategy:
       matrix:
         os: [macOS-latest]
-        node: [8]
+        node: ['8']
     env:
       APP_IDENTITY: "C2E24BC6719F81C54FAD02B8B4E3535B330794B8"
       CERT_PASS: ${{ secrets.CERT_PASS }}
       DEST_DIR: ./stremio.app/Contents/MacOS
-      TAG: mpv029
+      TAG: master
     steps:
       - uses: actions/checkout@v2
   
       - uses: actions/setup-node@v1
         with:
-          node-version: '8.x'
+          node-version: ${{ matrix.node }}
 
       - name: Submodules
         run: git submodule update --init --recursive
@@ -34,6 +34,7 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
+          version: 5.9.5
           modules: qtwebengine qtwebglplugin
 
       - name: Dependencies
