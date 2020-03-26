@@ -15,7 +15,7 @@ jobs:
           
     - os: osx
       compiler: clang
-      osx_image: xcode8.3 # build with older OSX
+      osx_image: xcode11.2
       env:
         global:
         - BUILD_OS: "osx"
@@ -27,7 +27,7 @@ jobs:
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install p7zip awscli; ln -s $(brew --prefix openssl)/include/openssl /usr/local/include/openssl; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install p7zip awscli; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then npm -g install appdmg; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then source ./mac/keychain_profile; fi
 
@@ -63,7 +63,7 @@ script:
   # - export AWS_ACCESS_KEY_ID="AKIAJWBFLU34IVITPLHA"
   # - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET
   # - export AWS_DEFAULT_REGION=eu-west-1
-  # - aws s3 cp --acl public-read --cache-control max-age=7200,public ./dist-osx/*.dmg s3://stremio-artifacts/mac/$TAG/
+  # - aws s3 cp --acl public-read --cache-control max-age=7200,public ./dist-osx/*.dmg s3://stremio-artifacts/mac-new/$TAG/
 
   # notifications:
   #   slack: 
