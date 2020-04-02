@@ -315,6 +315,19 @@ ApplicationWindow {
             webView.url = webView.mainUrl;
         }
     }
+
+    // We want to remove the splash after a minute
+    Timer {
+        id: removeSplashTimer
+        interval: 60000
+        running: true
+        repeat: false
+        onTriggered: function () {
+            splashScreen.visible = false
+            pulseOpacity.running = false
+        }
+    }
+
     WebEngineView {
         id: webView;
 
