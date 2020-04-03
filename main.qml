@@ -316,11 +316,11 @@ ApplicationWindow {
         }
     }
     function injectJS() {
-        webView.webChannel.registerObject( 'transport', transport );
+        webView.webChannel.registerObject( 'transport', transport )
         // Try-catch to be able to return the error as result, but still throw it in the client context
         // so it can be caught and reported
         var injectedJS = "try { initShellComm() } " +
-                "catch(e) { setTimeout(function() { throw e }); e.message || JSON.stringify(e) }";
+                "catch(e) { setTimeout(function() { throw e }); e.message || JSON.stringify(e) }"
         webView.runJavaScript(injectedJS, function(err) {
             if (!err) {
                 webView.tries = 0
@@ -345,7 +345,7 @@ ApplicationWindow {
             webView.backgroundColor = "transparent"
             splashScreen.visible = false
             pulseOpacity.running = false
-            injectJS();
+            injectJS()
         }
     }
 
@@ -387,8 +387,8 @@ ApplicationWindow {
             }
 
             if (successfullyLoaded) {
-                removeSplashTimer.running = false;
-                injectJS();
+                removeSplashTimer.running = false
+                injectJS()
             }
 
             var shouldRetry = loadRequest.status == WebEngineView.LoadFailedStatus ||
