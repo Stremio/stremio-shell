@@ -378,7 +378,7 @@ ApplicationWindow {
             // hack for webEngineView changing it's background color on crashes
             webView.backgroundColor = "transparent"
 
-            var successfullyLoaded = loadRequest.status == WebEngineView.LoadSucceededStatus;
+            var successfullyLoaded = loadRequest.status == WebEngineView.LoadSucceededStatus
             if (successfullyLoaded || webView.tries > 0) {
                 // show the webview if the loading is failing
                 // can fail because of many reasons, including captive portals
