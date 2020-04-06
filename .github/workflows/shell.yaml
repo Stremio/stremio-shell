@@ -41,8 +41,6 @@ jobs:
         run: |
           brew update
           npm -g install appdmg
-          wget https://nodejs.org/dist/v8.17.0/node-v8.17.0-darwin-x64.tar.xz
-          tar xvf node-v8.17.0-darwin-x64.tar.xz
 
       - name: Build
         run: |
@@ -56,7 +54,7 @@ jobs:
       - name: Add binaries
         run: |
           cp ./mac/ffmpeg $DEST_DIR/
-          cat ./node-v8.17.0-darwin-x64/bin/node $DEST_DIR/node
+          cat ./mac/node $DEST_DIR/node
           chmod +w $DEST_DIR/ffmpeg
           chmod +wx $DEST_DIR/node
 
