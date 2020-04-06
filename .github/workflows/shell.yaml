@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         os: [macOS-latest]
-        node: ['8']
+      #  node: ['8']
     env:
       APP_IDENTITY: "C2E24BC6719F81C54FAD02B8B4E3535B330794B8"
       CERT_PASS: ${{ secrets.CERT_PASS }}
@@ -16,9 +16,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
   
-      - uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node }}
+      # - uses: actions/setup-node@v1
+      #   with:
+      #     node-version: ${{ matrix.node }}
 
       - name: Submodules
         run: git submodule update --init --recursive
@@ -41,6 +41,8 @@ jobs:
         run: |
           brew update
           npm -g install appdmg
+          wget https://nodejs.org/dist/v8.17.0/node-v8.17.0-darwin-x64.tar.xz
+          tar xvf node-v8.17.0-darwin-x64.tar.xz
 
       - name: Build
         run: |
@@ -54,9 +56,9 @@ jobs:
       - name: Add binaries
         run: |
           cp ./mac/ffmpeg $DEST_DIR/
-          cp $(which node) $DEST_DIR/
+          cat ./node-v8.17.0-darwin-x64/bin/node $DEST_DIR/node
           chmod +w $DEST_DIR/ffmpeg
-          chmod +w $DEST_DIR/node
+          chmod +wx $DEST_DIR/node
 
       - name: Deploy
         run: |
