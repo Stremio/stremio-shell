@@ -18,7 +18,7 @@ jobs:
           sudo add-apt-repository ppa:alexlarsson/flatpak
           sudo apt-get update
           sudo apt-get -y install flatpak-builder
-          flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
       - name: Build
         run: flatpak-builder --repo=stremio-flatpak-repo --install-deps-from=flathub --force-clean _build com.stremio.Stremio.json
