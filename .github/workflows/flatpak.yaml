@@ -21,7 +21,7 @@ jobs:
           sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
       - name: Build
-        run: flatpak-builder --repo=stremio-flatpak-repo --install-deps-from=flathub --force-clean _build com.stremio.Stremio.json
+        run: sudo flatpak-builder --repo=stremio-flatpak-repo --install-deps-from=flathub --force-clean _build com.stremio.Stremio.json
 
       - name: Pack
         run: flatpak build-bundle stremio-flatpak-repo Stremio.flatpak  com.stremio.Stremio beta
