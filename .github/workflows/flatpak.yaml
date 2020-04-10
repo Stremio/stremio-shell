@@ -1,0 +1,26 @@
+name: Shell
+
+on: [push]
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v2
+  
+      - name: Submodules
+        run: git submodule update --init --recursive
+
+      - name: Build
+        run: flatpak-builder --repo=stremio-flatpak-repo --force-clean _build com.stremio.Stremio.json
+
+      - name: Pack
+        run: flatpak build-bundle stremio-flatpak-repo Stremio.flatpak  com.stremio.Stremio beta
+
+      - name: Store the Flatpak
+        uses: actions/upload-artifact@v1
+        with:
+          name: StremioFlatpak
+          path: "Stremio.flatpak"
