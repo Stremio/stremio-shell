@@ -1,8 +1,8 @@
 {
-  "app-id": "com.stremio.Stremio-beta",
+  "app-id": "com.stremio.Stremio",
   "runtime": "org.kde.Platform",
   "runtime-version": "5.12",
-  "branch": "stable",
+  "branch": "beta",
   "sdk": "org.kde.Sdk",
   "command": "/app/opt/stremio/stremio",
   "separate-locales": true,
