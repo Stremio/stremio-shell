@@ -1,4 +1,4 @@
-name: Shell
+name: Flatpak
 
 on: [push]
 jobs:
