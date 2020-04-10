@@ -13,8 +13,8 @@ jobs:
       - name: Submodules
         run: git submodule update --init --recursive
 
-      # - name: Install flatpak
-      #   run: apt update && apt -y Install flatpak-builder
+      - name: Install flatpak
+        run: sudo apt-get -y install flatpak-builder
 
       - name: Build
         run: flatpak-builder --repo=stremio-flatpak-repo --force-clean _build com.stremio.Stremio.json
