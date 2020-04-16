@@ -52,17 +52,11 @@ jobs:
           export OPENSSL_BIN_PATH=$(brew --prefix openssl)
           qmake .
           make
-
-      - name: Add binaries
-        run: |
           cp ./mac/ffmpeg $DEST_DIR/
           cat ./mac/node > $DEST_DIR/node
           chmod +w $DEST_DIR/ffmpeg
           chmod +wx $DEST_DIR/node
-
-      # - name: Deploy
-      #   run: |
-      #     macdeployqt ./stremio.app -always-overwrite -executable=./stremio.app/Contents/MacOS/ffmpeg  -executable=./stremio.app/Contents/MacOS/node
+          macdeployqt ./stremio.app -always-overwrite -executable=./stremio.app/Contents/MacOS/ffmpeg  -executable=./stremio.app/Contents/MacOS/node
 
       - name: Server
         env:
