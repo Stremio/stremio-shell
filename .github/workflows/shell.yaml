@@ -31,11 +31,11 @@ jobs:
           echo ::set-env name=SHELL_VERSION::$SHELL_VERSION
           echo ::set-env name=DMG_PATH::$DMG_PATH
 
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v2
-        with:
-          version: 5.12.3
-          modules: qtwebengine qtwebglplugin
+      # - name: Install Qt
+      #   uses: jurplel/install-qt-action@v2
+      #   with:
+      #     version: 5.12.3
+      #     modules: qtwebengine qtwebglplugin
 
       - name: Dependencies
         run: |
@@ -44,6 +44,7 @@ jobs:
 
       - name: Build
         run: |
+          source mac/mac_profile
           git clone https://github.com/iina/iina
           export MPV_BIN_PATH=$(pwd)/iina/deps
           ( cd $MPV_BIN_PATH/lib && ln -s libmpv.1.dylib libmpv.dylib )
