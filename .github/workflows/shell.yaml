@@ -40,6 +40,7 @@ jobs:
       - name: Dependencies
         run: |
           brew update
+          install p7zip
           npm -g install appdmg
 
       - name: Build
