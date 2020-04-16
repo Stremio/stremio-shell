@@ -60,9 +60,9 @@ jobs:
           chmod +w $DEST_DIR/ffmpeg
           chmod +wx $DEST_DIR/node
 
-      - name: Deploy
-        run: |
-          macdeployqt ./stremio.app -always-overwrite -executable=./stremio.app/Contents/MacOS/ffmpeg  -executable=./stremio.app/Contents/MacOS/node
+      # - name: Deploy
+      #   run: |
+      #     macdeployqt ./stremio.app -always-overwrite -executable=./stremio.app/Contents/MacOS/ffmpeg  -executable=./stremio.app/Contents/MacOS/node
 
       - name: Server
         env:
@@ -73,7 +73,7 @@ jobs:
       - name: Fix dependencies
         run: |
           cp ./iina/deps/lib/* ./stremio.app/Contents/Frameworks
-          #./mac/fix_osx_deps.sh "./stremio.app/Contents/Frameworks" "@executable_path/../Frameworks"
+          ./mac/fix_osx_deps.sh "./stremio.app/Contents/Frameworks" "@executable_path/../Frameworks"
 
       - name: Testdrive
         run: ( $DEST_DIR/stremio & sleep 10 && STREMIO_PID=$! && kill $STREMIO_PID )
