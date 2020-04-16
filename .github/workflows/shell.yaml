@@ -60,7 +60,7 @@ jobs:
 
       - name: Deploy
         run: |
-          macdeployqt ./stremio.app -always-overwrite -executable=./stremio.app/Contents/MacOS/ffmpeg  -executable=./stremio.app/Contents/MacOS/node
+          macdeployqt ./stremio.app -executable=./stremio.app/Contents/MacOS/ffmpeg  -executable=./stremio.app/Contents/MacOS/node
 
       - name: Server
         env:
