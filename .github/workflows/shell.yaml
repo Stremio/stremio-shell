@@ -31,31 +31,35 @@ jobs:
           echo ::set-env name=SHELL_VERSION::$SHELL_VERSION
           echo ::set-env name=DMG_PATH::$DMG_PATH
 
-      # - name: Install Qt
-      #   uses: jurplel/install-qt-action@v2
-      #   with:
-      #     version: 5.12.3
-      #     modules: qtwebengine qtwebglplugin
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: 5.12.3
+          modules: qtwebengine qtwebglplugin
 
       - name: Dependencies
         run: |
           brew update
-          brew install p7zip
           npm -g install appdmg
 
       - name: Build
         run: |
-          source mac/mac_profile
           git clone https://github.com/iina/iina
           export MPV_BIN_PATH=$(pwd)/iina/deps
           ( cd $MPV_BIN_PATH/lib && ln -s libmpv.1.dylib libmpv.dylib )
           export OPENSSL_BIN_PATH=$(brew --prefix openssl)
           qmake .
           make
+
+      - name: Add binaries
+        run: |
           cp ./mac/ffmpeg $DEST_DIR/
           cat ./mac/node > $DEST_DIR/node
           chmod +w $DEST_DIR/ffmpeg
           chmod +wx $DEST_DIR/node
+
+      - name: Deploy
+        run: |
           macdeployqt ./stremio.app -always-overwrite -executable=./stremio.app/Contents/MacOS/ffmpeg  -executable=./stremio.app/Contents/MacOS/node
 
       - name: Server
@@ -67,7 +71,7 @@ jobs:
       - name: Fix dependencies
         run: |
           cp ./iina/deps/lib/* ./stremio.app/Contents/Frameworks
-          # ./mac/fix_osx_deps.sh "./stremio.app/Contents/Frameworks" "@executable_path/../Frameworks"
+          #./mac/fix_osx_deps.sh "./stremio.app/Contents/Frameworks" "@executable_path/../Frameworks"
 
       - name: Testdrive
         run: ( $DEST_DIR/stremio & sleep 10 && STREMIO_PID=$! && kill $STREMIO_PID )
