@@ -79,7 +79,7 @@ qrc:/main.qml:12 module "Qt.labs.platform" is not installed
 
 That means you need to install:
 
-``sudo apt-get install qml-module-qtwebchannel qml-module-qt-labs-platform qml-module-qtwebengine qml-module-qtquick-dialogs qml-module-qtquick-controls``
+``sudo apt-get install qml-module-qtwebchannel qml-module-qt-labs-platform qml-module-qtwebengine qml-module-qtquick-dialogs qml-module-qtquick-controls qtdeclarative5-dev``
 
 Now you should be able to run it normally.
 
