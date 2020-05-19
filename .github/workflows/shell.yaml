@@ -84,8 +84,7 @@ jobs:
 
       - name: Sign App
         run: |
-          codesign --deep --force -v -s $APP_IDENTITY ./Stremio.app
-          #codesign --deep --force -v -s $APP_IDENTITY --options runtime ./Stremio.app
+          codesign --deep --force -v -s $APP_IDENTITY --entitlements ./mac/entitlements.plist --options runtime ./Stremio.app
 
 #       - name: Notarizing
 #         env:
