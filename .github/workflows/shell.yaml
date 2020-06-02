@@ -108,12 +108,12 @@ jobs:
           name: StremioDMG
           path: "${{ env.DMG_PATH }}"
 
-      # - name: Upload to AWS
-      #   shell: bash
-      #   env:
-      #     AWS_ACCESS_KEY_ID: AKIAJUX6RQCFP5BJTECA
-      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET }}
-      #     AWS_DEFAULT_REGION: eu-west-1
-      #   run: |
-      #     pip3 install s3cmd
-      #     s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION put "$DMG_PATH" s3://stremio-artifacts/mac-newci/$CURRENT_BRANCH/
+      - name: Upload to AWS
+        shell: bash
+        env:
+          AWS_ACCESS_KEY_ID: AKIAJUX6RQCFP5BJTECA
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET }}
+          AWS_DEFAULT_REGION: eu-west-1
+        run: |
+          pip3 install s3cmd
+          s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION put "$DMG_PATH" s3://stremio-artifacts/mac-newci/$CURRENT_BRANCH/
