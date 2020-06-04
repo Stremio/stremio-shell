@@ -125,8 +125,8 @@ test_script:
   - windeployqt --release --no-compiler-runtime --qmldir=. ./dist-win/stremio.exe
 
   # sign-windows-files
-  # - SignTool sign /f ./windows/smartcode-20181204-20211204.pfx /p %CERT_PASS%  ./dist-win/stremio.exe
-  # - SignTool sign /f ./helpers/smartcode-20181204-20211204.pfx /p %CERT_PASS%  ./dist-win/ffmpeg.exe
+  - SignTool sign /f ./windows/smartcode-20181204-20211204.pfx /p %CERT_PASS%  ./dist-win/stremio.exe
+  - SignTool sign /f ./windows/smartcode-20181204-20211204.pfx /p %CERT_PASS%  ./dist-win/ffmpeg.exe
 
   # build-windows-installer
   - makensis -V2 ./windows/installer/windows-installer.nsi
@@ -140,15 +140,15 @@ test_script:
 artifacts:
   - path: "*.exe"
 
-# deploy:
-#   provider: S3
-#   access_key_id: $(aws_key)
-#   secret_access_key: $(aws_secret)
-#   bucket: stremio-artifacts
-#   region: eu-west-1
-#   set_public: true
-#   folder: win/$(TAG)
-#   max_error_retry: 1
+deploy:
+  provider: S3
+  access_key_id: $(aws_key)
+  secret_access_key: $(aws_secret)
+  bucket: stremio-artifacts
+  region: eu-west-1
+  set_public: true
+  folder: win/$(TAG)
+  max_error_retry: 1
 
 # We need to customize the Slack notification so we add messages and links to artifacts
 notifications:
