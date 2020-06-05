@@ -116,4 +116,4 @@ jobs:
           AWS_DEFAULT_REGION: eu-west-1
         run: |
           pip3 install s3cmd
-          s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION put "$DMG_PATH" s3://stremio-artifacts/mac-newci/$CURRENT_BRANCH/
+          s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION put "$DMG_PATH" s3://stremio-artifacts/shell-osx/$CURRENT_BRANCH/
