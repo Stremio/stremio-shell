@@ -20,14 +20,35 @@ jobs:
           sudo apt-get -y install flatpak-builder
           sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
+      - name: Prepare environment
+        run: |
+          SHELL_VERSION=$(git grep -hoP '^\s*VERSION\s*=\s*\K.*$' HEAD -- stremio.pro)
+          FLATPAK_PATH="Stremio $SHELL_VERSION.flatpak"
+          node -e 'process.stdout.write("::set-env name=CURRENT_BRANCH::"+process.env.GITHUB_REF.replace(/^refs\/(heads|tags)\//, "")+"\n")'
+          echo ::set-env name=SHELL_VERSION::$SHELL_VERSION
+          echo ::set-env name=FLATPAK_PATH::$FLATPAK_PATH
+  
       - name: Build
         run: sudo flatpak-builder --repo=stremio-flatpak-repo --install-deps-from=flathub --force-clean _build com.stremio.Stremio.json
 
       - name: Pack
-        run: flatpak build-bundle stremio-flatpak-repo Stremio.flatpak  com.stremio.Stremio beta
+        run: |
+          flatpak build-bundle stremio-flatpak-repo Stremio.flatpak com.stremio.Stremio beta
+          mv Stremio.flatpak "$FLATPAK_PATH"
 
       - name: Store the Flatpak
         uses: actions/upload-artifact@v1
         with:
           name: StremioFlatpak
-          path: "Stremio.flatpak"
+          path: ${{ process.env.FLATPAK_PATH }}
+
+      - name: Upload to AWS
+      shell: bash
+      env:
+        AWS_ACCESS_KEY_ID: AKIAJWBFLU34IVITPLHA
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET }}
+        AWS_DEFAULT_REGION: eu-west-1
+      run: |
+        pip3 install s3cmd
+        s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION put "$FLATPAK_PATH" s3://stremio-artifacts/shell-linux/$CURRENT_BRANCH/
+  
