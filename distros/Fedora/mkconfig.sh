@@ -19,3 +19,4 @@ sed -i '2,${/^#!/d}' "$DEST_FILE"
 sed -i "s/PKG_VER/$VERSION/" "$DEST_FILE"
 
 export COPY_CMD='chmod 644 rpmbuild/RPMS/*/* && cp rpmbuild/RPMS/*/*.rpm /app/'
+export CLEAN_CMD="rm $DEST_FILE"
