@@ -316,6 +316,40 @@ ApplicationWindow {
             webView.url = webView.mainUrl;
         }
     }
+    function injectJS() {
+        webView.webChannel.registerObject( 'transport', transport )
+        // Try-catch to be able to return the error as result, but still throw it in the client context
+        // so it can be caught and reported
+        var injectedJS = "try { initShellComm() } " +
+                "catch(e) { setTimeout(function() { throw e }); e.message || JSON.stringify(e) }"
+        webView.runJavaScript(injectedJS, function(err) {
+            if (!err) {
+                webView.tries = 0
+            } else {
+                errorDialog.text = "Error while applying shell JS." +
+                        " Please consider re-installing Stremio from https://www.stremio.com"
+                errorDialog.detailedText = err
+                errorDialog.visible = true
+
+                console.error(err)
+            }
+        });
+    }
+
+    // We want to remove the splash after a minute
+    Timer {
+        id: removeSplashTimer
+        interval: 90000
+        running: true
+        repeat: false
+        onTriggered: function () {
+            webView.backgroundColor = "transparent"
+            splashScreen.visible = false
+            pulseOpacity.running = false
+            injectJS()
+        }
+    }
+
     WebEngineView {
         id: webView;
 
@@ -345,35 +379,17 @@ ApplicationWindow {
             // hack for webEngineView changing it's background color on crashes
             webView.backgroundColor = "transparent"
 
-            if (webView.tries > 0) {
+            var successfullyLoaded = loadRequest.status == WebEngineView.LoadSucceededStatus
+            if (successfullyLoaded || webView.tries > 0) {
                 // show the webview if the loading is failing
                 // can fail because of many reasons, including captive portals
                 splashScreen.visible = false
                 pulseOpacity.running = false
             }
 
-            if (loadRequest.status == WebEngineView.LoadSucceededStatus) { 
-                webView.webChannel.registerObject( 'transport', transport );
-
-                // Try-catch to be able to return the error as result, but still throw it in the client context
-                // so it can be caught and reported
-                var injectedJS = "try { initShellComm() } " +
-                        "catch(e) { setTimeout(function() { throw e }); e.message || JSON.stringify(e) }";
-                webView.runJavaScript(injectedJS, function(err) {
-                    splashScreen.visible = false
-                    pulseOpacity.running = false
-
-                    if (!err) {
-                        webView.tries = 0
-                    } else {
-                        errorDialog.text = "Error while applying shell JS." +
-                                " Please consider re-installing Stremio from https://www.stremio.com"
-                        errorDialog.detailedText = err
-                        errorDialog.visible = true
-
-                        console.error(err)
-                    }
-                });
+            if (successfullyLoaded) {
+                removeSplashTimer.running = false
+                injectJS()
             }
 
             var shouldRetry = loadRequest.status == WebEngineView.LoadFailedStatus ||

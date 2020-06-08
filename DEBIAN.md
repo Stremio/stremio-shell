@@ -56,7 +56,7 @@ This will create the `stremio' binary.
 
 Upon running the ./stremio binary, stremio should start up as usual. Except it won't start the streaming server, for this you need to have NodeJS installed and server.js, stremio.asar in your working dir, for which you need to do:
 
-``wget https://dl.strem.io/four/v4.4.10/server.js ; wget https://dl.strem.io/four/v4.4.10/stremio.asar``
+``wget https://dl.strem.io/four/v4.4.111/server.js ; wget https://dl.strem.io/four/v4.4.111/stremio.asar``
 
 
 ## 6. Install other dependencies
@@ -79,7 +79,7 @@ qrc:/main.qml:12 module "Qt.labs.platform" is not installed
 
 That means you need to install:
 
-``sudo apt-get install qml-module-qtwebchannel qml-module-qt-labs-platform qml-module-qtwebengine qml-module-qtquick-dialogs qml-module-qtquick-controls``
+``sudo apt-get install qml-module-qtwebchannel qml-module-qt-labs-platform qml-module-qtwebengine qml-module-qtquick-dialogs qml-module-qtquick-controls qtdeclarative5-dev``
 
 Now you should be able to run it normally.
 
