@@ -40,7 +40,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: StremioFlatpak
-          path: ${{ process.env.FLATPAK_PATH }}
+          path: ${{ env.FLATPAK_PATH }}
 
       - name: Upload to AWS
         shell: bash
