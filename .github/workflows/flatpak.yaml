@@ -49,6 +49,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET }}
           AWS_DEFAULT_REGION: eu-west-1
         run: |
-          pip3 install s3cmd
+          sudo pip3 install s3cmd
           s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION put "$FLATPAK_PATH" s3://stremio-artifacts/shell-linux/$CURRENT_BRANCH/
   
