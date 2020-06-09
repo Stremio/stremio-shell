@@ -42,8 +42,8 @@ script:
 
   - mkdir -p packages
   - export DESTDIR=`realpath packages`
-  - export TAG=${TAG:-master}
-  # - export TAG=$(git rev-parse --abbrev-ref HEAD)
+  - export BRANGCH=$(git rev-parse --abbrev-ref HEAD)
+  - export TAG=${TAG:-$BRANGCH}
   - echo "> building from TAG $TAG"
   - echo "> Using node $(node --version)"
   # - git checkout $TAG
