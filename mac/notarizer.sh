@@ -39,7 +39,7 @@ rm "$ZIP_PATH"
 #	exit 1
 #fi
 echo Waiting for notarization...
-sleep 200
+sleep 240
 
 echo Check the notarization status...
 xcrun altool --notarization-info "$REQUEST" -u "$USER" -p "$PASS"
