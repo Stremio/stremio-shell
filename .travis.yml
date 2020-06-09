@@ -64,7 +64,7 @@ script:
   - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET
   - export AWS_DEFAULT_REGION=eu-west-1
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION --add-header=Cache-Control:max-age=7200 put ./dist-osx/*.dmg s3://stremio-artifacts/shell-osx-old/$TAG/; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION --add-header=Cache-Control:max-age=7200 put ./*.{deb,pkg.tar.xz,rpm} s3://stremio-artifacts/shell-linux/$TAG/; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then shopt -s nullglob;for package in ./*.{deb,pkg.tar.xz,rpm}; do s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION --add-header=Cache-Control:max-age=7200 put "$package" s3://stremio-artifacts/shell-linux/$TAG/; done; fi
 
   # notifications:
   #   slack: 
