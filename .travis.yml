@@ -11,8 +11,8 @@ jobs:
         global:
         - BUILD_OS: "linux"
         # AWS_SECRET
-        - secure: "JDnPmHdEh+EyW8WtIw9b1rZ21bGjYACZ7C63JUcG38tYCoxGE95zjm17q3z5+CTsR6SJT9szgS2A5MTSjyEcKn6r4rFHZGUjnG03exMEUUBS9KQrh1lFM5GDGubfJzMQ89BobnmL9kVdMDDaU2W+IWbS8dJ4cXQnnDIqNpGMLdP3VuT8SzUetAM+mA+gV9vrlCAwWgwkobq0+3zmZ+bVYUVDKiRsvnOsAVNeOB2Rt+fg42HRNnrcHGCe0fiVi/DhtE5/Ein7/YlQKZqv6u/storkxBuTNuHnuufZW9O25tF06aItGUChdsLj9o26vw3fPAWGoCeTvFnXKFzIwyevBCKvdT7TlNs8KJa0YdGU2tf5RQSvhmcSZyfHFu1/6Y2X5uEsXThL86kj/eKYTyK7NY2IpUb6UpnYmULWpuzGzsjdj1AJ3g+IsW3uWSKkIUEze2BS2d/wGl3DveWmohd6AN75QZvlAZN0hbEaOX+T/ta0bzv2kS/5K/dvMmI4+yGK9f0iU+/kVHewVBOHYsYJ199BXmkfpLGELa8Gle/hMu3Jq9kluUCX/6DkkB9PyL2haiR0hnmpM9DH4JnX4WYjmh7qB/eOKXeqOZAzHFbQvEzHYsPHGntIAAlVjfXcE5LKddKKGVY7BX6RAbc4P5imDIP9sZHK2yRBw3QjYrYCpoc="
-          
+        - secure: "JvS+gSpRn3OCLBSmr62VpbDHL8e4ktof12PQyLeLHzt/kI7NqjXStvKwMvUvf6Nxh5j9NVNYCK8WS/mOahtPkEuKN8h6k1ARt4YvJw3Ybsiau0UjjkIBQGncI3TDk4sJsMe3us8dFZcDNUGIjZTgnMY6ts/mlA2EMEkmyjGTuOOpIMsR7q1li4FRnewvOWSvxj+TK1ugmVdfeEihCRlg3iV5k1BC7hutL8LrGdSIxblB3w/co9smp7c0l82KuBvdItDFeJWiL12pro4kXb0ygngWmf8JvlgeuhCL1nPbNeaFqIPGHdbKl84GavQBUHfwWGx0GK66VWhBBgsle/eFCMJYdtmGgSknKhnebdu2qd7KicGO3lyDgQySk866u50QFnYS3kQdpIUZOye7hEib4bUJEuDftyrGcz/D3lcEKF0ZxIQereyuR3TlsDmh4/khjUrJt/cgCdGEB532I8J0se0aCks+bqyKJK1DP4jljmh4MfJRFTvxQdhWrPTlfIkJrMI/vPqaL0koM2Yk9zInCI39jhXUuaVcHOaS2cJ6j9Q0ODWkBi5vKURZgaGeUvXuJPbviOdXRkTjspcyxYo5dVPwcopKNZKw8Ob7jAY/zRWQlT71zsVPF4dUMWrC+8ZiCIYwcDW25emFYZEXtjV6rf0nMvO+ZaEv5KjEOktX8UI="
+
     - os: osx
       compiler: clang
       osx_image: xcode11.2
@@ -23,7 +23,7 @@ jobs:
         # CERT_PASS
         - secure: "R9IDvyVJ8mQ5gpcqMu2XSv02AQVDcTla0S85NfQJ0jJU+rmOYwdUO4nT9a2nMN3bwtcRUpSi4AUiYZ7oiN/Aia/0SCiM0gfU3gQ3umuaRuIJ82C4ILkF/1ez021koF5pNDqFhw6YrL5lXi2RwpUDaAhfZO93kM4/e9y4r8jAEwU8NN+p6fSH8FQLuam7LSVDTLZaEdgBZfMEczPvGq+MztI6Kg4qtpHNC3fgzlXDwUjlHlQU6dqf5fuhMbhthcDTCWYND0A+Tc3sT9m3rRfXQvSbiXExzgA7+rra73CKT5jcZ2q2u8PihfH9HWzjrNBjNxey2NdHYI/i2C2mTM4+bX3C8BtlS9eTmeodRfXbw5dRtLh04d7i2qnzvZTzi7N04O6w0sgIGlnWI/GPm6c+6uJ4KoOi04OmPqER7+u+PRWTv1jiD3u3qe9cBHpdy9YHZswjqSpZKXkw+jBstEUz/rrL+tMTJZTGPj9Mmw25Zx+6SkTwQKTR3ysAV67L43W8ZHw7Tt8qOMfwCjCyAWBA9aVKUW+NZDb5ZGb5XVue8v3XKPXm4crICtX1nqOR2qHyvIaIKIzKtvcpIhOmIYEREyfrI1PRVixZluDTad6+yK+ISFH+Wxbbsi714e/V1M0GWKq349sRDqb52uW6+h3Nro99KT31L8/+XkTX2WpP86Y="
         # AWS_SECRET
-        - secure: "QGmS8su1Nj8E/uZaqUhzxIVGbbl2E9m9ZUsmHCGXLH1dGgzevP9ag8x/FleJSMtWn7nRCH+ZRhWx1MTvd2XIXRckT5ezj1MTbrApVr9p6R4QhPTSokSwz5YAy0rTnc3JvqEtahklKHLBlUO5YGrqp4g90/OflmYEler8+w7Hb4qDSCWjmyBHdHZ0WR8jq08j+/u6bMc3G4TAngOXQf3OU3+WnNqN/NGNBNmSIw9fATEkC58g6ZEccbEQfaZtZQXHiD6QDzvWlfoX/EN2z2nlGz9vad0yjcmMbUVjbBcwtIdJdgyq76ThbiA7tXe/hLc4qkOPhexWGYq8HNNIPZ+7ZNoFmq9RydgwYxncQu9SZXkyJeBVXC7NmMI95lQpHVg882uVx7C8SExEAbWCpN+gzV/XdrIfSJ+0+eI8bJGKzKJR8kOiLfzv2OVbP3fCTfURFUiiaXpDKA4w8U9QRGrLbyxFTz1ejfHCposFOuPLY2idppV6t4udMb9EN2zZtPdx+CxeaEg3Hqp8DTPa6Naxg1NPbA2N1jfhLwj33n+HaoxE7GaGGIOeJhtk3PZC9CrK+ahTGdsn3/ssUBUOXTbuOZqz3WYX+KZth7sr3RJXSpBR1rf7RbDctjTdABP2MiV9lX0zLVMWa6/qPiL/PxxxF+Ubwedxd583P31TFxSlYTo="
+        - secure: "JvS+gSpRn3OCLBSmr62VpbDHL8e4ktof12PQyLeLHzt/kI7NqjXStvKwMvUvf6Nxh5j9NVNYCK8WS/mOahtPkEuKN8h6k1ARt4YvJw3Ybsiau0UjjkIBQGncI3TDk4sJsMe3us8dFZcDNUGIjZTgnMY6ts/mlA2EMEkmyjGTuOOpIMsR7q1li4FRnewvOWSvxj+TK1ugmVdfeEihCRlg3iV5k1BC7hutL8LrGdSIxblB3w/co9smp7c0l82KuBvdItDFeJWiL12pro4kXb0ygngWmf8JvlgeuhCL1nPbNeaFqIPGHdbKl84GavQBUHfwWGx0GK66VWhBBgsle/eFCMJYdtmGgSknKhnebdu2qd7KicGO3lyDgQySk866u50QFnYS3kQdpIUZOye7hEib4bUJEuDftyrGcz/D3lcEKF0ZxIQereyuR3TlsDmh4/khjUrJt/cgCdGEB532I8J0se0aCks+bqyKJK1DP4jljmh4MfJRFTvxQdhWrPTlfIkJrMI/vPqaL0koM2Yk9zInCI39jhXUuaVcHOaS2cJ6j9Q0ODWkBi5vKURZgaGeUvXuJPbviOdXRkTjspcyxYo5dVPwcopKNZKw8Ob7jAY/zRWQlT71zsVPF4dUMWrC+8ZiCIYwcDW25emFYZEXtjV6rf0nMvO+ZaEv5KjEOktX8UI="
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi
@@ -59,13 +59,12 @@ script:
 
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./mac/pack.sh; fi
 
-  # Upload artifacts MAC
+  # Upload artifacts
   - export AWS_ACCESS_KEY_ID="AKIAJWBFLU34IVITPLHA"
   - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET
   - export AWS_DEFAULT_REGION=eu-west-1
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then aws s3 cp --acl public-read --cache-control max-age=7200,public ./dist-osx/*.dmg s3://stremio-artifacts/shell-osx-old/$TAG/; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then mkdir -p ./$TAG; cp ./*.{deb,pkg.tar.xz,rpm} ./$TAG/; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then aws s3 cp --acl public-read --cache-control max-age=7200,public ./$TAG s3://stremio-artifacts/shell-linux/ --recursive; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION --add-header=Cache-Control:max-age=7200 put ./*.{deb,pkg.tar.xz,rpm} s3://stremio-artifacts/shell-linux/$TAG/ ; fi
 
   # notifications:
   #   slack: 
