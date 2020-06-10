@@ -20,8 +20,6 @@ jobs:
     #     - APP_IDENTITY: "C2E24BC6719F81C54FAD02B8B4E3535B330794B8"
     #     # CERT_PASS
     #     - secure: "R9IDvyVJ8mQ5gpcqMu2XSv02AQVDcTla0S85NfQJ0jJU+rmOYwdUO4nT9a2nMN3bwtcRUpSi4AUiYZ7oiN/Aia/0SCiM0gfU3gQ3umuaRuIJ82C4ILkF/1ez021koF5pNDqFhw6YrL5lXi2RwpUDaAhfZO93kM4/e9y4r8jAEwU8NN+p6fSH8FQLuam7LSVDTLZaEdgBZfMEczPvGq+MztI6Kg4qtpHNC3fgzlXDwUjlHlQU6dqf5fuhMbhthcDTCWYND0A+Tc3sT9m3rRfXQvSbiXExzgA7+rra73CKT5jcZ2q2u8PihfH9HWzjrNBjNxey2NdHYI/i2C2mTM4+bX3C8BtlS9eTmeodRfXbw5dRtLh04d7i2qnzvZTzi7N04O6w0sgIGlnWI/GPm6c+6uJ4KoOi04OmPqER7+u+PRWTv1jiD3u3qe9cBHpdy9YHZswjqSpZKXkw+jBstEUz/rrL+tMTJZTGPj9Mmw25Zx+6SkTwQKTR3ysAV67L43W8ZHw7Tt8qOMfwCjCyAWBA9aVKUW+NZDb5ZGb5XVue8v3XKPXm4crICtX1nqOR2qHyvIaIKIzKtvcpIhOmIYEREyfrI1PRVixZluDTad6+yK+ISFH+Wxbbsi714e/V1M0GWKq349sRDqb52uW6+h3Nro99KT31L8/+XkTX2WpP86Y="
-    #     # AWS_SECRET
-    #     - secure: "CpL6ITYa53WGTi1rBMcTwdxcqEoZkli6lgy8sTQjvqD5aXAwq1BT/LCZf3/8OE+9a4g9izy5l4Eb6qZRcuG3v1FSBssUvzDBKECdR5vy9jeewgMbpnkWtszAhrpqtBT37OG72Dm94LfObQh2cagUJpDYuVDAesBC4OQmBm9n+HrG3YmUWxrP6tEnN/ngf2XhCbCCTTC3be42JWdhtX6ufAJ+oGanC/ryptac/qufJQ3MgchuxEBDsLKVXeb/OQB8UHrrubBmxzRHgqKk/VpAtZ88DerF4LaJ+1RL13JEamVeBbQY9de0Un0QPi+eZSjfY9JB13GmZh0sv2kHY0w1Awn0SmYpNeKzwbcFhEawI7gTa3j0r9CK6IysZ/Vbi0rox/V4EddW6IB3FetOdcYSq00TbOy1hmg6f/58PMs+kZZ0t0J5SVke0u/Kts1wuK6QUpacqrdoCnc8xrf/q3z3PVTVMyusP+2oi4ULp5VoJDmZd6TQN61nN3ynaFEUOzow7ZNfO3w2BrK1kf2HU+TwX3TWfFOZZbQ8wQrzWDyx8IfpTNPRvfYf+RgqSyVlUdjfN42wY0G44KT03mnBaJT1L8KGKfaNkBLwsh0vu/YU7/fGbDwUvVGvhhqfnQbzJ6PVEuozE3AaX7pm6t7pWZe6X5TUg1RVBc2bJY3h+x04m2s="
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi
@@ -40,11 +38,9 @@ script:
 
   - mkdir -p packages
   - export DESTDIR=`realpath packages`
-  - export BRANGCH=$(git rev-parse --abbrev-ref HEAD)
   - export TAG=${TAG:-$TRAVIS_BRANCH}
   - echo "> building from TAG $TAG"
   - echo "> Using node $(node --version)"
-  # - git checkout $TAG
 
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export DISTROS=`ls distros`; for i in $DISTROS; do echo "Building for distro $i..." && ./dist-utils/build-package.sh $i -d $DESTDIR -t $TAG; done fi
 
