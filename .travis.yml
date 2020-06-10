@@ -44,10 +44,10 @@ install:
   - echo "Nothing to do for install"
   
 script:
-  - echo TEST1: $TEST1
-  - echo TEST2: $TEST2
-  - echo TEST3: $TEST3
-  - echo TEST4: $TEST4
+  - echo TEST1 - $TEST1
+  - echo TEST2 - $TEST2
+  - echo TEST3 - $TEST3
+  - echo TEST4 - $TEST4
   - export NODE_BIN_PATH=$(dirname `which node`)
   # Set environment
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then source mac/mac_profile; fi
