@@ -10,8 +10,6 @@ jobs:
       env:
         global:
         - BUILD_OS: "linux"
-        # AWS_SECRET
-        - secure: "CpL6ITYa53WGTi1rBMcTwdxcqEoZkli6lgy8sTQjvqD5aXAwq1BT/LCZf3/8OE+9a4g9izy5l4Eb6qZRcuG3v1FSBssUvzDBKECdR5vy9jeewgMbpnkWtszAhrpqtBT37OG72Dm94LfObQh2cagUJpDYuVDAesBC4OQmBm9n+HrG3YmUWxrP6tEnN/ngf2XhCbCCTTC3be42JWdhtX6ufAJ+oGanC/ryptac/qufJQ3MgchuxEBDsLKVXeb/OQB8UHrrubBmxzRHgqKk/VpAtZ88DerF4LaJ+1RL13JEamVeBbQY9de0Un0QPi+eZSjfY9JB13GmZh0sv2kHY0w1Awn0SmYpNeKzwbcFhEawI7gTa3j0r9CK6IysZ/Vbi0rox/V4EddW6IB3FetOdcYSq00TbOy1hmg6f/58PMs+kZZ0t0J5SVke0u/Kts1wuK6QUpacqrdoCnc8xrf/q3z3PVTVMyusP+2oi4ULp5VoJDmZd6TQN61nN3ynaFEUOzow7ZNfO3w2BrK1kf2HU+TwX3TWfFOZZbQ8wQrzWDyx8IfpTNPRvfYf+RgqSyVlUdjfN42wY0G44KT03mnBaJT1L8KGKfaNkBLwsh0vu/YU7/fGbDwUvVGvhhqfnQbzJ6PVEuozE3AaX7pm6t7pWZe6X5TUg1RVBc2bJY3h+x04m2s="
         # Test1 - no --pro quoted
         - secure: "n6SNdnywYTcfTeI3SSNJRvEmav9lNILSUnneeJ8ensHjSUWwtPIArJT9TcSFoUXARC+0QkKiP0TYLSdMbnnyUSA8+dDORT+FPsR6qzfqg1V7edTpojN8nGp5qHCkZPuNhzmSfvazFxPCDzOOZ9fotETCdsR7CiS30NRyE9h1aD26m4YmwDtqf+1n5Y+3CkGcQLo4LhMk2xAy14/ci5/d+y6fcN/5LWcDNT/CI5c0OjfEfcUOurz6LwhXM0rasbHGFZAZeUIFmofKycvQzFWCAlVKk533VUvJbBqP/vjuHETFjtyRk1eoe4C4Mf2w8XpLy4odb8NU8S8AEIL6JSZHJlXX32+l5K4zAvOnW1S/jU5tFP7B4EEUBX3GDuski+sRIFZqTmQqTWUakPZheFx2Qmp0fgoxURzLIefKeZHIU3qX6N6Q58BxARMfJT1JCIqLacGYlUkn8dO5182C8a+ceUPayBJ7/LZdvzfwmSt91TMv5tx3GtcmssNHg6tCfRt+IwrgaDmLpsseIom2hlzLVOtCBTr348vj5FSt84dmGUb9F0e8CoOjAcv4RL1pDvlRZHJcSzk/yQsqm5Pp4FugCBaElIxfXlProf504hMa1Ufg3DTMZ+v4+OWKTiOKPxN8OrNvZdunXW6mINe202Zl4cf0Z0YHPCZ2TnSskP/zRxg="
         # Test2 - no --pro
@@ -34,6 +32,10 @@ jobs:
     #     - secure: "CpL6ITYa53WGTi1rBMcTwdxcqEoZkli6lgy8sTQjvqD5aXAwq1BT/LCZf3/8OE+9a4g9izy5l4Eb6qZRcuG3v1FSBssUvzDBKECdR5vy9jeewgMbpnkWtszAhrpqtBT37OG72Dm94LfObQh2cagUJpDYuVDAesBC4OQmBm9n+HrG3YmUWxrP6tEnN/ngf2XhCbCCTTC3be42JWdhtX6ufAJ+oGanC/ryptac/qufJQ3MgchuxEBDsLKVXeb/OQB8UHrrubBmxzRHgqKk/VpAtZ88DerF4LaJ+1RL13JEamVeBbQY9de0Un0QPi+eZSjfY9JB13GmZh0sv2kHY0w1Awn0SmYpNeKzwbcFhEawI7gTa3j0r9CK6IysZ/Vbi0rox/V4EddW6IB3FetOdcYSq00TbOy1hmg6f/58PMs+kZZ0t0J5SVke0u/Kts1wuK6QUpacqrdoCnc8xrf/q3z3PVTVMyusP+2oi4ULp5VoJDmZd6TQN61nN3ynaFEUOzow7ZNfO3w2BrK1kf2HU+TwX3TWfFOZZbQ8wQrzWDyx8IfpTNPRvfYf+RgqSyVlUdjfN42wY0G44KT03mnBaJT1L8KGKfaNkBLwsh0vu/YU7/fGbDwUvVGvhhqfnQbzJ6PVEuozE3AaX7pm6t7pWZe6X5TUg1RVBc2bJY3h+x04m2s="
 
 before_install:
+  - echo TEST1 - $TEST1
+  - echo TEST2 - $TEST2
+  - echo TEST3 - $TEST3
+  - echo TEST4 - $TEST4
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install p7zip awscli; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then npm -g install appdmg; fi
@@ -48,6 +50,7 @@ script:
   - echo TEST2 - $TEST2
   - echo TEST3 - $TEST3
   - echo TEST4 - $TEST4
+  - set
   - export NODE_BIN_PATH=$(dirname `which node`)
   # Set environment
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then source mac/mac_profile; fi
