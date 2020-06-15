@@ -64,6 +64,7 @@ install:
 build: off
 
 test_script:
+  - ps: $env:UPLOAD_PATH = If ($env:TAG) { $env:TAG } else { If ($env:APPVEYOR_REPO_TAG_NAME) { $env:APPVEYOR_REPO_TAG_NAME } else { $env:APPVEYOR_REPO_BRANCH } }
   - ps: $env:TAG = If (!$env:TAG) { "master" } else { $env:TAG }
   # Install packages
   - yarn install
@@ -148,7 +149,7 @@ deploy:
   bucket: stremio-artifacts
   region: eu-west-1
   set_public: true
-  folder: shell-win/$(TAG)
+  folder: shell-win/$(UPLOAD_PATH)
   max_error_retry: 1
 
 # We need to customize the Slack notification so we add messages and links to artifacts
