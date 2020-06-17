@@ -27,9 +27,8 @@ icons:
 	mkdir -p "$@"
 	cd "$@" && printf 16,22,24,32,64,128 | xargs -I^ -d, sh -c 'rsvg-convert ../images/stremio.svg -w ^ -o smartcode-stremio_^.png && rsvg-convert ../images/stremio_tray_white.svg -w ^ -o smartcode-stremio-tray_^.png'
 
-${SERVER_JS}:
-	SHELL_VERSION=$(git grep -hoP '^\s*VERSION\s*=\s*\K.*$' HEAD -- stremio.pro)
-	wget "https://s3-eu-west-1.amazonaws.com/stremio-artifacts/four/v$SHELL_VERSION/server.js" -qO ${SERVER_JS} || rm ${SERVER_JS}
+${SERVER_JS}: 
+	wget "https://s3-eu-west-1.amazonaws.com/stremio-artifacts/four/v$(shell git grep -hoP '^\s*VERSION\s*=\s*\K.*$$' HEAD -- stremio.pro)/server.js" -qO ${SERVER_JS} || rm ${SERVER_JS}
 
 ${STREMIO_BIN}:
 	mkdir -p ${BUILD_DIR}
