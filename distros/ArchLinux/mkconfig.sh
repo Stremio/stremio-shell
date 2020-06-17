@@ -7,3 +7,4 @@ sed -i '/^pre_remove/r../../dist-utils/common/preremove' "$DEST_FILE"
 sed -i '2,${/^#!/d}' "$DEST_FILE"
 
 export COPY_CMD='cp *.pkg.tar.xz /app/'
+export CLEAN_CMD="rm $DEST_FILE"

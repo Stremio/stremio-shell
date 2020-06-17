@@ -32,7 +32,7 @@ Download NodeJs from here https://nodejs.org/dist/v8.17.0/win-x86/node.exe
 Download FFmpeg from https://ffmpeg.zeranoe.com/builds/win32/static/ffmpeg-3.3.4-win32-static.zip
 Other version may also work.
 
-Download MPV from here https://mpv.srsfckn.biz/mpv-dev-20170212.7z
+Download MPV from here https://sourceforge.net/projects/mpv-player-windows/files/libmpv/ We need `mpv-dev-i686` version. Stremio is tested to work with mpv-dev-i686-20200610-git-c7fe4ae.7z
 
 Download stremio-server from here https://s3-eu-west-1.amazonaws.com/stremio-artifacts/four/master/server.js
 
@@ -67,7 +67,7 @@ You need to also put the following previously downloaded files in the stremio-wi
 
  * node.exe
  * ffmpeg.exe from the ffmpeg-3.3.4-win32-static.zip
- * mpv-1.dll from the mpv-dev-20170212.7z
+ * mpv-1.dll from the mpv-dev-i686 archive
  * server.js
 
  The last step is do deploy the QT dependencies:

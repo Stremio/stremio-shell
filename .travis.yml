@@ -1,0 +1,69 @@
+language: node_js
+node_js: '8'
+jobs:
+  include:
+    - os: linux
+      dist: xenial
+      sudo: required
+      services:
+        - docker
+      env:
+        global:
+        - BUILD_OS: "linux"
+
+    # - os: osx
+    #   compiler: clang
+    #   osx_image: xcode11.2
+    #   env:
+    #     global:
+    #     - BUILD_OS: "osx"
+    #     - APP_IDENTITY: "C2E24BC6719F81C54FAD02B8B4E3535B330794B8"
+    #     # CERT_PASS
+    #     - secure: "R9IDvyVJ8mQ5gpcqMu2XSv02AQVDcTla0S85NfQJ0jJU+rmOYwdUO4nT9a2nMN3bwtcRUpSi4AUiYZ7oiN/Aia/0SCiM0gfU3gQ3umuaRuIJ82C4ILkF/1ez021koF5pNDqFhw6YrL5lXi2RwpUDaAhfZO93kM4/e9y4r8jAEwU8NN+p6fSH8FQLuam7LSVDTLZaEdgBZfMEczPvGq+MztI6Kg4qtpHNC3fgzlXDwUjlHlQU6dqf5fuhMbhthcDTCWYND0A+Tc3sT9m3rRfXQvSbiXExzgA7+rra73CKT5jcZ2q2u8PihfH9HWzjrNBjNxey2NdHYI/i2C2mTM4+bX3C8BtlS9eTmeodRfXbw5dRtLh04d7i2qnzvZTzi7N04O6w0sgIGlnWI/GPm6c+6uJ4KoOi04OmPqER7+u+PRWTv1jiD3u3qe9cBHpdy9YHZswjqSpZKXkw+jBstEUz/rrL+tMTJZTGPj9Mmw25Zx+6SkTwQKTR3ysAV67L43W8ZHw7Tt8qOMfwCjCyAWBA9aVKUW+NZDb5ZGb5XVue8v3XKPXm4crICtX1nqOR2qHyvIaIKIzKtvcpIhOmIYEREyfrI1PRVixZluDTad6+yK+ISFH+Wxbbsi714e/V1M0GWKq349sRDqb52uW6+h3Nro99KT31L8/+XkTX2WpP86Y="
+
+before_install:
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install p7zip awscli; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then npm -g install appdmg; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then source ./mac/keychain_profile; fi
+  - sudo pip install --upgrade s3cmd
+
+install:
+  - echo "Nothing to do for install"
+  
+script:
+  - export NODE_BIN_PATH=$(dirname `which node`)
+  # Set environment
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then source mac/mac_profile; fi
+
+  - mkdir -p packages
+  - export DESTDIR=`realpath packages`
+  - export TAG=${TAG:-$TRAVIS_BRANCH}
+  - echo "> building from TAG $TAG"
+  - echo "> Using node $(node --version)"
+
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export DISTROS=`ls distros`; for i in $DISTROS; do echo "Building for distro $i..." && ./dist-utils/build-package.sh $i -d $DESTDIR -t $TAG; done fi
+
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ( qmake . && make ); fi
+
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./mac/finalize.sh "$TAG"; fi
+
+  # Test if the app launches
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ( ./stremio.app/Contents/MacOS/stremio & sleep 10 && STREMIO_PID=$! && kill $STREMIO_PID ); fi
+
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./mac/pack.sh; fi
+
+  # Upload artifacts
+  - export AWS_ACCESS_KEY_ID="AKIAJWBFLU34IVITPLHA"
+  - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET
+  - export AWS_DEFAULT_REGION=eu-west-1
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION --add-header=Cache-Control:max-age=7200 put ./dist-osx/*.dmg s3://stremio-artifacts/shell-osx-old/$TAG/; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then shopt -s nullglob; for package in $DESTDIR/*.{deb,pkg.tar.xz,rpm}; do echo Uploading package to http://stremio-artifacts.s3.amazonaws.com/shell-linux/$TAG/$package; s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION --add-header=Cache-Control:max-age=7200 put "$package" s3://stremio-artifacts/shell-linux/$TAG/; done; fi
+
+  # notifications:
+  #   slack: 
+  #     rooms:
+  #       - stremio:74vRvYUJbhcl3IrYCbOIvTo3#installer-ci
+  #     template: |
+  #       %{repository}@%{branch}: build <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) by %{author} %{result} in %{duration}
+  #       %{message} - %{commit_message}"

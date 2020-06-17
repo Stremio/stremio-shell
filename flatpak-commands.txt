@@ -1,0 +1,5 @@
+flatpak-builder _build com.stremio.Stremio.json --force-clean
+flatpak-builder --repo=stremio-flatpak-repo --force-clean _build com.stremio.Stremio.json
+flatpak build-bundle stremio-flatpak-repo Stremio.flatpak  com.stremio.Stremio beta
+flatpak-builder --run _build com.stremio.Stremio.json _build/files/opt/stremio/stremio
+
