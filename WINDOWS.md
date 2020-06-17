@@ -34,7 +34,7 @@ Other version may also work.
 
 Download MPV from here https://sourceforge.net/projects/mpv-player-windows/files/libmpv/ We need `mpv-dev-i686` version. Stremio is tested to work with mpv-dev-i686-20200610-git-c7fe4ae.7z
 
-Download stremio-server from here https://s3-eu-west-1.amazonaws.com/stremio-artifacts/four/master/server.js
+Download stremio-server from here https://s3-eu-west-1.amazonaws.com/stremio-artifacts/four/v4.4.116/server.js where v4.4.116 is the shell version.
 
 Open command prompt and run the following commands:
 
