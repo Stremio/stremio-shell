@@ -18,5 +18,6 @@ cp ./deps/libmpv/mac/lib/*.dylib ./stremio.app/Contents/Frameworks/
 # you don't want to be using always-overwrite in any version until Qt 5.11.3
 macdeployqt ./stremio.app -executable=./stremio.app/Contents/MacOS/ffmpeg -executable=./stremio.app/Contents/MacOS/node
 
-curl https://s3-eu-west-1.amazonaws.com/stremio-artifacts/four/$TAG/server.js > $DEST_DIR/server.js
+SHELL_VERSION=$(git grep -hoP '^\s*VERSION\s*=\s*\K.*$' HEAD -- stremio.pro)
+curl https://s3-eu-west-1.amazonaws.com/stremio-artifacts/four/v$SHELL_VERSION/server.js > $DEST_DIR/server.js
 # ./mac/fix_osx_deps.sh "./stremio.app/Contents/Frameworks" "@executable_path/../Frameworks"

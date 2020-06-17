@@ -66,7 +66,7 @@ jobs:
         env:
           TAG: master 
         run: |
-          curl https://s3-eu-west-1.amazonaws.com/stremio-artifacts/four/$TAG/server.js > $DEST_DIR/server.js
+          curl https://s3-eu-west-1.amazonaws.com/stremio-artifacts/four/v$SHELL_VERSION/server.js > $DEST_DIR/server.js
           
       - name: Fix dependencies
         run: |
