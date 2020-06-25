@@ -2,7 +2,7 @@
 
 git clone https://github.com/mpv-player/mpv-build.git
 pushd mpv-build
-echo --enable-libmpv-shared > mpv_options
+echo --enable-libmpv-shared --disable-cplayer --disable-build-date --disable-oss-audio --disable-alsa > mpv_options
 echo --enable-libx264 >> ffmpeg_options
 echo --enable-libmp3lame >> ffmpeg_options
 echo --enable-libfdk-aac >> ffmpeg_options
