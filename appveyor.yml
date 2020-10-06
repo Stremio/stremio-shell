@@ -35,9 +35,9 @@ install:
   - set DS_BIN_PATH=%DLL_DIR%\DS
   
   # Get FFmpeg and set FFMPEG_BIN_PATH
-  - ps: Start-FileDownload "http://ffmpeg.zeranoe.com/builds/win32/static/ffmpeg-3.3.4-win32-static.zip"
-  - 7z x ffmpeg-3.3.4-win32-static.zip
-  - set FFMPEG_BIN_PATH=%cd%\ffmpeg-3.3.4-win32-static\bin
+  - ps: Start-FileDownload "https://github.com/vot/ffbinaries-prebuilt/releases/download/v3.3/ffmpeg-3.3.4-win-32.zip"
+  - 7z x ffmpeg-3.3.4-win-32.zip
+  - set FFMPEG_BIN_PATH=%cd%
 
   - if %compiler%==msvc2015 set VCREDIST_BIN_PATH=C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\redist\x86\Microsoft.VC140.CRT
   - if %compiler%==msvc2015_64 set VCREDIST_BIN_PATH=C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\redist\x64\Microsoft.VC140.CRT
