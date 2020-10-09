@@ -91,11 +91,11 @@ jobs:
         run: |
           codesign --deep --force -v -s $APP_IDENTITY --entitlements ./mac/entitlements.plist --options runtime ./Stremio.app
 
-      - name: Notarizing
-        env:
-          NOTARIZATION_PWD: ${{ secrets.NOTARIZATION_PWD }}
-        run: |
-          ./mac/notarizer.sh Stremio.app "ivo@linvo.com" "$NOTARIZATION_PWD"
+#       - name: Notarizing
+#         env:
+#           NOTARIZATION_PWD: ${{ secrets.NOTARIZATION_PWD }}
+#         run: |
+#           ./mac/notarizer.sh Stremio.app "ivo@linvo.com" "$NOTARIZATION_PWD"
 
       - name: Pack
         run: |
@@ -113,12 +113,12 @@ jobs:
           name: StremioDMG
           path: "${{ env.DMG_PATH }}"
 
-      - name: Upload to AWS
-        shell: bash
-        env:
-          AWS_ACCESS_KEY_ID: AKIAJWBFLU34IVITPLHA
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET }}
-          AWS_DEFAULT_REGION: eu-west-1
-        run: |
-          pip3 install s3cmd
-          s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION put "$DMG_PATH" s3://stremio-artifacts/shell-osx/$CURRENT_BRANCH/
+#       - name: Upload to AWS
+#         shell: bash
+#         env:
+#           AWS_ACCESS_KEY_ID: AKIAJWBFLU34IVITPLHA
+#           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET }}
+#           AWS_DEFAULT_REGION: eu-west-1
+#         run: |
+#           pip3 install s3cmd
+#           s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION put "$DMG_PATH" s3://stremio-artifacts/shell-osx/$CURRENT_BRANCH/
