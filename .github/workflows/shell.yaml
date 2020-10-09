@@ -27,9 +27,9 @@ jobs:
         run: |
           SHELL_VERSION=$(git grep -hoP '^\s*VERSION\s*=\s*\K.*$' HEAD -- stremio.pro)
           DMG_PATH="Stremio $SHELL_VERSION.dmg"
-          node -e 'process.stdout.write("::set-env name=CURRENT_BRANCH::"+process.env.GITHUB_REF.replace(/^refs\/(heads|tags)\//, "")+"\n")'
-          echo ::set-env name=SHELL_VERSION::$SHELL_VERSION
-          echo ::set-env name=DMG_PATH::$DMG_PATH
+          node -e 'process.stdout.write("CURRENT_BRANCH="+process.env.GITHUB_REF.replace(/^refs\/(heads|tags)\//, "")+"\n")' >> $GITHUB_ENV
+          echo SHELL_VERSION=$SHELL_VERSION >> $GITHUB_ENV
+          echo DMG_PATH=$DMG_PATH >> $GITHUB_ENV
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
