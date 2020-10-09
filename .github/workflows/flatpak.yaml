@@ -24,10 +24,10 @@ jobs:
         run: |
           SHELL_VERSION=$(git grep -hoP '^\s*VERSION\s*=\s*\K.*$' HEAD -- stremio.pro)
           FLATPAK_PATH="Stremio $SHELL_VERSION.flatpak"
-          node -e 'process.stdout.write("::set-env name=CURRENT_BRANCH::"+process.env.GITHUB_REF.replace(/^refs\/(heads|tags)\//, "")+"\n")'
-          echo ::set-env name=SHELL_VERSION::$SHELL_VERSION
-          echo ::set-env name=FLATPAK_PATH::$FLATPAK_PATH
-  
+          node -e 'process.stdout.write("CURRENT_BRANCH="+process.env.GITHUB_REF.replace(/^refs\/(heads|tags)\//, "")+"\n")' >> $GITHUB_ENV
+          echo SHELL_VERSION=$SHELL_VERSION >> $GITHUB_ENV
+          echo FLATPAK_PATH=$FLATPAK_PATH >> $GITHUB_ENV
+
       - name: Build
         run: sudo flatpak-builder --repo=stremio-flatpak-repo --install-deps-from=flathub --force-clean _build com.stremio.Stremio.json
 
