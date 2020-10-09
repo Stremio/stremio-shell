@@ -43,6 +43,7 @@ jobs:
 
       - name: Dependencies
         run: |
+          brew update-reset
           brew update
           npm -g install appdmg
 
