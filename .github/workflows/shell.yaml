@@ -14,9 +14,9 @@ jobs:
       DEST_DIR: ./stremio.app/Contents/MacOS
       TAG: master
     steps:
-      - uses: maxim-lobanov/setup-xcode@v1.1
-        with:
-          xcode-version: '11.5'
+      # - uses: maxim-lobanov/setup-xcode@v1.1
+      #   with:
+      #     xcode-version: '11.5'
 
       - uses: actions/checkout@v2
   
