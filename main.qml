@@ -147,7 +147,7 @@ ApplicationWindow {
         webView.destroy();
         systemTray.hideIconTray();
 	streamingServer.kill();
-        streamingServer.waitForFinished(150);
+        streamingServer.waitForFinished(1500);
         Qt.quit();
     }
 
