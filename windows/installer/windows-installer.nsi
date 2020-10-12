@@ -168,6 +168,9 @@ done:
 FunctionEnd
 
 Section ; App Files
+    ; Sleep 2 seconds to ensure stremio has quit (if we are autoupdating)
+    Sleep 2000
+
     check:
     ; Check if stremio.exe is running
     ${nsProcess::FindProcess} "stremio.exe" $R0
