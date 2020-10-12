@@ -146,7 +146,7 @@ ApplicationWindow {
         root.quitting = true;
         webView.destroy();
         systemTray.hideIconTray();
-	streamingServer.kill();
+        streamingServer.kill();
         streamingServer.waitForFinished(1500);
         Qt.quit();
     }
@@ -242,7 +242,7 @@ ApplicationWindow {
             transport.event("server-address", address)
         }
         onErrorThrown: function (error) {
-	    if (root.quitting) return; // inhibits errors during quitting
+            if (root.quitting) return; // inhibits errors during quitting
             if (streamingServer.fastReload && error == 1) return; // inhibit errors during fast reload mode;
                                                                   // we'll unset that after we've restarted the server
             transport.queueEvent("server-crash", {"code": error, "log": streamingServer.getErrBuff()});
