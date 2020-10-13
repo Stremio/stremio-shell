@@ -14,6 +14,10 @@ jobs:
       DEST_DIR: ./stremio.app/Contents/MacOS
       TAG: master
     steps:
+      # - uses: maxim-lobanov/setup-xcode@v1.1
+      #   with:
+      #     xcode-version: '11.5'
+
       - uses: actions/checkout@v2
   
       # - uses: actions/setup-node@v1
@@ -27,18 +31,19 @@ jobs:
         run: |
           SHELL_VERSION=$(git grep -hoP '^\s*VERSION\s*=\s*\K.*$' HEAD -- stremio.pro)
           DMG_PATH="Stremio $SHELL_VERSION.dmg"
-          node -e 'process.stdout.write("::set-env name=CURRENT_BRANCH::"+process.env.GITHUB_REF.replace(/^refs\/(heads|tags)\//, "")+"\n")'
-          echo ::set-env name=SHELL_VERSION::$SHELL_VERSION
-          echo ::set-env name=DMG_PATH::$DMG_PATH
+          node -e 'process.stdout.write("CURRENT_BRANCH="+process.env.GITHUB_REF.replace(/^refs\/(heads|tags)\//, "")+"\n")' >> $GITHUB_ENV
+          echo SHELL_VERSION=$SHELL_VERSION >> $GITHUB_ENV
+          echo DMG_PATH=$DMG_PATH >> $GITHUB_ENV
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
-          version: 5.12.3
+          version: 5.9.5
           modules: qtwebengine qtwebglplugin
 
       - name: Dependencies
         run: |
+          brew update-reset
           brew update
           npm -g install appdmg
 
