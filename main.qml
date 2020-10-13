@@ -26,7 +26,7 @@ ApplicationWindow {
     width: root.initialWidth
     height: root.initialHeight
 
-    property bool notificationsEnabled: true
+    property bool quitting: false
 
     color: "#201f32";
     title: appTitle
@@ -142,15 +142,12 @@ ApplicationWindow {
         transport.queueEvent("open-media", url)
     }
 
-    function stopStreamingServer() {
-        streamingServer.kill();
-    }
-
     function quitApp() {
+        root.quitting = true;
         webView.destroy();
         systemTray.hideIconTray();
-        stopStreamingServer();
-        streamingServer.waitForFinished(2000);
+        streamingServer.kill();
+        streamingServer.waitForFinished(1500);
         Qt.quit();
     }
 
@@ -225,7 +222,7 @@ ApplicationWindow {
         onStarted: function() { stayAliveStreamingServer.stop() }
         onFinished: function(code, status) { 
             // status -> QProcess::CrashExit is 1
-            if (!streamingServer.fastReload && errors < 5 && (code !== 0 || status !== 0)) {
+            if (!streamingServer.fastReload && errors < 5 && (code !== 0 || status !== 0) && !root.quitting) {
                 transport.queueEvent("server-crash", {"code": code, "log": streamingServer.getErrBuff()});
 
                 errors++
@@ -245,6 +242,7 @@ ApplicationWindow {
             transport.event("server-address", address)
         }
         onErrorThrown: function (error) {
+            if (root.quitting) return; // inhibits errors during quitting
             if (streamingServer.fastReload && error == 1) return; // inhibit errors during fast reload mode;
                                                                   // we'll unset that after we've restarted the server
             transport.queueEvent("server-crash", {"code": error, "log": streamingServer.getErrBuff()});
