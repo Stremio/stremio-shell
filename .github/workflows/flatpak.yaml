@@ -4,7 +4,7 @@ on:
   push:
   pull_request:
   schedule:
-    - cron: '45 23 * * *'
+    - cron: '45 21 * * *'
 jobs:
   build:
     runs-on: ${{ matrix.os }}
