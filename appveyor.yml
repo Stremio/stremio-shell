@@ -12,11 +12,6 @@ environment:
 
 install:
   - git submodule update --init --recursive
-  # Set the OS private key, so we can authenticate for the repos
-  - ps: $fileContent = "-----BEGIN RSA PRIVATE KEY-----`n"
-  - ps: $fileContent += $env:priv_key.Replace(' ', "`n")
-  - ps: $fileContent += "`n-----END RSA PRIVATE KEY-----`n"
-  - ps: Set-Content c:\users\appveyor\.ssh\id_rsa $fileContent
 
   # Install OpenSSL
   - ps: Start-FileDownload 'https://slproweb.com/download/Win32OpenSSL-1_1_1h.exe'
