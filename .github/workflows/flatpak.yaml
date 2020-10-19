@@ -1,6 +1,10 @@
 name: Flatpak
 
-on: [push]
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '45 23 * * *'
 jobs:
   build:
     runs-on: ${{ matrix.os }}
