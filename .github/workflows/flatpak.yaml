@@ -1,12 +1,18 @@
 name: Flatpak
 
-on: [push]
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '45 21 * * *'
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest]
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
       - uses: actions/checkout@v2
   
@@ -52,3 +58,9 @@ jobs:
           sudo pip3 install s3cmd
           s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION put "$FLATPAK_PATH" s3://stremio-artifacts/shell-linux/$CURRENT_BRANCH/
   
+      - uses: act10ns/slack@v1
+        with:
+          status: ${{ job.status }}
+          steps: ${{ toJson(steps) }}
+          channel: '#installer-ci'
+        if: always()
