@@ -141,7 +141,7 @@ jobs:
         env:
           SLACK_USERNAME: Github Action
           SLACK_ICON: https://s3-us-west-2.amazonaws.com/slack-files2/bot_icons/2020-10-19/1422366829703_48.png
-          SLACK_TITLE: Nightly Builds - Shell
+          SLACK_TITLE: Github Builds - Shell
           SLACK_CHANNEL: '#installer-ci'
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
         if: always()
