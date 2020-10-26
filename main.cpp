@@ -30,12 +30,16 @@ typedef QApplication Application;
 #include <QGuiApplication>
 #endif
 
-void InitializeParameters(QQmlApplicationEngine& engine, MainApp& app) {
-    QQmlContext *ctx = engine.rootContext();
+void InitializeParameters(QQmlApplicationEngine *engine, MainApp& app) {
+    QQmlContext *ctx = engine->rootContext();
+    SystemTray * systemTray = new SystemTray();
 
     ctx->setContextProperty("applicationDirPath", QGuiApplication::applicationDirPath());
     ctx->setContextProperty("appTitle", QString(APP_TITLE));
     ctx->setContextProperty("autoUpdater", app.autoupdater);
+
+    // Set access to an object of class properties in QML context
+    ctx->setContextProperty("systemTray", systemTray);
 
     #ifdef QT_DEBUG
         ctx->setContextProperty("debug", true);
@@ -87,29 +91,26 @@ int main(int argc, char **argv)
     // requires the LC_NUMERIC category to be set to "C", so change it back.
     std::setlocale(LC_NUMERIC, "C");
     
+
+    static QQmlApplicationEngine* engine = new QQmlApplicationEngine();
+
     qmlRegisterType<Process>("com.stremio.process", 1, 0, "Process");
     qmlRegisterType<ScreenSaver>("com.stremio.screensaver", 1, 0, "ScreenSaver");
     qmlRegisterType<MpvObject>("com.stremio.libmpv", 1, 0, "MpvObject");
     qmlRegisterType<RazerChroma>("com.stremio.razerchroma", 1, 0, "RazerChroma");
     qmlRegisterType<ClipboardProxy>("com.stremio.clipboard", 1, 0, "Clipboard");
 
-    QQmlApplicationEngine engine;
-    InitializeParameters(engine, app);
-    QtWebEngine::initialize();
- 
-    SystemTray * systemTray = new SystemTray();
-    QQmlContext * context = engine.rootContext();
-    // Set access to an object of class properties in QML context
-    context->setContextProperty("systemTray", systemTray);
- 
+    InitializeParameters(engine, app); 
 
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    engine->load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     #ifndef Q_OS_MACOS
     QObject::connect( &app, &SingleApplication::receivedMessage, &app, &MainApp::processMessage );
     #endif
-    QObject::connect( &app, SIGNAL(receivedMessage(QVariant, QVariant)), engine.rootObjects().value(0),
+    QObject::connect( &app, SIGNAL(receivedMessage(QVariant, QVariant)), engine->rootObjects().value(0),
                       SLOT(onAppMessageReceived(QVariant, QVariant)) );
-
-    return app.exec();
+    int ret = app.exec();
+    delete engine;
+    engine = nullptr;
+    return ret;
 }
