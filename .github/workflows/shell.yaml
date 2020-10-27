@@ -132,9 +132,16 @@ jobs:
           pip3 install s3cmd
           s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION put "$DMG_PATH" s3://stremio-artifacts/shell-osx/$CURRENT_BRANCH/
 
-      - uses: act10ns/slack@v1
-        with:
-          status: ${{ job.status }}
-          steps: ${{ toJson(steps) }}
-          channel: '#installer-ci'
+  slackNotification:
+    name: Slack Notification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Slack channel
+        uses: rtCamp/action-slack-notify@master
+        env:
+          SLACK_USERNAME: Github Action
+          SLACK_ICON: https://s3-us-west-2.amazonaws.com/slack-files2/bot_icons/2020-10-19/1422366829703_48.png
+          SLACK_TITLE: Github Builds - Shell
+          SLACK_CHANNEL: '#installer-ci'
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
         if: always()
