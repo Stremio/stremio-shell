@@ -46,8 +46,8 @@ extern "C" {
 #define NS_TEST_ENDPOINT "http://clients3.google.com/generate_204"
 // Expected status code
 #define NS_TEST_STATUS 204
-// Connection timeout (ms)
-#define NS_TEST_CONN_TIMEOUT 10000
+// Connection timeout (ms) - This is Qt 5.15 only
+// #define NS_TEST_CONN_TIMEOUT 10000
 // Retry wait time (ms)
 #define NS_TEST_RETRY_TIMEOUT 3000
 // Number of retries to be performed

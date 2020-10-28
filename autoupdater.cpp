@@ -3,7 +3,7 @@
 
 AutoUpdater::AutoUpdater(): manager(new QNetworkAccessManager(this)), nsManager(new QNetworkAccessManager(this)) {
     init_public_key();
-    nsManager->setTransferTimeout(NS_TEST_CONN_TIMEOUT);
+    // nsManager->setTransferTimeout(NS_TEST_CONN_TIMEOUT); // This is Qt 5.15 only
     QObject::connect(this, &AutoUpdater::performPing, this, [=]() {
         nsManager->get(QNetworkRequest(QUrl(NS_TEST_ENDPOINT)));
     });
