@@ -1,26 +1,11 @@
 #include "screensaver.h"
-#include <QtCore/QTimerEvent>
 #include <QtCore/QLibrary>
 #ifdef Q_OS_LINUX
-//#include <X11/Xlib.h>
-#ifndef Success
-#define Success 0
-#endif
-struct _XDisplay;
-typedef struct _XDisplay Display;
-typedef Display* (*fXOpenDisplay)(const char*/* display_name */);
-typedef int (*fXCloseDisplay)(Display*/* display */);
-typedef int (*fXSetScreenSaver)(Display*, int /* timeout */, int /* interval */,int /* prefer_blanking */,
-                                int /* allow_exposures */);
-typedef int (*fXGetScreenSaver)(Display*, int* /* timeout_return */, int* /* interval_return */,
-                                int* /* prefer_blanking_return */, int* /* allow_exposures_return */);
-typedef int (*fXResetScreenSaver)(Display*/* display */);
-static fXOpenDisplay XOpenDisplay = 0;
-static fXCloseDisplay XCloseDisplay = 0;
-static fXSetScreenSaver XSetScreenSaver = 0;
-static fXGetScreenSaver XGetScreenSaver = 0;
-static fXResetScreenSaver XResetScreenSaver = 0;
-static QLibrary xlib;
+#include <QtDBus/QDBusConnection>
+#include <QtDBus/QDBusInterface>
+#include <QtDBus/QDBusReply>
+static QDBusInterface screenSaverInterface("org.freedesktop.ScreenSaver", 
+           "/org/freedesktop/ScreenSaver", "org.freedesktop.ScreenSaver");
 #endif //Q_OS_LINUX
 #if defined(Q_OS_MAC) && !defined(Q_OS_IOS)
 //http://www.cocoachina.com/macdev/cocoa/2010/0201/453.html
@@ -122,46 +107,9 @@ ScreenSaver& ScreenSaver::instance()
 
 ScreenSaver::ScreenSaver()
 {
-    state_saved = false;
-    modified = false;
 #ifdef Q_OS_LINUX
-    timeout = 0;
-    interval = 0;
-    preferBlanking = 0;
-    allowExposures = 0;
-    if (qgetenv("DISPLAY").isEmpty()) {
-        isX11 = false;
-    } else {
-        xlib.setFileName(QString::fromLatin1("libX11.so"));
-        isX11 = xlib.load();
-        // meego only has libX11.so.6, libX11.so.6.x.x
-        if (!isX11) {
-            xlib.setFileName(QString::fromLatin1("libX11.so.6"));
-            isX11 = xlib.load();
-        }
-        if (!isX11) {
-            qDebug("open X11 so failed: %s", xlib.errorString().toUtf8().constData());
-        } else {
-            XOpenDisplay = (fXOpenDisplay)xlib.resolve("XOpenDisplay");
-            XCloseDisplay = (fXCloseDisplay)xlib.resolve("XCloseDisplay");
-            XSetScreenSaver = (fXSetScreenSaver)xlib.resolve("XSetScreenSaver");
-            XGetScreenSaver = (fXGetScreenSaver)xlib.resolve("XGetScreenSaver");
-            XResetScreenSaver = (fXResetScreenSaver)xlib.resolve("XResetScreenSaver");
-        }
-        isX11 = XOpenDisplay && XCloseDisplay && XSetScreenSaver && XGetScreenSaver && XResetScreenSaver;
-    }
+    cookieID = 0;
 #endif //Q_OS_LINUX
-    ssTimerId = 0;
-    retrieveState();
-}
-
-ScreenSaver::~ScreenSaver()
-{
-    restoreState();
-#ifdef Q_OS_LINUX
-    if (xlib.isLoaded())
-        xlib.unload();
-#endif
 }
 
 //http://msdn.microsoft.com/en-us/library/windows/desktop/ms724947%28v=vs.85%29.aspx
@@ -177,7 +125,6 @@ bool ScreenSaver::enable(bool yes)
 #if defined(Q_OS_WIN) && !defined(Q_OS_WINRT)
 #if USE_NATIVE_EVENT
     ScreenSaverEventFilter::instance().enable(yes);
-    modified = true;
     rv = true;
     return true;
 #else
@@ -200,35 +147,30 @@ bool ScreenSaver::enable(bool yes)
             sLastState = SetThreadExecutionState(sLastState|ES_CONTINUOUS);
     }
     rv = sLastState != 0;
-    modified = true;
 #endif //USE_NATIVE_EVENT
 #endif //defined(Q_OS_WIN) && !defined(Q_OS_WINRT)
 #ifdef Q_OS_LINUX
-    if (isX11) {
-        Display *display = XOpenDisplay(0);
-        // -1: restore default. 0: disable
-        int ret = 0;
-        if (yes)
-            ret = XSetScreenSaver(display, -1, interval, preferBlanking, allowExposures);
-        else
-            ret = XSetScreenSaver(display, 0, interval, preferBlanking/*DontPreferBlanking*/, allowExposures);
-        //TODO: why XSetScreenSaver return 1? now use XResetScreenSaver to workaround
-        ret = XResetScreenSaver(display);
-        XCloseDisplay(display);
-        rv = ret==Success;
-        qDebug("ScreenSaver::enable %d, ret %d timeout origin: %d", yes, ret, timeout);
-    }
-    modified = true;
-    if (!yes) {
-        if (ssTimerId <= 0) {
-            ssTimerId = startTimer(1000 * 60);
+    if (yes) {
+        if (cookieID) {
+            screenSaverInterface.call("UnInhibit", cookieID);
+            rv = true;
+            qDebug("ScreenSaver:: UnInhibit Successful %d", cookieID);
+        } else {
+            qWarning("ScreenSaver::Asked for Dbus UnInhibit, but Inhibit never called. Ignoring");
         }
     } else {
-        if (ssTimerId)
-            killTimer(ssTimerId);
+        if(screenSaverInterface.isValid()) {
+            QDBusReply<uint> reply = screenSaverInterface.call(
+                "Inhibit", "stremio", "video");
+            if (reply.isValid()) {
+                cookieID = reply.value();
+                rv = true;
+                qDebug("ScreenSaver::Dbus Inhibit Successful %d", cookieID);
+            } else {   
+                qWarning("ScreenSaver::Dbus Inhibit Failed");
+            }
+        }
     }
-    rv = true;
-    modified = true;
 #endif //Q_OS_LINUX
 #if defined(Q_OS_MAC) && !defined(Q_OS_IOS)
     // kIOPMAssertionTypeNoDisplaySleep prevents display sleep,
@@ -247,12 +189,11 @@ bool ScreenSaver::enable(bool yes)
     }
 
     rv = success == kIOReturnSuccess;
-    modified = true;
 #endif //Q_OS_MAC
     if (!rv) {
         qWarning("Failed to enable/disable screen saver (enabled: %d)", yes);
     } else {
-        qDebug("Succeed to enable/disable screen saver (enabled: %d)", yes);
+        qDebug("Successful to enable/disable screen saver (enabled: %d)", yes);
     }
     return rv;
 }
@@ -265,69 +206,4 @@ void ScreenSaver::enable()
 void ScreenSaver::disable()
 {
     enable(false);
-}
-
-bool ScreenSaver::retrieveState() {
-    bool rv = false;
-    qDebug("ScreenSaver::retrieveState");
-    if (!state_saved) {
-#ifdef Q_OS_LINUX
-        if (isX11) {
-            Display *display = XOpenDisplay(0);
-            XGetScreenSaver(display, &timeout, &interval, &preferBlanking, &allowExposures);
-            XCloseDisplay(display);
-            qDebug("ScreenSaver::retrieveState timeout: %d, interval: %d, preferBlanking:%d, allowExposures:%d",
-                   timeout, interval, preferBlanking, allowExposures);
-            state_saved = true;
-            rv = true;
-        }
-#endif //Q_OS_LINUX
-    } else {
-        qDebug("ScreenSaver::retrieveState: state already saved previously, doing nothing");
-    }
-    return rv;
-}
-
-bool ScreenSaver::restoreState() {
-    bool rv = false;
-    if (!modified) {
-        qDebug("ScreenSaver::restoreState: state did not change, doing nothing");
-        return true;
-    }
-    if (state_saved) {
-#if defined(Q_OS_WIN) && !defined(Q_OS_WINRT)
-#if USE_NATIVE_EVENT
-        ScreenSaverEventFilter::instance().enable();
-        rv = true;
-#else
-        SetThreadExecutionState(ES_CONTINUOUS);
-#endif //USE_NATIVE_EVENT
-#endif //defined(Q_OS_WIN) && !defined(Q_OS_WINRT)
-#ifdef Q_OS_LINUX
-        if (isX11) {
-            Display *display = XOpenDisplay(0);
-            // -1: restore default. 0: disable
-            XSetScreenSaver(display, timeout, interval, preferBlanking, allowExposures);
-            XCloseDisplay(display);
-            rv = true;
-        }
-#endif //Q_OS_LINUX
-    } else {
-        qWarning("ScreenSaver::restoreState: no data, doing nothing");
-    }
-    return rv;
-}
-
-void ScreenSaver::timerEvent(QTimerEvent *e)
-{
-    if (e->timerId() != ssTimerId)
-        return;
-
-#ifdef Q_OS_LINUX
-    if (!isX11)
-        return;
-    Display *display = XOpenDisplay(0);
-    XResetScreenSaver(display);
-    XCloseDisplay(display);
-#endif //Q_OS_LINUX
 }
