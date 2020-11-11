@@ -1,0 +1,1 @@
+../Ubuntu/mkconfig.sh
