@@ -46,7 +46,6 @@ install:
   - set VSCDIR=C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC
   - set NSISDIR=C:\Program Files (x86)\NSIS
   - set PATH=%PATH%;%QTDIR%\bin;%VSCDIR%\bin;%NSISDIR%
-  - ps: $env:NODE_BIN_PATH=(Get-Command node.exe | Split-Path)
 
   # Install NsProcess NSIS Plugin
   - move windows\NsProcess\Include\nsProcess.nsh "%NSISDIR%\Include"
@@ -59,6 +58,7 @@ install:
   # Prepare the environment by installing Node and setting VC utils in the PATH
   - ps: Install-Product node $env:nodejs_version
   - 'CALL "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86'
+  - ps: $env:NODE_BIN_PATH=(Get-Command node.exe | Split-Path)
 
 # Unfortunately AppVeyor expects that to be a Visual Studio/C#/whatever project, so we cannot define custom build steps; instead, use test_script step
 build: off
