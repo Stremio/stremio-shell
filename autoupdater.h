@@ -39,6 +39,20 @@ extern "C" {
     #define FULL_UPDATE_FILES { }
 #endif
 
+// Network status test configuration
+
+// The checked URL 
+// This URL is borrowed from here https://www.chromium.org/chromium-os/chromiumos-design-docs/network-portal-detection
+#define NS_TEST_ENDPOINT "http://clients3.google.com/generate_204"
+// Expected status code
+#define NS_TEST_STATUS 204
+// Connection timeout (ms) - This is Qt 5.15 only
+// #define NS_TEST_CONN_TIMEOUT 10000
+// Retry wait time (ms)
+#define NS_TEST_RETRY_TIMEOUT 3000
+// Number of retries to be performed
+#define NS_TEST_RETRIES 3
+
 typedef QPair<QUrl, QByteArray> fDownload;
 
 class AutoUpdater : public QObject
@@ -59,9 +73,11 @@ class AutoUpdater : public QObject
 
     bool moveFileToAppDir(QString);
     int executeCmd(QString, QStringList, bool);
-    bool isOnline();
+    void checkNetworkStatus();
 
     signals:
+    void performPing();
+    void networkStatus(bool);
     void error(QString, QVariant);
     void checkFinished(QVariant);
     void prepared(QVariantList, QVariant);
@@ -89,6 +105,8 @@ class AutoUpdater : public QObject
     QByteArray getFileChecksum(QString);
 
     QNetworkAccessManager* manager = NULL;
+    QNetworkAccessManager* nsManager = NULL;
+    uint8_t nsRetries;
 
     // State; must be reset on abort
     QJsonDocument currentVersionDesc;

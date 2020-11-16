@@ -27,13 +27,8 @@
             console.log("Auto-updater: skipping, possibly not running an installed app?")
             return
         }
-        
-        // This is the timeout we use to check periodically; the signal is handled in the main (UI) thread
-        var onTriggered
-        shortTimer.triggered.connect(onTriggered = function() {
-            // WARNING: what if .isOnline() fails on some system?? it's based on QNetworkConfigurationManager
-            // can we trust it??
-            if (autoUpdater.isOnline()) {
+        autoUpdater.networkStatus.connect(function(isOnline) {
+            if (isOnline) {
                 console.log("Auto-updater: checking for new version")
                 autoUpdater.abort()
                 autoUpdater.checkForUpdates(autoUpdater.endpoint(), userAgent)
@@ -42,6 +37,11 @@
                 console.log("Auto-update: skip check because we're not online")
                 shortTimer.restart()
             }
+        });
+        // This is the timeout we use to check periodically; the signal is handled in the main (UI) thread
+        var onTriggered
+        shortTimer.triggered.connect(onTriggered = function() {
+            autoUpdater.checkNetworkStatus();
         })
         onTriggered(); // initial check
 
