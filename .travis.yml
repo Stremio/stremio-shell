@@ -10,6 +10,7 @@ jobs:
       env:
         global:
         - BUILD_OS: "linux"
+        - DEPLOY: true
 
     # - os: osx
     #   compiler: clang
@@ -26,6 +27,7 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install p7zip awscli; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then npm -g install appdmg; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then source ./mac/keychain_profile; fi
+  - if [ !$TRAVIS_PULL_REQUEST ]; then export DEPLOY=false; fi
   - sudo pip install --upgrade s3cmd
 
 install:
@@ -57,8 +59,8 @@ script:
   - export AWS_ACCESS_KEY_ID="AKIAJWBFLU34IVITPLHA"
   - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET
   - export AWS_DEFAULT_REGION=eu-west-1
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION --add-header=Cache-Control:max-age=7200 put ./dist-osx/*.dmg s3://stremio-artifacts/shell-osx-old/$TAG/; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then shopt -s nullglob; for package in $DESTDIR/*.{deb,pkg.tar.xz,rpm}; do echo Uploading package to http://stremio-artifacts.s3.amazonaws.com/shell-linux/$TAG/$package; s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION --add-header=Cache-Control:max-age=7200 put "$package" s3://stremio-artifacts/shell-linux/$TAG/; done; fi
+  - if [ $DEPLOY && "$TRAVIS_OS_NAME" = "osx" ]; then s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION --add-header=Cache-Control:max-age=7200 put ./dist-osx/*.dmg s3://stremio-artifacts/shell-osx-old/$TAG/; fi
+  - if [ $DEPLOY && "$TRAVIS_OS_NAME" = "linux" ]; then shopt -s nullglob; for package in $DESTDIR/*.{deb,pkg.tar.xz,rpm}; do echo Uploading package to http://stremio-artifacts.s3.amazonaws.com/shell-linux/$TAG/$package; s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION --add-header=Cache-Control:max-age=7200 put "$package" s3://stremio-artifacts/shell-linux/$TAG/; done; fi
 
 notifications:
   slack:
