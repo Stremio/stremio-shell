@@ -57,7 +57,7 @@ jobs:
           AWS_DEFAULT_REGION: eu-west-1
         run: |
           sudo pip3 install s3cmd
-          if [ $DEPLOY ]; then s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION put "$FLATPAK_PATH" s3://stremio-artifacts/shell-linux/$CURRENT_BRANCH/; fi
+          if [ "$DEPLOY" = "true" ]; then s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION put "$FLATPAK_PATH" s3://stremio-artifacts/shell-linux/$CURRENT_BRANCH/; fi
   
       - name: Notify Slack channel
         uses: rtCamp/action-slack-notify@master
