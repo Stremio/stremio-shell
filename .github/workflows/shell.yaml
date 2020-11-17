@@ -39,7 +39,7 @@ jobs:
           node -e 'process.stdout.write("CURRENT_BRANCH="+process.env.GITHUB_REF.replace(/^refs\/(heads|tags)\//, "")+"\n")' >> $GITHUB_ENV
           echo SHELL_VERSION=$SHELL_VERSION >> $GITHUB_ENV
           echo DMG_PATH=$DMG_PATH >> $GITHUB_ENV
-          if [ ${{github.event.number}} || ${{github.event.issue.number}} ]; then echo DEPLOY=false >> $GITHUB_ENV; else echo DEPLOY=true >> $GITHUB_ENV; fi
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then echo DEPLOY=false >> $GITHUB_ENV; else echo DEPLOY=true >> $GITHUB_ENV; fi
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
