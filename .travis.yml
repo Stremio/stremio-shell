@@ -26,7 +26,6 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install p7zip awscli; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then npm -g install appdmg; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then source ./mac/keychain_profile; fi
-  - if [ $TRAVIS_PULL_REQUEST ]; then export DEPLOY=false; fi
   - sudo pip install --upgrade s3cmd
 
 install:
