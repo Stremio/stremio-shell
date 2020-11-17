@@ -33,6 +33,7 @@ jobs:
           node -e 'process.stdout.write("CURRENT_BRANCH="+process.env.GITHUB_REF.replace(/^refs\/(heads|tags)\//, "")+"\n")' >> $GITHUB_ENV
           echo SHELL_VERSION=$SHELL_VERSION >> $GITHUB_ENV
           echo FLATPAK_PATH=$FLATPAK_PATH >> $GITHUB_ENV
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then echo DEPLOY=false >> $GITHUB_ENV; else echo DEPLOY=true >> $GITHUB_ENV; fi
 
       - name: Build
         run: sudo flatpak-builder --repo=stremio-flatpak-repo --install-deps-from=flathub --force-clean _build com.stremio.Stremio.json
@@ -56,7 +57,7 @@ jobs:
           AWS_DEFAULT_REGION: eu-west-1
         run: |
           sudo pip3 install s3cmd
-          s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION put "$FLATPAK_PATH" s3://stremio-artifacts/shell-linux/$CURRENT_BRANCH/
+          if [ "$DEPLOY" = "true" ]; then s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION put "$FLATPAK_PATH" s3://stremio-artifacts/shell-linux/$CURRENT_BRANCH/; fi
   
       - name: Notify Slack channel
         uses: rtCamp/action-slack-notify@master

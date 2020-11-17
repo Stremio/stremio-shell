@@ -39,6 +39,7 @@ jobs:
           node -e 'process.stdout.write("CURRENT_BRANCH="+process.env.GITHUB_REF.replace(/^refs\/(heads|tags)\//, "")+"\n")' >> $GITHUB_ENV
           echo SHELL_VERSION=$SHELL_VERSION >> $GITHUB_ENV
           echo DMG_PATH=$DMG_PATH >> $GITHUB_ENV
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then echo DEPLOY=false >> $GITHUB_ENV; else echo DEPLOY=true >> $GITHUB_ENV; fi
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
@@ -94,17 +95,17 @@ jobs:
         run: mv ./stremio.app ./Stremio.app
 
       - name: Setup keychain
-        run: source ./mac/keychain_profile
+        run: if [ "$DEPLOY" = "true" ]; then source ./mac/keychain_profile; fi
 
       - name: Sign App
         run: |
-          codesign --deep --force -v -s $APP_IDENTITY --entitlements ./mac/entitlements.plist --options runtime ./Stremio.app
+          if [ "$DEPLOY" = "true" ]; then codesign --deep --force -v -s $APP_IDENTITY --entitlements ./mac/entitlements.plist --options runtime ./Stremio.app; fi
 
       - name: Notarizing
         env:
           NOTARIZATION_PWD: ${{ secrets.NOTARIZATION_PWD }}
         run: |
-          ./mac/notarizer.sh Stremio.app "ivo@linvo.com" "$NOTARIZATION_PWD"
+          if [ "$DEPLOY" = "true" ]; then ./mac/notarizer.sh Stremio.app "ivo@linvo.com" "$NOTARIZATION_PWD"; fi
 
       - name: Pack
         run: |
@@ -114,7 +115,7 @@ jobs:
 
       - name: Sign Dmg
         run: |
-          codesign --deep --force -v -s $APP_IDENTITY "$DMG_PATH"
+          if [ "$DEPLOY" = "true" ]; then codesign --deep --force -v -s $APP_IDENTITY "$DMG_PATH"; fi
 
       - name: Store DMG
         uses: actions/upload-artifact@v1
@@ -130,7 +131,7 @@ jobs:
           AWS_DEFAULT_REGION: eu-west-1
         run: |
           pip3 install s3cmd
-          s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION put "$DMG_PATH" s3://stremio-artifacts/shell-osx/$CURRENT_BRANCH/
+           if [ "$DEPLOY" = "true" ]; then s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION put "$DMG_PATH" s3://stremio-artifacts/shell-osx/$CURRENT_BRANCH/ ; fi
 
   slackNotification:
     name: Slack Notification
