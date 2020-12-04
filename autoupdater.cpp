@@ -1,33 +1,7 @@
 #include <autoupdater.h>
-#include <QTimer>
 
-AutoUpdater::AutoUpdater(): manager(new QNetworkAccessManager(this)), nsManager(new QNetworkAccessManager(this)) {
+AutoUpdater::AutoUpdater(): manager(new QNetworkAccessManager(this)) {
     init_public_key();
-    // nsManager->setTransferTimeout(NS_TEST_CONN_TIMEOUT); // This is Qt 5.15 only
-    QObject::connect(this, &AutoUpdater::performPing, this, [=]() {
-        nsManager->get(QNetworkRequest(QUrl(NS_TEST_ENDPOINT)));
-    });
-    QObject::connect(nsManager, &QNetworkAccessManager::finished,
-        this, [=](QNetworkReply *resp) {
-            if (!resp->error()) {
-                
-                QVariant status_code = resp->attribute(QNetworkRequest::HttpStatusCodeAttribute);
-                if(status_code.isValid()) {
-                    auto status = status_code.toInt();
-                    if(status == NS_TEST_STATUS) {
-                        emit networkStatus(true);
-                        return;
-                    }
-                }
-            }
-            if(nsRetries >= NS_TEST_RETRIES) {
-                emit networkStatus(false);
-                return;
-            }
-            nsRetries++;
-            QTimer::singleShot(NS_TEST_RETRY_TIMEOUT, this, [=](){ emit performPing(); });
-        }
-    );
 }
 
 // HANDLE FATAL ERRORS
@@ -112,11 +86,6 @@ int AutoUpdater::executeCmd(QString cmd, QStringList args, bool noWait = false) 
     if (! proc.waitForFinished(5 * 60 * 1000)) return -1;
 
     return proc.exitCode();
-}
-
-void AutoUpdater::checkNetworkStatus() {
-    nsRetries = 0;
-    emit performPing();
 }
 
 // CHECK FOR UPDATES
