@@ -63,7 +63,7 @@ win32 {
 QT += widgets
 
 # TODO: if def WEBENGINE
-QT += webengine webchannel
+QT += webengine webchannel dbus
 WEBENGINE_CONFIG+=use_proprietary_codecs
 
 SOURCES += main.cpp \
