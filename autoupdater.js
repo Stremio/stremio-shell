@@ -74,9 +74,7 @@
 
             console.log("Auto-updater error: " + msg);
 
-            // Display the error only if it's not QNetworkReply::HostNotFound (3) and not QNetworkReply::TimeoutError (4)
-            // - this usually happens when we are not connected; sometimes autoupdater.isOnline() reports wrong
-            if (err !== 3 && err !== 4 && errorCounter <= 0) {
+            if (errorCounter <= 0) {
                 errorCounter = MAX_ERROR_COUNT;
                 errorDialog.text = "Oops! Stremio wasn't able to autoupdate because it's unable to connect to strem.io or stremio.com. Please check your internet connection, make sure you're not offline. If the problem persists, please send a screenshot of the following error message:"
                 errorDialog.detailedText = msg
