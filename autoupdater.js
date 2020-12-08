@@ -4,6 +4,10 @@
     // signal autoUpdaterErr(var msg, var err);
     // signal autoUpdaterRestartTimer();
     function initAutoUpdater(autoUpdater, autoUpdaterErr, shortTimer, longTimer, restartTimer, userAgent) {
+        var MAX_ERROR_COUNT = 4;
+
+        var errorCounter = MAX_ERROR_COUNT;
+
         var endpoints = ["https://www.strem.io/updater/check", "https://www.stremio.com/updater/check",
                          "https://www.stremio.net/updater/check"];
         var fallbackSite = "https://www.stremio.com/?fromFailedAutoupdate=true";
@@ -27,22 +31,13 @@
             console.log("Auto-updater: skipping, possibly not running an installed app?")
             return
         }
-        autoUpdater.networkStatus.connect(function(isOnline) {
-            if (isOnline) {
-                console.log("Auto-updater: checking for new version")
-                autoUpdater.abort()
-                autoUpdater.checkForUpdates(autoUpdater.endpoint(), userAgent)
-
-            } else {
-                console.log("Auto-update: skip check because we're not online")
-                shortTimer.restart()
-            }
-        });
         // This is the timeout we use to check periodically; the signal is handled in the main (UI) thread
         var onTriggered
         shortTimer.triggered.connect(onTriggered = function() {
-            autoUpdater.checkNetworkStatus();
-        })
+            console.log("Auto-updater: checking for new version")
+            autoUpdater.abort()
+            autoUpdater.checkForUpdates(autoUpdater.endpoint(), userAgent)
+        });
         onTriggered(); // initial check
 
         // Re-start this timer only from the main thread
@@ -53,6 +48,8 @@
         // WARNING: all of the slot handlers are handled in another thread, that's why we need the autoUpdaterErr()
         // signal - to bring execution back to UI thread
         autoUpdater.checkFinished.connect(function(check) {
+            // reset the autoupdater error counter
+            errorCounter = MAX_ERROR_COUNT;
             // reset the notif, so there's no chance we'd trigger a re-start while downloading new ver
             if (check && !check.upToDate) autoUpdater.onNotifClicked = null;
 
@@ -65,6 +62,7 @@
         autoUpdater.error.connect(function(msg, err) {
             autoUpdaterErr(msg, err);
         });
+
         autoUpdaterErr.connect(function(msg, err) {
             // send to front-end, so we can handle accordingly
             transport.queueEvent("autoupdater-error", {
@@ -74,12 +72,15 @@
 
             longTimer.restart()
 
-            // Display the error only if it's not QNetworkReply::HostNotFound (3) and not QNetworkReply::TimeoutError (4)
-            // - this usually happens when we are not connected; sometimes autoupdater.isOnline() reports wrong
-            if (err !== 3 && err !== 4) {
-                errorDialog.text = "Auto updater error"
+            console.log("Auto-updater error: " + msg);
+
+            if (errorCounter <= 0) {
+                errorCounter = MAX_ERROR_COUNT;
+                errorDialog.text = "Oops! Stremio wasn't able to autoupdate because it's unable to connect to strem.io or stremio.com. Please check your internet connection, make sure you're not offline. If the problem persists, please send a screenshot of the following error message:"
                 errorDialog.detailedText = msg
                 errorDialog.visible = true
+            } else {
+                errorCounter--;
             }
         })
 
