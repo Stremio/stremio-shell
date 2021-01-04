@@ -59,9 +59,10 @@ class AutoUpdater : public QObject
 
     bool moveFileToAppDir(QString);
     int executeCmd(QString, QStringList, bool);
-    bool isOnline();
 
     signals:
+    void performPing();
+    void networkStatus(bool);
     void error(QString, QVariant);
     void checkFinished(QVariant);
     void prepared(QVariantList, QVariant);

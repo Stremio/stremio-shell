@@ -14,6 +14,7 @@
     "--socket=wayland",
     "--socket=pulseaudio",
     "--talk-name=org.a11y.Bus",
+    "--talk-name=org.freedesktop.ScreenSaver",
     "--talk-name=org.freedesktop.Notifications",
     "--talk-name=org.kde.StatusNotifierWatcher",
     "--own-name=org.kde.StatusNotifierItem-2-1",

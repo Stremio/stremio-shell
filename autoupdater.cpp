@@ -1,7 +1,6 @@
 #include <autoupdater.h>
-#include <QDebug>
 
-AutoUpdater::AutoUpdater() {
+AutoUpdater::AutoUpdater(): manager(new QNetworkAccessManager(this)) {
     init_public_key();
 }
 
@@ -89,16 +88,9 @@ int AutoUpdater::executeCmd(QString cmd, QStringList args, bool noWait = false) 
     return proc.exitCode();
 }
 
-bool AutoUpdater::isOnline() {
-    QNetworkConfigurationManager mgr;
-    return mgr.isOnline();
-}
-
 // CHECK FOR UPDATES
 void AutoUpdater::checkForUpdatesPerform(QString endpoint, QString userAgent)
 {
-    if (! manager) manager = new QNetworkAccessManager(this);
-
     QByteArray serverHash = getFileChecksum(QCoreApplication::applicationDirPath() +  QDir::separator() + SERVER_FNAME);
     QByteArray asarHash = getFileChecksum(QCoreApplication::applicationDirPath() +  QDir::separator() + ASAR_FNAME);
 
