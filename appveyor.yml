@@ -115,7 +115,7 @@ test_script:
   - ps: cp release\*.exe dist-win
 
   # Very basic integration test
-  - ps: $serverProc = Start-Process "$env:COMSPEC" "/c node.exe dist-win\server.js > server-log.txt 2>&1" -PassThru
+  - ps: $serverProc = Start-Process "$env:COMSPEC" "/c ./dist-win/stremio-runtime.exe dist-win\server.js > server-log.txt 2>&1" -PassThru
   - ps: Start-Sleep 8
   - ps: Try { $serverStatusCode = wget 127.0.0.1:11470/stats.json | % {$_.StatusCode} } Catch { cat server-log.txt; Throw $_ }
   - ps: if ($serverStatusCode -ne 200) { throw 'stremio server is not reachable' }
