@@ -6,9 +6,7 @@ set rt_exe="%rt_path%\stremio-runtime.exe"
 
 set rh="C:\RH\ResourceHacker.exe"
 
-FOR /f "tokens=* USEBACKQ" %%p IN (`where node.exe`) DO (
-    set node="%%p"
-)
+set node="C:\Program Files (x86)\nodejs\node.exe"
 
 pushd %~dp0
 pushd ..\images
