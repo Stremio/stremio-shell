@@ -121,6 +121,7 @@ test_script:
   - ps: Try { $serverStatusCode = wget 127.0.0.1:11470/stats.json | % {$_.StatusCode} } Catch { cat server-log.txt; Throw $_ }
   - ps: if ($serverStatusCode -ne 200) { throw 'stremio server is not reachable' }
   - ps: Stop-Process $serverProc.Id
+  - ps: taskkill /f /im stremio-runtime.exe
   - ps: echo "> server status code was $serverStatusCode"
 
   - ps: $mpvExists = Test-Path $env:MPV_BIN_PATH\mpv-1.dll
@@ -131,7 +132,7 @@ test_script:
 
   # sign-windows-files
   - if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20181204-20211204.pfx /p %CERT_PASS%  ./dist-win/stremio.exe
-  - if "%DEPLOY%" == "true" SignTool sign /f .\windows\smartcode-20181204-20211204.pfx /p %CERT_PASS%  dist-win\stremio-runtime.exe
+  - if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20181204-20211204.pfx /p %CERT_PASS%  ./dist-win/stremio-runtime.exe
   - if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20181204-20211204.pfx /p %CERT_PASS%  ./dist-win/ffmpeg.exe
 
   # build-windows-installer
