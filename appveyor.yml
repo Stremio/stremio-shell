@@ -131,7 +131,7 @@ test_script:
 
   # sign-windows-files
   - if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20181204-20211204.pfx /p %CERT_PASS%  ./dist-win/stremio.exe
-  - if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20181204-20211204.pfx /p %CERT_PASS%  ./dist-win/stremio-runtime.exe
+  - if "%DEPLOY%" == "true" SignTool sign /f .\windows\smartcode-20181204-20211204.pfx /p %CERT_PASS%  dist-win\stremio-runtime.exe
   - if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20181204-20211204.pfx /p %CERT_PASS%  ./dist-win/ffmpeg.exe
 
   # build-windows-installer
