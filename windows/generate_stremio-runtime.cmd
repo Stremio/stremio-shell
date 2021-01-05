@@ -48,7 +48,7 @@ popd
 
 :: Build the stremio-runtime executable
 %rh% -open %node% -saveas %rt_exe% -action modify -res "%res_dir%\stremio-rt.res"
-signtool remove /c /u %rt_exe%
+
 :: Cleanup
 rd /S /Q "%res_dir%"
 exit /b 0
