@@ -113,6 +113,7 @@ test_script:
   - ps: ls release
   - ps: cp release\*.dll dist-win
   - ps: cp release\*.exe dist-win
+  - ps: ls dist-win
 
   # Very basic integration test
   - ps: $serverProc = Start-Process "$env:COMSPEC" "/c ./dist-win/stremio-runtime.exe dist-win\server.js > server-log.txt 2>&1" -PassThru
