@@ -130,6 +130,9 @@ test_script:
   # prepare-windows-qt
   - windeployqt --release --no-compiler-runtime --qmldir=. ./dist-win/stremio.exe
 
+  - ps: dumpbin /headers "C:\Program Files (x86)\nodejs\node.exe" | Select-String "machine"
+  - ps: dumpbin /headers dist-win\stremio-runtime.exe | Select-String "machine"
+
   # sign-windows-files
   - if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20181204-20211204.pfx /p %CERT_PASS%  ./dist-win/stremio.exe
   - if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20181204-20211204.pfx /p %CERT_PASS%  ./dist-win/stremio-runtime.exe
