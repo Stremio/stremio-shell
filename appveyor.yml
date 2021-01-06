@@ -64,7 +64,7 @@ install:
   
   # Prepare the environment by installing Node and setting VC utils in the PATH
   - ps: Install-Product node $env:nodejs_version x86
-  - 'CALL "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x86'
+  - 'CALL "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"'
 
 # Unfortunately AppVeyor expects that to be a Visual Studio/C#/whatever project, so we cannot define custom build steps; instead, use test_script step
 build: off
