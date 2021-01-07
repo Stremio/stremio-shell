@@ -96,7 +96,7 @@ test_script:
   - copy "%OPENSSL_BIN_PATH%\ssleay32.dll" dist-win
   - copy "%OPENSSL_BIN_PATH%\libeay32.dll" dist-win
   # copy-windows-ffmpeg
-  - copy "%FFMPEG_BIN_PATH%\ffmpeg.exe" dist-win
+  - move "%FFMPEG_BIN_PATH%\ffmpeg.exe" dist-win
   # copy-windows-node (stremio-runtime)
   - ps: cmd /c $(Join-Path $env:DLL_DIR "generate_stremio-runtime.cmd") dist-win
   # copy-windows-server
@@ -113,10 +113,8 @@ test_script:
   - copy "%VCREDIST_BIN_PATH%\vccorlib140.dll" dist-win
   - copy "%VCREDIST_BIN_PATH%\vcruntime140.dll" dist-win
   # copy-windows-qtshell
-  - ps: ls release
   - ps: cp release\*.dll dist-win
   - ps: cp release\*.exe dist-win
-  - ps: ls dist-win
 
   # Very basic integration test
   - ps: $serverProc = Start-Process "$env:COMSPEC" "/c dist-win\stremio-runtime.exe dist-win\server.js > server-log.txt 2>&1" -PassThru
@@ -132,9 +130,6 @@ test_script:
 
   # prepare-windows-qt
   - windeployqt --release --no-compiler-runtime --qmldir=. ./dist-win/stremio.exe
-
-  - ps: dumpbin /headers "C:\Program Files (x86)\nodejs\node.exe" | Select-String "machine"
-  - ps: dumpbin /headers dist-win\stremio-runtime.exe | Select-String "machine"
 
   # sign-windows-files
   - if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20181204-20211204.pfx /p %CERT_PASS%  ./dist-win/stremio.exe
