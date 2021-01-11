@@ -1,6 +1,8 @@
 ;Stremio
 ;Installer Source for NSIS 3.0 or higher
 
+Unicode True
+
 #Tells the compiler whether or not to do datablock optimizations.
 SetDatablockOptimize on
 
@@ -128,6 +130,8 @@ LangString noRoot ${LANG_ENGLISH} "You cannot install Stremio in a directory tha
 LangString desktopShortcut ${LANG_ENGLISH} "Desktop Shortcut"
 LangString appIsRunning ${LANG_ENGLISH} "${APP_NAME} is running. Please close it and press OK to continue."
 
+Var Parameters
+
 # Finish page custom options
 Var AssociateTorrentCheckbox
 Var checkbox_value
@@ -136,15 +140,18 @@ Function fin_pg_options
   Pop $AssociateTorrentCheckbox
   SetCtlColors $AssociateTorrentCheckbox '0xFF0000' '0xFFFFFF'
   ${NSD_Check} $AssociateTorrentCheckbox
-  ;GetFunctionAddress $0 fin_pg_leave
-	;nsDialogs::OnClick $AssociateTorrentCheckbox $0
 Functionend
 
 Function fin_pg_leave
   ${NSD_GetState} $AssociateTorrentCheckbox $checkbox_value
-
+  IfSilent 0 assoc
+  StrCpy $checkbox_value ${BST_UNCHECKED}
+  ${GetOptions} $Parameters /notorrentassoc $R1
+  IfErrors 0 assoc
+  StrCpy $checkbox_value ${BST_CHECKED}
+  assoc:
+  ;MessageBox MB_OK $checkbox_value
   ${If} $checkbox_value == ${BST_CHECKED}
-		;MessageBox MB_OK "checkbox clicked"
     !insertmacro APP_ASSOCIATE "torrent" "stremio" "BitTorrent file" "$INSTDIR\stremio.exe,0" "Play with Stremio" "$INSTDIR\stremio.exe $\"%1$\""
 	${EndIf}
 Functionend
@@ -157,9 +164,9 @@ Function .onInit ; check for previous version
     StrCmp $0 "" done
     StrCpy $INSTDIR $0
 
-    ${GetParameters} $R0
-
-    ${GetOptions} $R0 "/addon" $R1
+    ${GetParameters} $Parameters
+    ClearErrors
+    ${GetOptions} $Parameters "/addon" $R1
 
     FileOpen $0 "$INSTDIR\addons.txt" w
     FileWrite $0 "$R1"
@@ -170,12 +177,16 @@ FunctionEnd
 Section ; App Files
     check:
     ; Check if stremio.exe is running
-    ${nsProcess::FindProcess} "stremio.exe" $R0
+    ${nsProcess::FindProcess} ${APP_LAUNCHER} $R0
 
     ${If} $R0 == 0
+        IfSilent killapp
         MessageBox MB_OK "$(appIsRunning)"
         Goto check
-    ${EndIf}    
+        killapp:
+        ${nsProcess::CloseProcess} "${APP_LAUNCHER}" $R0
+        Sleep 2000
+    ${EndIf}
 
     ${nsProcess::Unload}
 
@@ -235,22 +246,28 @@ Section ; Shortcuts
     ; Register stremio:// protocol handler
     WriteRegStr HKCU "Software\Classes\stremio" "" "URL:Stremio Protocol"
     WriteRegStr HKCU "Software\Classes\stremio" "URL Protocol" ""
-    WriteRegStr HKCU "Software\Classes\stremio\DefaultIcon" "" $INSTDIR\stremio.exe,1
+    WriteRegStr HKCU "Software\Classes\stremio\DefaultIcon" "" "$INSTDIR\stremio.exe,1"
     WriteRegStr HKCU "Software\Classes\stremio\shell" "" "open"
     WriteRegStr HKCU "Software\Classes\stremio\shell\open\command" "" '"$INSTDIR\stremio.exe" "%1"'
 
     ; Register magnet:// protocol handler
     WriteRegStr HKCU "Software\Classes\magnet" "" "URL:BitTorrent magnet"
     WriteRegStr HKCU "Software\Classes\magnet" "URL Protocol" ""
-    WriteRegStr HKCU "Software\Classes\magnet\DefaultIcon" "" $INSTDIR\stremio.exe,1
+    WriteRegStr HKCU "Software\Classes\magnet\DefaultIcon" "" "$INSTDIR\stremio.exe,1"
     WriteRegStr HKCU "Software\Classes\magnet\shell" "" "open"
     WriteRegStr HKCU "Software\Classes\magnet\shell\open\command" "" '"$INSTDIR\stremio.exe" "%1"'
+    IfSilent 0 end
+    Call fin_pg_leave
+    ${GetOptions} $Parameters /nodesktopicon $R1
+    IfErrors 0 end
+    Call finishpageaction
+    end:
 SectionEnd
 
 ; ------------------- ;
 ;     Uninstaller     ;
 ; ------------------- ;
-Section "uninstall" 
+Section "uninstall"
     SetDetailsPrint none
 
     check:
@@ -258,9 +275,13 @@ Section "uninstall"
     ${nsProcess::FindProcess} "stremio.exe" $R0
 
     ${If} $R0 == 0
+        IfSilent killapp
         MessageBox MB_OK "$(appIsRunning)"
         Goto check
-    ${EndIf}    
+        killapp:
+        ${nsProcess::CloseProcess} "${APP_LAUNCHER}" $R0
+        Sleep 2000
+    ${EndIf}
 
     ${nsProcess::Unload}
 
@@ -274,11 +295,19 @@ Section "uninstall"
 
     !insertmacro APP_UNASSOCIATE "torrent" "stremio"
 
+    IfSilent +3
     MessageBox MB_YESNO|MB_ICONQUESTION "$(removeDataFolder)" IDNO KeepUserData
+    goto notsilent
+    ${GetParameters} $Parameters
+    ClearErrors
+    ${GetOptions} $Parameters "/keepdata" $R1
+    IfErrors 0 KeepUserData
+    notsilent:
       RMDir /r "$LOCALAPPDATA\${COMPANY_NAME}"
       RMDir /r "$APPDATA\${DATA_FOLDER}"
     KeepUserData:
 
+    IfSilent +2
     ExecShell "open" "http://www.strem.io/goodbye"
 SectionEnd
 
@@ -353,7 +382,7 @@ Function .onVerifyInstDir
   IntCmp $R1 0 pathgood
   Pop $R1
   Call CloseBrowseForFolderDialog
-  MessageBox MB_OK|MB_USERICON "$(noRoot)"
+  MessageBox MB_OK|MB_USERICON "$(noRoot)" /SD IDOK
   Abort
 
 pathgood:
