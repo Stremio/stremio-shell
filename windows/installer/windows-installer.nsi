@@ -128,7 +128,9 @@ XPStyle off
 LangString removeDataFolder ${LANG_ENGLISH} "Remove all data and configuration?"
 LangString noRoot ${LANG_ENGLISH} "You cannot install Stremio in a directory that requires administrator permissions"
 LangString desktopShortcut ${LANG_ENGLISH} "Desktop Shortcut"
-LangString appIsRunning ${LANG_ENGLISH} "${APP_NAME} is running. Please close it and press OK to continue."
+LangString appIsRunning ${LANG_ENGLISH} "${APP_NAME} is running. Do you want to close it?"
+LangString appIsRunningInstallError ${LANG_ENGLISH} "${APP_NAME} cannot be installed while another instance is running."
+LangString appIsRunningUninstallError ${LANG_ENGLISH} "${APP_NAME} cannot be uninstalled while another instance is running."
 
 Var Parameters
 
@@ -156,6 +158,32 @@ Function fin_pg_leave
 	${EndIf}
 Functionend
 
+!macro checkIfAppIsRunning AppIsRunningErrorMsg
+    ; Check if stremio.exe is running
+    ${nsProcess::FindProcess} ${APP_LAUNCHER} $R0
+
+    ${If} $R0 == 0
+        IfSilent killapp
+        MessageBox MB_YESNO|MB_ICONQUESTION "$(appIsRunning)" IDYES killapp
+        ; Check if stremio.exe is still running.
+        ; No need to abort if the user manually closes Stremio and answer NO on the prompt
+        ${nsProcess::FindProcess} ${APP_LAUNCHER} $R0
+        ${If} $R0 == 0
+            ; Hide the progress bar
+            FindWindow $0 "#32770" "" $HWNDPARENT
+            GetDlgItem $1 $0 0x3ec
+            ShowWindow $1 ${SW_HIDE}
+            ; Abort install
+            Abort "${AppIsRunningErrorMsg}"
+        ${EndIf}
+        killapp:
+        ${nsProcess::CloseProcess} "${APP_LAUNCHER}" $R0
+        Sleep 2000
+    ${EndIf}
+
+    ${nsProcess::Unload}
+!macroend
+
 ; ------------------- ;
 ;    Install code     ;
 ; ------------------- ;
@@ -175,20 +203,7 @@ done:
 FunctionEnd
 
 Section ; App Files
-    check:
-    ; Check if stremio.exe is running
-    ${nsProcess::FindProcess} ${APP_LAUNCHER} $R0
-
-    ${If} $R0 == 0
-        IfSilent killapp
-        MessageBox MB_OK "$(appIsRunning)"
-        Goto check
-        killapp:
-        ${nsProcess::CloseProcess} "${APP_LAUNCHER}" $R0
-        Sleep 2000
-    ${EndIf}
-
-    ${nsProcess::Unload}
+    !insertmacro checkIfAppIsRunning "$(appIsRunningInstallError)"
 
     ; Hide details
     SetDetailsPrint None
@@ -268,22 +283,9 @@ SectionEnd
 ;     Uninstaller     ;
 ; ------------------- ;
 Section "uninstall"
+    !insertmacro checkIfAppIsRunning "$(appIsRunningUninstallError)"
+
     SetDetailsPrint none
-
-    check:
-    ; Check if stremio.exe is running
-    ${nsProcess::FindProcess} "stremio.exe" $R0
-
-    ${If} $R0 == 0
-        IfSilent killapp
-        MessageBox MB_OK "$(appIsRunning)"
-        Goto check
-        killapp:
-        ${nsProcess::CloseProcess} "${APP_LAUNCHER}" $R0
-        Sleep 2000
-    ${EndIf}
-
-    ${nsProcess::Unload}
 
     RMDir /r "$INSTDIR"
     RMDir /r "$SMPROGRAMS\${APP_NAME}"
