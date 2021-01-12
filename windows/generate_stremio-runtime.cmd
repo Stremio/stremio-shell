@@ -45,7 +45,7 @@ pushd "%res_dir%"
 popd
 
 :: Build the stremio-runtime executable
-%rh% -open %node% -saveas %rt_exe% -action modify -res "%res_dir%\stremio-rt.res"
+%rh% -open %node% -saveas %rt_exe% -action addoverwrite -res "%res_dir%\stremio-rt.res"
 
 :: Cleanup
 rd /S /Q "%res_dir%"
