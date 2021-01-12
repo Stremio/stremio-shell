@@ -98,7 +98,7 @@ test_script:
   # copy-windows-ffmpeg
   - move "%FFMPEG_BIN_PATH%\ffmpeg.exe" dist-win
   # copy-windows-node (stremio-runtime)
-  - ps: & $(Join-Path $env:DLL_DIR "generate_stremio-runtime.cmd") dist-win
+  - ps: '& $(Join-Path $env:DLL_DIR "generate_stremio-runtime.cmd") dist-win'
   # copy-windows-server
   - appveyor DownloadFile https://s3-eu-west-1.amazonaws.com/stremio-artifacts/four/v%package_version%/server.js -FileName dist-win\server.js
   # Patch server.js in order to work with node 14
