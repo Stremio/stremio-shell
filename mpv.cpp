@@ -115,6 +115,26 @@ MpvObject::MpvObject(QQuickItem * parent)
     if (!mpv)
         throw std::runtime_error("could not create mpv context");
 
+    // Setup the callback that will make QtQuick update and redraw if there
+    // is a new video frame. Use a queued connection: this makes sure the
+    // doUpdate() function is run on the GUI thread.
+    connect(this, &MpvObject::onUpdate, this, &MpvObject::doUpdate,
+            Qt::QueuedConnection);
+
+    initialize_mpv();
+}
+
+MpvObject::~MpvObject()
+{
+    if (mpv_gl) // only initialized if something got drawn
+    {
+        mpv_render_context_free(mpv_gl);
+    }
+
+    mpv_terminate_destroy(mpv);
+}
+
+void MpvObject::initialize_mpv() {
     // terminal=yes brings us all the terminal logs; on windows it's much better with winpty (https://github.com/mpv-player/mpv/blob/master/DOCS/compile-windows.md)
     mpv_set_option_string(mpv, "terminal", "yes");
     mpv_set_option_string(mpv, "msg-level", "all=v");
@@ -148,24 +168,12 @@ MpvObject::MpvObject(QQuickItem * parent)
     // User-visible stream title used by some audio APIs (at least PulseAudio and wasapi).
     mpv::qt::set_property(mpv, "title", QCoreApplication::applicationName());
 
-    // Setup the callback that will make QtQuick update and redraw if there
-    // is a new video frame. Use a queued connection: this makes sure the
-    // doUpdate() function is run on the GUI thread.
-    connect(this, &MpvObject::onUpdate, this, &MpvObject::doUpdate,
-            Qt::QueuedConnection);
-
     // // Setup handling events from MPV
     mpv_set_wakeup_callback(mpv, wakeup, this);
-}
 
-MpvObject::~MpvObject()
-{
-    if (mpv_gl) // only initialized if something got drawn
-    {
-        mpv_render_context_free(mpv_gl);
+    foreach (const QString &name, observed_properties) {
+        mpv_observe_property(mpv, 0, name.toStdString().c_str(), MPV_FORMAT_NODE);
     }
-
-    mpv_terminate_destroy(mpv);
 }
 
 void MpvObject::on_update(void *ctx)
@@ -193,6 +201,7 @@ void MpvObject::setProperty(const QString& name, const QVariant& value)
 
 void MpvObject::observeProperty(const QString& name)
 {
+    observed_properties.insert(name);
     // NOTE: it's possible to use MPV_FORMAT_NONE to only observe the event change, without caring about value
     mpv_observe_property(mpv, 0, name.toStdString().c_str(), MPV_FORMAT_NODE);
 }
@@ -255,15 +264,29 @@ void MpvObject::handle_mpv_event(mpv_event *event) {
             mpv_event_end_file *endFile = (mpv_event_end_file *)event->data;
             switch (endFile->reason) {
                 case MPV_END_FILE_REASON_ERROR:
+                    eventJson["reason"] = "error";
                     eventJson["error"] = mpv_error_string(endFile->error);
                     break;
-                case MPV_END_FILE_REASON_STOP:
+                case MPV_END_FILE_REASON_QUIT:
+                    eventJson["reason"] = "quit";
                     break;
                 default:
+                    eventJson["reason"] = "other";
                     break;
             }
             Q_EMIT mpvEvent("mpv-event-ended", eventJson);
 
+            break;
+        }
+        case MPV_EVENT_SHUTDOWN: {
+            if (mpv_gl) // only initialized if something got drawn
+            {
+                mpv_render_context_free(mpv_gl);
+                mpv_gl = nullptr;
+            }
+            mpv_terminate_destroy(mpv);
+            mpv = mpv_create();
+            initialize_mpv();
             break;
         }
         default: {

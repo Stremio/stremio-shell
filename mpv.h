@@ -43,6 +43,8 @@ private slots:
 private:
     static void wakeup(void *ctx);
     void handle_mpv_event(mpv_event *event);
+    void initialize_mpv();
+    QSet<QString> observed_properties;
 };
 
 #endif
