@@ -1,3 +1,4 @@
+#pragma once
 #include <QCoreApplication>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
