@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.13)
+# set(CMAKE_CONFIGURATION_TYPES "Release" CACHE STRING "" FORCE)
 project(stremio)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules/")
 
-add_definitions(-DSTREMIO_SHELL_VERSION="4.4.120")
+add_definitions(-DSTREMIO_SHELL_VERSION="4.4.120"  -DUNICODE -D_UNICODE)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -12,18 +13,6 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 list(APPEND WEBENGINE_CONFIG use_proprietary_codecs)
-
-set(QAPPLICATION_CLASS QApplication)
-add_subdirectory(deps/singleapplication)
-
-set(CMAKE_BUILD_RPATH_USE_ORIGIN TRUE)
-
-find_package(Qt${QT_DEFAULT_MAJOR_VERSION} COMPONENTS Widgets Network Qml Quick WebEngine WebChannel DBus REQUIRED)
-find_package(OpenSSL REQUIRED)
-find_package(MPV REQUIRED)
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${MPV_INCLUDE_DIR} deps/libmpv/include)
-
 set(SOURCES
   main
   mpv
@@ -38,7 +27,36 @@ set(SOURCES
   qml.qrc
 )
 
-add_executable(stremio ${SOURCES})
+set(MPV_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/deps/libmpv/include)
+if(WIN32)
+  list(APPEND SOURCES deps/chroma/chroma stremio.rc)
+  set(QT_DEFAULT_MAJOR_VERSION 5)
+  set(ENV{Qt5_DIR} C:/Qt/5.12.3/msvc2017)
+  set(MPV_LIBRARY_mpv ${CMAKE_CURRENT_SOURCE_DIR}/deps/libmpv/win32/mpv.lib)
+endif()
+
+set(QAPPLICATION_CLASS QApplication)
+add_subdirectory(deps/singleapplication)
+
+set(CMAKE_BUILD_RPATH_USE_ORIGIN TRUE)
+
+find_package(Qt${QT_DEFAULT_MAJOR_VERSION} COMPONENTS Widgets Network Qml Quick WebEngine WebChannel DBus REQUIRED)
+find_package(OpenSSL REQUIRED)
+find_package(MPV REQUIRED)
+
+add_executable(${PROJECT_NAME} ${SOURCES})
+
+if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Release")
+  set_property(TARGET ${PROJECT_NAME} PROPERTY WIN32_EXECUTABLE true)
+endif()
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${MPV_INCLUDE_DIR}
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/deps/libmpv/include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/deps/chroma>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/deps/chroma/ChromaSDK/inc>
+)
 
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC
   Qt5::Qml
@@ -54,3 +72,5 @@ target_link_libraries(${PROJECT_NAME} LINK_PUBLIC
 )
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION opt/stremio)
+
+message("Generated with config types: ${CMAKE_CONFIGURATION_TYPES}")
