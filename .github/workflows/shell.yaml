@@ -56,7 +56,8 @@ jobs:
       - name: Build
         run: |
           git clone https://github.com/iina/iina
-          export MPV_BIN_PATH=$(pwd)/iina/deps
+          bash ./iina/other/download_libs.sh
+          export MPV_BIN_PATH=$(pwd)/deps
           ( cd $MPV_BIN_PATH/lib && ln -s libmpv.1.dylib libmpv.dylib )
           export OPENSSL_BIN_PATH=$(brew --prefix openssl)
           qmake .
@@ -81,8 +82,7 @@ jobs:
           
       - name: Fix dependencies
         run: |
-          cp ./iina/deps/lib/* ./stremio.app/Contents/Frameworks
-          #./mac/fix_osx_deps.sh "./stremio.app/Contents/Frameworks" "@executable_path/../Frameworks"
+          cp ./deps/lib/* ./stremio.app/Contents/Frameworks
 
       - name: Testdrive
         run: ( $DEST_DIR/stremio & sleep 10 && STREMIO_PID=$! && kill $STREMIO_PID )
