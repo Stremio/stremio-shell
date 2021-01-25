@@ -32,7 +32,7 @@ ${SERVER_JS}:
 
 ${STREMIO_BIN}:
 	mkdir -p ${BUILD_DIR}
-	cd ${BUILD_DIR} && qmake PREFIX="${PREFIX}" ..
+	cd ${BUILD_DIR} && cmake -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${PREFIX}" ..
 	make -j -C ${BUILD_DIR}
 
 clean:
