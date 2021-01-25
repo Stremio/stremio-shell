@@ -8,7 +8,7 @@ fi
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 STASHED=$(git stash | grep -qv "No local changes to save" && echo 1 || :)
 git checkout "$BRANCH"
-VERSION="$(grep -oPm1 'VERSION=\K.+' ../../stremio.pro)"
+VERSION="$(../../dist-utils/common/get-version.sh)"
 git checkout "$CURRENT_BRANCH"
 if [[ -n "$STASHED" ]]; then
     git stash pop

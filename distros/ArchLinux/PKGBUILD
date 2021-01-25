@@ -26,10 +26,7 @@ md5sums=("SKIP")
 # a description of each element in the source array.
 
 pkgver() {
-	cd "$srcdir/${_pkgname}"
-	grep -oPm1 'VERSION=\K.+' stremio.pro
-	# Git, tags available
-	#printf "%s" "$(git describe --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')"
+	"./$srcdir/${_pkgname}/dist-utils/common/get-version.sh"
 }
 
 prepare() {
