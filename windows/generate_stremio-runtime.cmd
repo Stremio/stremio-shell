@@ -24,6 +24,11 @@ if not exist "%rt_path%\" goto :nodir
 set "res_dir=%TEMP%\srres"
 md "%res_dir%"
 
+:: Copy node.exe to the temp dir and remove signature
+copy %node% "%res_dir%\node.exe"
+set node="%res_dir%\node.exe"
+signtool remove /s %node%
+
 :: Extract Node.js resources
 %rh% -open %node% -save "%res_dir%\resources.rc" -action extract -mask ",,"
 
@@ -45,7 +50,7 @@ pushd "%res_dir%"
 popd
 
 :: Build the stremio-runtime executable
-%rh% -open %node% -saveas %rt_exe% -action modify -res "%res_dir%\stremio-rt.res"
+%rh% -open %node% -saveas %rt_exe% -action addoverwrite -res "%res_dir%\stremio-rt.res"
 
 :: Cleanup
 rd /S /Q "%res_dir%"
