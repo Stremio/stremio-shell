@@ -53,4 +53,5 @@ stremio
 distros/ArchLinux/stremio.install
 distros/Fedora/stremio.spec
 icons
+server.js
 
