@@ -7,7 +7,8 @@ License:        MIT
 URL:            https://www.stremio.com
 Source0:        https://github.com/Stremio/stremio-shell/archive/master.zip
 
-BuildRequires: qt5-devel
+BuildRequires: cmake
+BuildRequires: qt-devel
 BuildRequires: librsvg2-tools
 BuildRequires: qt5-qtwebengine-devel
 BuildRequires: openssl-devel
@@ -20,6 +21,7 @@ Requires:       qt5-qtquickcontrols
 Requires:       qt5-qtquickcontrols2
 
 %description
+The next generation media center
 
 %global debug_package %{nil}
 
