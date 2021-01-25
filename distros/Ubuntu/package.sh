@@ -1,17 +1,5 @@
 #!/bin/bash
 
-git clone https://github.com/mpv-player/mpv-build.git
-pushd mpv-build
-./use-mpv-release
-./use-ffmpeg-release
-echo --enable-libmpv-shared --disable-cplayer --disable-build-date > mpv_options
-echo --enable-libx264 >> ffmpeg_options
-echo --enable-libmp3lame >> ffmpeg_options
-echo --enable-libfdk-aac >> ffmpeg_options
-echo --enable-nonfree >> ffmpeg_options
-./rebuild
-popd
-
 git clone https://github.com/Stremio/stremio-shell.git
 cd stremio-shell
 if [ -n "$1" ]; then
@@ -25,4 +13,4 @@ cp dist-utils/common/preremove ./preremove-pak
 
 make -f release.makefile clean
 make -f release.makefile
-sudo checkinstall --default --install=no --fstrans=yes --pkgname stremio --pkgversion "$(grep -oPm1 'VERSION=\K.+' stremio.pro)" --pkggroup video --pkglicense="MIT" --nodoc --pkgarch=$(dpkg --print-architecture) --requires="nodejs,qml-module-qt-labs-platform \(\>=5.9.5\),qml-module-qtquick-controls \(\>=5.9.5\),qml-module-qtquick-dialogs \(\>=5.9.5\),qml-module-qtwebchannel \(\>=5.9.5\),qml-module-qtwebengine \(\>=5.9.5\),librubberband2 \(\>=1.8.1\),libuchardet0  \(\>=0.0.6\),libfdk-aac1  \(\>=0.1.5\)" make -f release.makefile install
+sudo checkinstall --default --install=no --fstrans=yes --pkgname stremio --pkgversion "$(grep -oPm1 'VERSION=\K.+' stremio.pro)" --pkggroup video --pkglicense="MIT" --nodoc --pkgarch=$(dpkg --print-architecture) --requires="nodejs,libmpv1 \(\>=0.30.0\),qml-module-qt-labs-platform \(\>=5.9.5\),qml-module-qtquick-controls \(\>=5.9.5\),qml-module-qtquick-dialogs \(\>=5.9.5\),qml-module-qtwebchannel \(\>=5.9.5\),qml-module-qtwebengine \(\>=5.9.5\),librubberband2 \(\>=1.8.1\),libuchardet0  \(\>=0.0.6\),libfdk-aac1  \(\>=0.1.5\)" make -f release.makefile install
