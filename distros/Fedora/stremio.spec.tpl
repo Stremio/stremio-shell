@@ -21,7 +21,6 @@ Requires:       qt5-qtquickcontrols
 Requires:       qt5-qtquickcontrols2
 
 %description
-The next generation media center
 
 %global debug_package %{nil}
 
