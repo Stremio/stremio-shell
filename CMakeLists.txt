@@ -53,7 +53,6 @@ endif()
 target_include_directories(${PROJECT_NAME} PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${MPV_INCLUDE_DIR}
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/deps/libmpv/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/deps/chroma>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/deps/chroma/ChromaSDK/inc>
 )
@@ -72,5 +71,3 @@ target_link_libraries(${PROJECT_NAME} LINK_PUBLIC
 )
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION opt/stremio)
-
-message("Generated with config types: ${CMAKE_CONFIGURATION_TYPES}")
