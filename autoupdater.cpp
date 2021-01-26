@@ -34,7 +34,7 @@ bool AutoUpdater::isInstalled() {
     size_t size = sizeof(ret);
     if (sysctlbyname("sysctl.proc_translated", &ret, &size, NULL, 0) >= 0 && ret) {
         QDir pathDir("/Applications/Stremio.app");
-        QDebug << "AUTOUPDATER: Installed on Rosetta!";
+        qDebug() << "AUTOUPDATER: Installed on Rosetta!";
         return pathDir.exists();
     }
 #endif
