@@ -1,4 +1,9 @@
 #include <autoupdater.h>
+#ifdef Q_OS_MACOS
+#include <sys/types.h>
+#include <sys/sysctl.h>
+#include <QDebug>
+#endif
 
 AutoUpdater::AutoUpdater(): manager(new QNetworkAccessManager(this)) {
     init_public_key();
@@ -23,6 +28,16 @@ bool AutoUpdater::isInstalled() {
 
     // macOS
     if (dirPath.contains("/Applications") && dirPath.contains(".app")) return true;
+    // Rosetta2
+#ifdef Q_OS_MACOS
+    int ret = 0;
+    size_t size = sizeof(ret);
+    if (sysctlbyname("sysctl.proc_translated", &ret, &size, NULL, 0) >= 0 && ret) {
+        QDir pathDir("/Applications/Stremio.app");
+        qDebug() << "AUTOUPDATER: Installed on Rosetta!";
+        return pathDir.exists();
+    }
+#endif
 
     // Linux - appImage
     if (dirPath.startsWith("/tmp/.mount_")) return true;
