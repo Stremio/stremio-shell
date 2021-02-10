@@ -562,13 +562,17 @@ ApplicationWindow {
       folder: shortcuts.home
       onAccepted: {
         var fileProtocol = "file://"
+        var onWindows = Qt.platform.os === "windows" ? 1 : 0
+        var pathSeparators = ["/", "\\"]
         var files = fileDialog.fileUrls.filter(function(fileUrl) {
           // Ignore network drives and alike
           return fileUrl.startsWith(fileProtocol)
         })
         .map(function(fileUrl) {
           // Send actual path and not file protocol URL
-          return decodeURIComponent(fileUrl.substring(fileProtocol.length + (Qt.platform.os === "windows" ? 1 : 0)))
+          return decodeURIComponent(fileUrl
+            .substring(fileProtocol.length + onWindows))
+            .replace(/\//g, pathSeparators[onWindows])
         })
         transport.event("file-selected", {
           files: files,
