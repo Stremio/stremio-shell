@@ -9,7 +9,6 @@ import com.stremio.screensaver 1.0
 import com.stremio.libmpv 1.0
 import com.stremio.clipboard 1.0
 import QtQml 2.2
-// import Qt.labs.platform 1.0
 
 import "autoupdater.js" as Autoupdater
 
@@ -562,13 +561,14 @@ ApplicationWindow {
       id: fileDialog
       folder: shortcuts.home
       onAccepted: {
+        var fileProtocol = "file://"
         var files = fileDialog.fileUrls.filter(function(fileUrl) {
           // Ignore network drives and alike
-          return fileUrl.startsWith("file:///")
+          return fileUrl.startsWith(fileProtocol)
         })
         .map(function(fileUrl) {
           // Send actual path and not file protocol URL
-          return decodeURIComponent(fileUrl.substring(Qt.platform.os === "windows" ? 8 : 7))
+          return decodeURIComponent(fileUrl.substring(fileProtocol.length + (Qt.platform.os === "windows" ? 1 : 0)))
         })
         transport.event("file-selected", {
           files: files,
