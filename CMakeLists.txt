@@ -40,6 +40,7 @@ if(APPLE)
   set_source_files_properties(images/stremio.icns PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
   set(MPV_LIBRARY_mpv ${CMAKE_CURRENT_SOURCE_DIR}/deps/lib/libmpv.dylib)
   list(APPEND CMAKE_EXE_LINKER_FLAGS "-lc")
+  set(ENV{OPENSSL_ROOT_DIR} $ENV{OPENSSL_BIN_PATH})
 endif()
 
 set(QAPPLICATION_CLASS QApplication)
