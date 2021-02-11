@@ -37,7 +37,7 @@ if(WIN32)
 endif()
 
 if(APPLE)
-  list(APPEND SOURCES images/stremio.icns Info.plist)
+  list(APPEND SOURCES images/stremio.icns)
   set_source_files_properties(images/stremio.icns PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
   set(MPV_LIBRARY_mpv ${CMAKE_CURRENT_SOURCE_DIR}/deps/lib/libmpv.dylib)
   list(APPEND CMAKE_EXE_LINKER_FLAGS "-framework CoreFoundation -framework IOKit -lc")
@@ -91,4 +91,6 @@ target_link_libraries(${PROJECT_NAME} LINK_PUBLIC
   ${MPV_LIBRARY}
 )
 
+if(UNIX AND NOT APPLE)
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION opt/stremio)
+endif()
