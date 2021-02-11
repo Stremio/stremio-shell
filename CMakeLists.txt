@@ -48,6 +48,7 @@ if(APPLE)
        -mtune=native # Tune the code for the computer used compile ITK, but allow running on generic cpu archetectures
        ## use corei7-avx for ARGON cluster builds
        -march=native # Use ABI settings to support corei7 (circa 2008 ABI feature sets, corei7-avx circa 2013)
+       -mmacosx-version-min=10.12
        )
 endif()
 
