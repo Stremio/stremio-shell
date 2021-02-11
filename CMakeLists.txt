@@ -42,6 +42,13 @@ if(APPLE)
   set(MPV_LIBRARY_mpv ${CMAKE_CURRENT_SOURCE_DIR}/deps/lib/libmpv.dylib)
   list(APPEND CMAKE_EXE_LINKER_FLAGS "-framework CoreFoundation -framework IOKit -lc")
   set(ENV{OPENSSL_ROOT_DIR} $ENV{OPENSSL_BIN_PATH})
+  set(InstructionSetOptimizationFlags
+       # https://gcc.gnu.org/onlinedocs/gcc-4.8.0/gcc/i386-and-x86_002d64-Options.html
+       # NOTE the corei7 release date was 2008
+       -mtune=native # Tune the code for the computer used compile ITK, but allow running on generic cpu archetectures
+       ## use corei7-avx for ARGON cluster builds
+       -march=native # Use ABI settings to support corei7 (circa 2008 ABI feature sets, corei7-avx circa 2013)
+       )
 endif()
 
 set(QAPPLICATION_CLASS QApplication)
