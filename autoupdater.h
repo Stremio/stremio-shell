@@ -1,4 +1,6 @@
-#pragma once
+#ifndef AUTOUPDATER_H
+#define AUTOUPDATER_H
+
 #include <QCoreApplication>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -111,3 +113,5 @@ class AutoUpdater : public QObject
     bool inProgress = false;
 
 };
+
+#endif // AUTOUPDATER_H
