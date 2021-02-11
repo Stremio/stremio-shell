@@ -35,6 +35,13 @@ if(WIN32)
   set(MPV_LIBRARY_mpv ${CMAKE_CURRENT_SOURCE_DIR}/deps/libmpv/win32/mpv.lib)
 endif()
 
+if(APPLE)
+  list(APPEND SOURCES images/stremio.icns Info.plist)
+  set_source_files_properties(images/stremio.icns PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+  set(MPV_LIBRARY_mpv ${CMAKE_CURRENT_SOURCE_DIR}/deps/lib/libmpv.dylib)
+  list(APPEND CMAKE_EXE_LINKER_FLAGS "-lc")
+endif()
+
 set(QAPPLICATION_CLASS QApplication)
 add_subdirectory(deps/singleapplication)
 
