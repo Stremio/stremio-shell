@@ -19,9 +19,9 @@ jobs:
       TAG: master
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
-      # - uses: maxim-lobanov/setup-xcode@v1.1
-      #   with:
-      #     xcode-version: '11.5'
+      - uses: maxim-lobanov/setup-xcode@v1.1
+        with:
+          xcode-version: '11.5'
 
       - uses: actions/checkout@v2
   
