@@ -19,9 +19,9 @@ jobs:
       TAG: master
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
-      - uses: maxim-lobanov/setup-xcode@v1.1
-        with:
-          xcode-version: '11.5'
+      #- uses: maxim-lobanov/setup-xcode@v1.1
+      #  with:
+      #    xcode-version: '11.5'
 
       - uses: actions/checkout@v2
   
@@ -61,7 +61,7 @@ jobs:
           ( cd $MPV_BIN_PATH/lib && ln -s libmpv.1.dylib libmpv.dylib )
           export OPENSSL_BIN_PATH=$(brew --prefix openssl)
           mkdir build
-          ( cd build && cmake .. && make )
+          ( cd build && cmake -DCMAKE_RULE_MESSAGES:BOOL=OFF -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON .. && make --no-print-directory )
 
       - name: Add binaries
         run: |
