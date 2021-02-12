@@ -55,7 +55,7 @@ add_subdirectory(deps/singleapplication)
 
 set(CMAKE_BUILD_RPATH_USE_ORIGIN TRUE)
 
-find_package(Qt${QT_DEFAULT_MAJOR_VERSION} COMPONENTS Widgets Network Qml Quick WebEngine WebChannel DBus REQUIRED)
+find_package(Qt${QT_DEFAULT_MAJOR_VERSION} COMPONENTS Widgets Network Qml Quick WebEngine WebChannel DBus OpenGL REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(MPV REQUIRED)
 
@@ -117,6 +117,7 @@ target_link_libraries(${PROJECT_NAME} LINK_PUBLIC
   Qt5::WebEngine
   Qt5::WebChannel
   Qt5::DBus
+  Qt5::OpenGL
   SingleApplication::SingleApplication
   OpenSSL::Crypto
   ${MPV_LIBRARY}
