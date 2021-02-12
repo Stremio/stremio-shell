@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 # set(CMAKE_CONFIGURATION_TYPES "Release" CACHE STRING "" FORCE)
 if(APPLE)
-  set(CMAKE_OSX_DEPLOYMENT_TARGET "10.12" CACHE STRING "Minimum OS X deployment version")
+  set(CMAKE_OSX_DEPLOYMENT_TARGET "10.10" CACHE STRING "Minimum OS X deployment version")
 endif()
 
 project(stremio VERSION "4.4.120")
@@ -44,7 +44,7 @@ if(APPLE)
   list(APPEND SOURCES images/stremio.icns)
   set_source_files_properties(images/stremio.icns PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
   set(MPV_LIBRARY_mpv ${CMAKE_CURRENT_SOURCE_DIR}/deps/lib/libmpv.dylib)
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -framework CoreFoundation -framework IOKit -lc -mtune=native -march=native")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -framework CoreFoundation -framework IOKit -lc -arch=x86_64")
   set(ENV{OPENSSL_ROOT_DIR} $ENV{OPENSSL_BIN_PATH})
 endif()
 
@@ -96,5 +96,5 @@ target_link_libraries(${PROJECT_NAME} LINK_PUBLIC
 )
 
 if(UNIX AND NOT APPLE)
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION opt/stremio)
+  install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION opt/stremio)
 endif()
