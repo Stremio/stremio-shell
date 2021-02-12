@@ -44,9 +44,9 @@ if(APPLE)
   list(APPEND SOURCES images/stremio.icns)
   set_source_files_properties(images/stremio.icns PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
   set(MPV_LIBRARY_mpv ${CMAKE_CURRENT_SOURCE_DIR}/deps/lib/libmpv.dylib)
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mtune=native -march=native")
-  add_definitions("-arch x86_64")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe -stdlib=libc++")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath,@executable_path/../Frameworks")
+  add_definitions("-pipe")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -arch x86_64")
   set(ENV{OPENSSL_ROOT_DIR} $ENV{OPENSSL_BIN_PATH})
 endif()
 
@@ -84,11 +84,13 @@ if(APPLE)
   find_library(C_LIBRARY NAMES c REQUIRED)
   find_library(COREFOUNDATION_LIBRARY NAMES CoreFoundation REQUIRED)
   find_library(IOKIT_LIBRARY NAMES IOKit REQUIRED)
+  find_library(AGL_LIBRARY NAMES AGL REQUIRED)
   target_link_libraries(${PROJECT_NAME} LINK_PUBLIC
     ${C_LIBRARY}
     ${COREFOUNDATION_LIBRARY}
     ${IOKIT_LIBRARY}
     ${OPENGL_LIBS}
+    ${AGL_LIBRARY}
     )
 else()
   add_executable(${PROJECT_NAME} ${SOURCES})
