@@ -37,7 +37,7 @@ set(MPV_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/deps/libmpv/include)
 if(WIN32)
   list(APPEND SOURCES deps/chroma/chroma stremio.rc)
   set(QT_DEFAULT_MAJOR_VERSION 5)
-  set(ENV{Qt5_DIR} C:/Qt/5.12.3/msvc2017)
+  set(ENV{Qt5_DIR} $ENV{QTDIR})
   set(MPV_LIBRARY_mpv ${CMAKE_CURRENT_SOURCE_DIR}/deps/libmpv/win32/mpv.lib)
 endif()
 
