@@ -39,7 +39,6 @@ make -f release.makefile clean
 
 
 %build
-sed -i 's/qmake /qmake-qt5 /g' release.makefile
 make -f release.makefile PREFIX="%{buildroot}"
 
 
