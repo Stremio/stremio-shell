@@ -8,6 +8,7 @@ Requirements
 * 7zip or another utility that supports extracting 7zip archives
 * Git
 * Microsoft Visual Studio
+* CMake
 * QT
 * OpenSSL
 * Node.js
@@ -43,11 +44,11 @@ Clone the repository
 
 Add QT and OpenSSL to the system Path
 
-		set PATH=C:\Qt\Qt5.12.7\5.12.7\msvc2017\bin;C:\OpenSSL-Win32\bin;%PATH%
+		set PATH=C:\Qt\Qt5.15.2\5.15.2\msvc2019\bin;C:\OpenSSL-Win32\bin;%PATH%
 
 Setup the environment
 
-		"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" x86
+    "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
 		FOR /F "usebackq delims== tokens=2" %i IN (`type stremio.pro ^| find "VERSION=4"`) DO set package_version=%i
 
 Download server.js
@@ -57,8 +58,8 @@ Download server.js
 
 Build the shell
 
-		qmake .
-		nmake
+    cmake -G"NMake Makefiles" -DCMAKE_BUILD_TYPE=Release ..
+    cmake --build .
 
 Now create new folder where we will put the final product and copy there the required files:
 
@@ -109,3 +110,4 @@ The default behavior is the opposite of what the arguments do.
 Once installed Stremio is located in `%LOCALAPPDATA%\Programs\LNV\Stremio-4\` directory. The uninstaller also have a silent mode when `/S` argument is present. By default everything is removed. If silent uninstall is required but the user's data have to be kept the uninstaller can be called like this:
 
 	"%LOCALAPPDATA%\Programs\LNV\Stremio-4\Uninstall.exe" /S /keepdata
+
