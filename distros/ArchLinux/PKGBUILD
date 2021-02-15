@@ -9,7 +9,7 @@ url="https://www.stremio.com"
 license=("MIT")
 groups=()
 depends=("nodejs" "ffmpeg" "qt5-webengine" "qt5-webchannel" "qt5-declarative" "qt5-quickcontrols" "qt5-quickcontrols2" "qt5-translations" "mpv" "openssl")
-makedepends=("git" "wget" "qt5-tools" "librsvg")
+makedepends=("git" "wget" "qt5-tools" "librsvg" "cmake")
 provides=("${_pkgname}")
 conflicts=("${_pkgname}" "stremio-legacy" "stremio-beta")
 replaces=("stremio-git")
@@ -26,10 +26,7 @@ md5sums=("SKIP")
 # a description of each element in the source array.
 
 pkgver() {
-	cd "$srcdir/${_pkgname}"
-	grep -oPm1 'VERSION=\K.+' stremio.pro
-	# Git, tags available
-	#printf "%s" "$(git describe --long | sed 's/\([^-]*-\)g/r\1/;s/-/./g')"
+	"./$srcdir/${_pkgname}/dist-utils/common/get-version.sh"
 }
 
 prepare() {

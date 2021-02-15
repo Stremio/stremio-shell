@@ -1,8 +1,8 @@
-FROM archlinux/base
+FROM archlinux:base-devel
 
 # Install package dependencies
 RUN pacman -Syu --noconfirm
-RUN pacman -S --needed --noconfirm sudo git wget librsvg base-devel
+RUN pacman -S --needed --noconfirm sudo
 
 # Setting up new user
 RUN useradd builduser -m

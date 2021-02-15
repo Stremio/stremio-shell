@@ -15,13 +15,13 @@ jobs:
     env:
       APP_IDENTITY: "C2E24BC6719F81C54FAD02B8B4E3535B330794B8"
       CERT_PASS: ${{ secrets.CERT_PASS }}
-      DEST_DIR: ./stremio.app/Contents/MacOS
+      DEST_DIR: ./build/stremio.app/Contents/MacOS
       TAG: master
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
-      # - uses: maxim-lobanov/setup-xcode@v1.1
-      #   with:
-      #     xcode-version: '11.5'
+      #- uses: maxim-lobanov/setup-xcode@v1.1
+      #  with:
+      #    xcode-version: '11.5'
 
       - uses: actions/checkout@v2
   
@@ -34,7 +34,7 @@ jobs:
 
       - name: Prepare environment
         run: |
-          SHELL_VERSION=$(git grep -hoP '^\s*VERSION\s*=\s*\K.*$' HEAD -- stremio.pro)
+          SHELL_VERSION=$(./dist-utils/common/get-version.sh)
           DMG_PATH="Stremio $SHELL_VERSION.dmg"
           node -e 'process.stdout.write("CURRENT_BRANCH="+process.env.GITHUB_REF.replace(/^refs\/(heads|tags)\//, "")+"\n")' >> $GITHUB_ENV
           echo SHELL_VERSION=$SHELL_VERSION >> $GITHUB_ENV
@@ -44,7 +44,7 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
-          version: 5.9.5
+          version: 5.15.2
           modules: qtwebengine qtwebglplugin
 
       - name: Dependencies
@@ -60,8 +60,8 @@ jobs:
           export MPV_BIN_PATH=$(pwd)/deps
           ( cd $MPV_BIN_PATH/lib && ln -s libmpv.1.dylib libmpv.dylib )
           export OPENSSL_BIN_PATH=$(brew --prefix openssl)
-          qmake .
-          make
+          mkdir build
+          ( cd build && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_RULE_MESSAGES:BOOL=OFF -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON .. && make --no-print-directory )
 
       - name: Add binaries
         run: |
@@ -72,7 +72,7 @@ jobs:
 
       - name: Deploy
         run: |
-          macdeployqt ./stremio.app -executable=./stremio.app/Contents/MacOS/ffmpeg  -executable=./stremio.app/Contents/MacOS/node
+          macdeployqt ./build/stremio.app -executable=$DEST_DIR/ffmpeg  -executable=$DEST_DIR/node
 
       - name: Server
         env:
@@ -82,13 +82,13 @@ jobs:
           
       - name: Fix dependencies
         run: |
-          cp ./deps/lib/* ./stremio.app/Contents/Frameworks
+          cp ./deps/lib/* ./build/stremio.app/Contents/Frameworks
 
       - name: Testdrive
         run: ( $DEST_DIR/stremio & sleep 10 && STREMIO_PID=$! && kill $STREMIO_PID )
 
       - name: Rename the app
-        run: mv ./stremio.app ./Stremio.app
+        run: mv ./build/stremio.app ./Stremio.app
 
       - name: Setup keychain
         run: if [ "$DEPLOY" = "true" ]; then source ./mac/keychain_profile; fi

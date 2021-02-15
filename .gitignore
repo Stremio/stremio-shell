@@ -8,6 +8,8 @@
 *.so
 ./*.dll
 *.dylib
+*.deb
+*.rpm
 
 # Qt-es
 
@@ -47,3 +49,10 @@ moc_predefs\.h
 
 # binary on Linux
 stremio
+
+distros/ArchLinux/stremio.install
+distros/Fedora/stremio.spec
+icons
+server.js
+Stremio*.exe
+
