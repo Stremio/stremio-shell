@@ -84,7 +84,6 @@ test_script:
   - ps: echo "> building shell"
   # Manually add a path to RC.exe
   - set PATH=C:\Program Files (x86)\Windows Kits\10\bin\10.0.18362.0\x86\;%PATH%
-  - if exist shell/deps/qBreakpad ( cd shell/deps/qBreakpad/handler && qmake && nmake && cd ../../../.. )
   - ps: |
       mkdir release
       pushd release
