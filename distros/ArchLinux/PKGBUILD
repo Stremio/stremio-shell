@@ -26,7 +26,7 @@ md5sums=("SKIP")
 # a description of each element in the source array.
 
 pkgver() {
-	"./$srcdir/${_pkgname}/dist-utils/common/get-version.sh"
+	"$srcdir/${_pkgname}/dist-utils/common/get-version.sh"
 }
 
 prepare() {
