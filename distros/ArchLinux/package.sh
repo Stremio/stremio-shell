@@ -5,5 +5,5 @@
 if [ -n "$1" ]; then
 	export BRANCH=$1
 fi
-PKGEXT=".pkg.tar.xz"
+PKGEXT=".pkg.tar.zst"
 makepkg --clean --syncdeps --noconfirm
