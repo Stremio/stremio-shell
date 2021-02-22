@@ -9,7 +9,6 @@ import com.stremio.screensaver 1.0
 import com.stremio.libmpv 1.0
 import com.stremio.clipboard 1.0
 import QtQml 2.2
-import Qt.labs.platform 1.0
 
 import "autoupdater.js" as Autoupdater
 
@@ -92,6 +91,24 @@ ApplicationWindow {
             }
             //if (ev === "chroma-toggle") { args.enabled ? chroma.enable() : chroma.disable() }
             if (ev === "screensaver-toggle") shouldDisableScreensaver(args.disabled)
+            if (ev === "file-close") fileDialog.close()
+            if (ev === "file-open") {
+              if(typeof args !== "undefined") {
+                var fileDialogDefaults = {
+                  title: "Please choose",
+                  selectExisting: true,
+                  selectFolder: false,
+                  selectMultiple: false,
+                  nameFilters: [],
+                  selectedNameFilter: "",
+                  data: null
+                }
+                Object.keys(fileDialogDefaults).forEach(function(key) {
+                  fileDialog[key] = args.hasOwnProperty(key) ? args[key] : fileDialogDefaults[key]
+                })
+              }
+              fileDialog.open()
+            }
         }
 
         // events that we want to wait for the app to initialize
@@ -538,6 +555,48 @@ ApplicationWindow {
         // onAccepted handler does not work
         //icon: StandardIcon.Critical
         //standardButtons: StandardButton.Ok
+    }
+
+    FileDialog {
+      id: fileDialog
+      folder: shortcuts.home
+      onAccepted: {
+        var fileProtocol = "file://"
+        var onWindows = Qt.platform.os === "windows" ? 1 : 0
+        var pathSeparators = ["/", "\\"]
+        var files = fileDialog.fileUrls.filter(function(fileUrl) {
+          // Ignore network drives and alike
+          return fileUrl.startsWith(fileProtocol)
+        })
+        .map(function(fileUrl) {
+          // Send actual path and not file protocol URL
+          return decodeURIComponent(fileUrl
+            .substring(fileProtocol.length + onWindows))
+            .replace(/\//g, pathSeparators[onWindows])
+        })
+        transport.event("file-selected", {
+          files: files,
+          title: fileDialog.title,
+          selectExisting: fileDialog.selectExisting,
+          selectFolder: fileDialog.selectFolder,
+          selectMultiple: fileDialog.selectMultiple,
+          nameFilters: fileDialog.nameFilters,
+          selectedNameFilter: fileDialog.selectedNameFilter,
+          data: fileDialog.data
+        })
+      }
+      onRejected: {
+        transport.event("file-rejected", {
+          title: fileDialog.title,
+          selectExisting: fileDialog.selectExisting,
+          selectFolder: fileDialog.selectFolder,
+          selectMultiple: fileDialog.selectMultiple,
+          nameFilters: fileDialog.nameFilters,
+          selectedNameFilter: fileDialog.selectedNameFilter,
+          data: fileDialog.data
+        })
+      }
+      property var data: {}
     }
 
     //
