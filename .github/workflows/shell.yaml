@@ -141,4 +141,4 @@ jobs:
           SLACK_TITLE: Github Builds - Shell
           SLACK_CHANNEL: '#installer-ci'
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-        if: always()
+        if: ${{ !github.event.pull_request }}
