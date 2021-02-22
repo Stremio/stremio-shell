@@ -20,7 +20,7 @@ install:
   - git submodule update --init --recursive
 
   # Install OpenSSL
-  - ps: $env:OPENSSL_INSTALLER = "Win32OpenSSL-1_1_1i.exe"
+  - ps: $env:OPENSSL_INSTALLER = "Win32OpenSSL-1_1_1j.exe"
   - ps: Start-FileDownload "https://slproweb.com/download/$env:OPENSSL_INSTALLER"
   - ps: Start-Process "$env:OPENSSL_INSTALLER" -ArgumentList "/silent /verysilent /sp- /suppressmsgboxes" -Wait
   - ps: del "$env:OPENSSL_INSTALLER"
