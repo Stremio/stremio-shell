@@ -61,7 +61,7 @@ script:
   - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export DEPLOY=true; else export DEPLOY=false; fi
   - echo "Deploy for build is $DEPLOY..."
   - if [ "$DEPLOY" = "true" ] && [ "$TRAVIS_OS_NAME" = "osx" ]; then s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION --add-header=Cache-Control:max-age=7200 put ./dist-osx/*.dmg s3://stremio-artifacts/shell-osx-old/$TAG/; fi
-  - if [ "$DEPLOY" = "true" ] && [ "$TRAVIS_OS_NAME" = "linux" ]; then shopt -s nullglob; for package in $DESTDIR/*.{deb,pkg.tar.xz,rpm}; do echo Uploading package to http://stremio-artifacts.s3.amazonaws.com/shell-linux/$TAG/$package; s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION --add-header=Cache-Control:max-age=7200 put "$package" s3://stremio-artifacts/shell-linux/$TAG/; done; fi
+  - if [ "$DEPLOY" = "true" ] && [ "$TRAVIS_OS_NAME" = "linux" ]; then shopt -s nullglob; for package in $DESTDIR/*.{deb,pkg.tar.zst,rpm}; do echo Uploading package to http://stremio-artifacts.s3.amazonaws.com/shell-linux/$TAG/$package; s3cmd --acl-public --access_key=$AWS_ACCESS_KEY_ID --secret_key=$AWS_SECRET_ACCESS_KEY --force --region=$AWS_DEFAULT_REGION --add-header=Cache-Control:max-age=7200 put "$package" s3://stremio-artifacts/shell-linux/$TAG/; done; fi
 
 notifications:
   slack:
