@@ -60,9 +60,6 @@ install:
   - move windows\NsProcess\Plugin\x86-ansi\nsProcess.dll "%NSISDIR%\Plugins\x86-ansi"
   - move windows\NsProcess\Plugin\x86-unicode\nsProcess.dll "%NSISDIR%\Plugins\x86-unicode"
   
-  # Install VCRedist 2017 x86
-  - set MSVC_BIN_PATH=%DLL_DIR%
-  
   # Prepare the environment by installing Node and setting VC utils in the PATH
   - ps: Install-Product node $env:nodejs_version x86
   - CALL "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
@@ -106,13 +103,12 @@ test_script:
   - appveyor DownloadFile https://s3-eu-west-1.amazonaws.com/stremio-artifacts/four/v%package_version%/server.js -FileName dist-win\server.js
   # Patch server.js in order to work with node 14
   - ps: ((Get-Content -path .\dist-win\server.js -Raw) -replace 'os.tmpDir','os.tmpdir') | Set-Content -Path .\dist-win\server.js
-  # copy-windows-msvc
-  - copy "%MSVC_BIN_PATH%\msvcr120.dll" dist-win
   # copy-windows-ds
   - copy "%DS_BIN_PATH%\DS.exe" dist-win
   - copy "%DS_BIN_PATH%\Microsoft.Search.Interop.dll" dist-win
   # copy-windows-vcredist
   - copy "%VCREDIST_BIN_PATH%\msvcp140.dll" dist-win
+  - copy "%VCREDIST_BIN_PATH%\msvcp140_1.dll" dist-win
   - copy "%VCREDIST_BIN_PATH%\vccorlib140.dll" dist-win
   - copy "%VCREDIST_BIN_PATH%\vcruntime140.dll" dist-win
   # copy-windows-qtshell
