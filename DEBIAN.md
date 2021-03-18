@@ -47,16 +47,16 @@ Then install:
 
 ## 4. Compile Stremio:
 
-$ make
+$ make -f release.makefile
 
-This will create the `stremio' binary.
+This will create a new directory named `build` where the `stremio' binary will be located. It will also generate icons and download the streaming server.
 
 
 ## 5. Prepare the streaming server
 
-Upon running the ./stremio binary, stremio should start up as usual. Except it won't start the streaming server, for this you need to have NodeJS installed and server.js, stremio.asar in your working dir, for which you need to do:
+Upon running the ./build/stremio binary, stremio should start up as usual. Except it won't start the streaming server, for this you need to have NodeJS installed and server.js in your working dir, for which you need to do:
 
-``wget https://dl.strem.io/four/v4.4.111/server.js ; wget https://dl.strem.io/four/v4.4.111/stremio.asar``
+``cp ./server.js ./build/ && ln -s "$(which node)" ./build/node``
 
 
 ## 6. Install other dependencies
@@ -83,19 +83,14 @@ That means you need to install:
 
 Now you should be able to run it normally.
 
-## 7. Run the streaming server
+## 7. Run Stremio
 
-In one terminal you can execute:
+``./build/stremio``
 
-``node server.js``
-
-## 8. Run Stremio
-
-``./stremio``
-
-It can appear a popup window stating:
+If you get a popup window stating:
 
 Error while starting streaming server. Please consider re-installing Stremio from https://www.stremio.com
 
+Perhaps you've skipped step #5
 
-However the system will be able to work normally. Cheers!
+Cheers!
