@@ -332,6 +332,9 @@ ApplicationWindow {
         }
     }
     function injectJS() {
+        splashScreen.visible = false
+        pulseOpacity.running = false
+        removeSplashTimer.running = false
         webView.webChannel.registerObject( 'transport', transport )
         // Try-catch to be able to return the error as result, but still throw it in the client context
         // so it can be caught and reported
@@ -359,8 +362,6 @@ ApplicationWindow {
         repeat: false
         onTriggered: function () {
             webView.backgroundColor = "transparent"
-            splashScreen.visible = false
-            pulseOpacity.running = false
             injectJS()
         }
     }
@@ -403,7 +404,6 @@ ApplicationWindow {
             }
 
             if (successfullyLoaded) {
-                removeSplashTimer.running = false
                 injectJS()
             }
 
