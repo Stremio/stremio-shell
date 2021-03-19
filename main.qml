@@ -497,7 +497,7 @@ ApplicationWindow {
             request.accepted = true;
             // Allow menu inside editalbe objects
             if(request.isContentEditable) {
-                ctxMenu.open();
+                ctxMenu.popup();
             }
         }
 
