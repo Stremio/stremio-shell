@@ -174,12 +174,12 @@ ApplicationWindow {
     Connections {
         target: systemTray
 
-        onSignalIconMenuAboutToShow: {
+        function onSignalIconMenuAboutToShow() {
             systemTray.updateIsOnTop((root.flags & Qt.WindowStaysOnTopHint) === Qt.WindowStaysOnTopHint);
 	        systemTray.updateVisibleAction(root.visible);
         }
 
-        onSignalShow: {
+        function onSignalShow() {
             if(root.visible) {
                 root.hide();
             } else {
@@ -187,7 +187,7 @@ ApplicationWindow {
             }
         }
 
-        onSignalAlwaysOnTop: {
+        function onSignalAlwaysOnTop() {
             root.raise()
             if(root.flags & Qt.WindowStaysOnTopHint) {
                 root.flags &= ~Qt.WindowStaysOnTopHint;
@@ -197,12 +197,12 @@ ApplicationWindow {
         }
  
         // The signal - close the application by ignoring the check-box
-        onSignalQuit: {
+        function onSignalQuit() {
             quitApp();
         }
  
         // Minimize / maximize the window by clicking on the default system tray
-        onSignalIconActivated: {
+        function onSignalIconActivated() {
            showWindow();
        }
     }
@@ -332,6 +332,9 @@ ApplicationWindow {
         }
     }
     function injectJS() {
+        splashScreen.visible = false
+        pulseOpacity.running = false
+        removeSplashTimer.running = false
         webView.webChannel.registerObject( 'transport', transport )
         // Try-catch to be able to return the error as result, but still throw it in the client context
         // so it can be caught and reported
@@ -359,8 +362,6 @@ ApplicationWindow {
         repeat: false
         onTriggered: function () {
             webView.backgroundColor = "transparent"
-            splashScreen.visible = false
-            pulseOpacity.running = false
             injectJS()
         }
     }
@@ -403,7 +404,6 @@ ApplicationWindow {
             }
 
             if (successfullyLoaded) {
-                removeSplashTimer.running = false
                 injectJS()
             }
 
@@ -497,7 +497,7 @@ ApplicationWindow {
             request.accepted = true;
             // Allow menu inside editalbe objects
             if(request.isContentEditable) {
-                ctxMenu.open();
+                ctxMenu.popup();
             }
         }
 
