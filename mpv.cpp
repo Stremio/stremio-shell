@@ -122,6 +122,10 @@ MpvObject::MpvObject(QQuickItem * parent)
             Qt::QueuedConnection);
 
     initialize_mpv();
+
+    // The player is hidden by default. It is shown only whe a video stream is available
+    this->setVisible(false);
+    this->observeProperty("vid");
 }
 
 MpvObject::~MpvObject()
@@ -242,8 +246,11 @@ void MpvObject::handle_mpv_event(mpv_event *event) {
             // NOTE: because we always observe as node, we can handle only that case; we are handling the others, to be safe :)
             switch (prop->format) {
             case MPV_FORMAT_NODE:
-                 eventJson["data"] = QJsonValue::fromVariant(mpv::qt::node_to_variant((mpv_node *) prop->data));
-                 break;
+                // Show the player only if there is a video stream
+                if(((mpv_node *)prop->data)->format == MPV_FORMAT_INT64 && eventJson["name"] == "vid")
+                    this->setVisible(true);
+                eventJson["data"] = QJsonValue::fromVariant(mpv::qt::node_to_variant((mpv_node *) prop->data));
+                break;
             case MPV_FORMAT_DOUBLE:
                 eventJson["data"] = *(double *)prop->data;
                 break;
@@ -261,6 +268,8 @@ void MpvObject::handle_mpv_event(mpv_event *event) {
             break;
         }
         case MPV_EVENT_END_FILE: {
+            // Hide player back when playback is finished
+            this->setVisible(false);
             mpv_event_end_file *endFile = (mpv_event_end_file *)event->data;
             switch (endFile->reason) {
                 case MPV_END_FILE_REASON_ERROR:
@@ -275,7 +284,6 @@ void MpvObject::handle_mpv_event(mpv_event *event) {
                     break;
             }
             Q_EMIT mpvEvent("mpv-event-ended", eventJson);
-
             break;
         }
         case MPV_EVENT_SHUTDOWN: {
