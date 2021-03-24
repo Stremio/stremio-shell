@@ -207,6 +207,7 @@ Section ; App Files
 
     ; Hide details
     SetDetailsPrint None
+    RMDir /r "$INSTDIR"
     RMDir /r "$LOCALAPPDATA\${COMPANY_NAME}\${APP_NAME}\QtWebEngine\Default\Service Worker\CacheStorage"
 
     ;Set output path to InstallDir
