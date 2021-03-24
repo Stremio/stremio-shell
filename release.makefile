@@ -13,6 +13,7 @@ ALL: ${STREMIO_BIN} ${SERVER_JS} icons
 install:
 	make -C ${BUILD_DIR} install
 	install -Dm 644 ${SERVER_JS} "${INSTALL_DIR}/server.js"
+	install -Dm 644 smartcode-stremio.desktop "${INSTALL_DIR}/smartcode-stremio.desktop"
 	cp -r icons "${INSTALL_DIR}/"
 	ln -s "${shell which node}" "${INSTALL_DIR}/node"
 ifneq ("$(wildcard ../mpv-build/mpv/build)","")
