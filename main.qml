@@ -26,6 +26,7 @@ ApplicationWindow {
     height: root.initialHeight
 
     property bool quitting: false
+    property bool closeByDefault: false
 
     color: "#201f32";
     title: appTitle
@@ -69,6 +70,7 @@ ApplicationWindow {
 
         signal event(var ev, var args)
         function onEvent(ev, args) {
+            if (ev === "closeByDefault" && args) root.closeByDefault = args[0]
             if (ev === "quit") quitApp()
             if (ev === "app-ready") transport.flushQueue()
             if (ev === "mpv-command" && args && args[0] !== "run") mpv.command(args)
@@ -633,8 +635,13 @@ ApplicationWindow {
     }
 
     onClosing: function(event){
-        event.accepted = false
-        root.hide()
+        if(!root.closeByDefault) {
+            event.accepted = false
+            root.hide()
+        }
+        else {
+            quitApp();
+        }
     }
 
     //
