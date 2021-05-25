@@ -344,8 +344,7 @@ ApplicationWindow {
             if (!err) {
                 webView.tries = 0
             } else {
-                errorDialog.text = "Error while applying shell JS." +
-                        " Please consider re-installing Stremio from https://www.stremio.com"
+                errorDialog.text = "User Interface could not be loaded.\n\nPlease try again later or contact the Stremio support team for assistance."
                 errorDialog.detailedText = err
                 errorDialog.visible = true
 
