@@ -312,7 +312,7 @@ Section "uninstall"
     KeepUserData:
 
     IfSilent +2
-    ExecShell "open" "http://www.strem.io/goodbye"
+    ExecShell "open" "https://www.strem.io/goodbye"
 SectionEnd
 
 ; ------------------- ;
