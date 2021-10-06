@@ -51,6 +51,7 @@ jobs:
         run: |
           brew update-reset
           brew update
+          brew install openssl
           npm -g install appdmg
 
       - name: Build
