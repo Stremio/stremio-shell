@@ -1,6 +1,6 @@
 # Build Stremio for Debian GNU/Linux
 
-These instructions have been tested in Debian Buster (Testing)
+These instructions have been tested in Debian Bulleye (Stable)
 
 ## 1. Start by cloning the GIT repository:
 
@@ -8,9 +8,11 @@ These instructions have been tested in Debian Buster (Testing)
 
 ## 2. Install QTCreator
 
-``sudo apt-get install qtcreator qt5-qmake qt5-default g++ pkgconf libssl-dev``
+``sudo apt-get install qtcreator qt5-qmake qtbase5-dev g++ pkgconf libssl-dev``
 
 ## 3. Generate the Makefiles for Stremio
+
+``sudo apt-get install cmake``
 
 ``cd stremio-shell``
 
@@ -87,6 +89,27 @@ Now you should be able to run it normally.
 
 ``./build/stremio``
 
+## 8. Addons Configuration
+Lets create a new desktop app shortcut: 
+``sudo touch /usr/share/applications/stremio.desktop``
+Then open it:
+``sudo gedit /usr/share/applications/stremio.desktop``
+Paste inside the followin:
+```
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=stremio
+Icon=/home/mache/Downloads/stremio-shell/images/stremio.png
+Exec=/home/mache/Downloads/stremio-shell/build/stremio %u
+Comment=Streaming with pleasure!
+Categories=Player;
+Terminal=false
+```
+Lets set the shortcut to be used on addresses like stremio://addons.conf/manifest.json:
+``sudo xdg-mime default stremio.desktop x-scheme-handler/stremio``
+
+## NOTE
 If you get a popup window stating:
 
 Error while starting streaming server. Please consider re-installing Stremio from https://www.stremio.com
