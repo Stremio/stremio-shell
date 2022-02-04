@@ -20,16 +20,16 @@ set(CMAKE_AUTOUIC ON)
 
 list(APPEND WEBENGINE_CONFIG use_proprietary_codecs)
 set(SOURCES
-  main
-  mpv
-  stremioprocess
-  screensaver
-  systemtray
-  razerchroma
-  qclipboardproxy
-  verifysig
-  mainapplication
-  autoupdater
+  main.cpp
+  mpv.cpp
+  stremioprocess.cpp
+  screensaver.cpp
+  systemtray.cpp
+  razerchroma.cpp
+  qclipboardproxy.cpp
+  verifysig.c
+  mainapplication.h
+  autoupdater.cpp
   qml.qrc
 )
 
