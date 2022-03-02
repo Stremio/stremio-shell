@@ -8,3 +8,4 @@ Terminal=false
 Type=Application
 Categories=AudioVideo;Video;Player;TV;
 MimeType=application/x-bittorrent;x-scheme-handler/magnet;x-scheme-handler/stremio;video/avi;video/msvideo;video/x-msvideo;video/mp4;video/x-matroska;
+StartupWMClass=stremio
