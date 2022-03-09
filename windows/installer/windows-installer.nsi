@@ -235,7 +235,6 @@ Section ; Shortcuts
     RMDir /r "$SMPROGRAMS\${APP_NAME}"
     CreateDirectory "$SMPROGRAMS\${APP_NAME}"
     CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk" "$INSTDIR\stremio.exe" "" "$INSTDIR\stremio.exe" "" "" "" "${APP_NAME} ${PRODUCT_VERSION}"
-    CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME} web.lnk" "$INSTDIR\stremio web.bat" "" "$INSTDIR\stremio web.bat" "" "" "" "${APP_NAME} ${PRODUCT_VERSION}"
     CreateShortCut "$SMPROGRAMS\${APP_NAME}\Uninstall ${APP_NAME}.lnk" "$INSTDIR\Uninstall.exe" "" "$INSTDIR\stremio.exe" "" "" "" "Uninstall ${APP_NAME}"
 
     ;Desktop Shortcut
