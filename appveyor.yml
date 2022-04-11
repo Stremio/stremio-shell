@@ -20,7 +20,7 @@ install:
   - git submodule update --init --recursive
 
   # Install OpenSSL
-  - ps: >-
+  - ps: |
       $opensslHashesUrl = 'https://raw.githubusercontent.com/slproweb/opensslhashes/master/win32_openssl_hashes.json'
       $files = (Invoke-RestMethod $opensslHashesUrl).files
       $file = $files.psobject.properties.name | ? { $_.StartsWith('Win32OpenSSL-1_1_1') -and $_.EndsWith('.exe') } | select -First 1
