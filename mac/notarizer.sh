@@ -2,8 +2,8 @@
 
 set -e
 
-if [ $# -ne 3 ]; then
-	echo Usage: $0 App.app user pass
+if [ $# -ne 4 ]; then
+	echo Usage: $0 App.app user pass team_id
 	exit 1
 fi
 APP_PATH="$1"
@@ -43,7 +43,7 @@ echo Waiting for notarization...
 sleep 480
 
 echo Check the notarization status...
-xcrun altool --notarization-info "$REQUEST" -u "$USER" -p "$PASS"
+xcrun altool --notarization-info "$REQUEST" -u "$USER" -p "$PASS" --asc-provider "$TEAM_ID"
 
 echo Stapling the app...
 xcrun stapler staple "$APP_PATH"
