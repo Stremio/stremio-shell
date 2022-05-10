@@ -20,10 +20,14 @@ install:
   - git submodule update --init --recursive
 
   # Install OpenSSL
-  - ps: $env:OPENSSL_INSTALLER = "Win32OpenSSL-1_1_1m.exe"
-  - ps: Start-FileDownload "https://slproweb.com/download/$env:OPENSSL_INSTALLER"
-  - ps: Start-Process "$env:OPENSSL_INSTALLER" -ArgumentList "/silent /verysilent /sp- /suppressmsgboxes /dir=C:\OpenSSL-Win32" -Wait
-  - ps: del "$env:OPENSSL_INSTALLER"
+  - ps: |
+      $opensslHashesUrl = 'https://raw.githubusercontent.com/slproweb/opensslhashes/master/win32_openssl_hashes.json'
+      $files = (Invoke-RestMethod $opensslHashesUrl).files
+      $file = $files.psobject.properties.name | ? { $_.StartsWith('Win32OpenSSL-1_1_1') -and $_.EndsWith('.exe') } | select -First 1
+      Start-FileDownload $files.$file.url
+      if ((Get-FileHash $file -Algorithm SHA256).Hash -ne $files.$file.sha256) { throw "The checksum does not match" }
+      Start-Process $file -ArgumentList '/silent /verysilent /sp- /suppressmsgboxes /dir=C:\OpenSSL-Win32' -Wait
+      del $file
   - set OPENSSL_BIN_PATH=C:\OpenSSL-Win32\bin
 
   # Install Resource Hacker
