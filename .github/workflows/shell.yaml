@@ -13,7 +13,7 @@ jobs:
         os: [macOS-latest]
       #  node: ['8']
     env:
-      APP_IDENTITY: "C2E24BC6719F81C54FAD02B8B4E3535B330794B8"
+      APP_IDENTITY: "4AC0E2954ED082BB221BED5A9632D979E940AD96"
       CERT_PASS: ${{ secrets.CERT_PASS }}
       DEST_DIR: ./build/stremio.app/Contents/MacOS
       TAG: master
