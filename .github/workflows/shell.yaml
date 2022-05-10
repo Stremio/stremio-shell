@@ -101,8 +101,9 @@ jobs:
       - name: Notarizing
         env:
           NOTARIZATION_PWD: ${{ secrets.NOTARIZATION_PWD }}
+          TEAM_ID: ${{ secrets.TEAM_ID }}
         run: |
-          if [ "$DEPLOY" = "true" ]; then ./mac/notarizer.sh Stremio.app "ivo@linvo.com" "$NOTARIZATION_PWD"; fi
+          if [ "$DEPLOY" = "true" ]; then ./mac/notarizer.sh Stremio.app "ivo@linvo.com" "$NOTARIZATION_PWD" "$TEAM_ID"; fi
 
       - name: Pack
         run: |

@@ -10,12 +10,13 @@ APP_PATH="$1"
 ZIP_PATH="$APP_PATH.zip"
 USER="$2"
 PASS="$3"
+TEAM_ID="$4"
 
 echo Compresing...
 ditto -c -k --rsrc --keepParent "$APP_PATH" "$ZIP_PATH"
 
 echo Sending notarizing request...
-REQUEST=$(xcrun altool --notarize-app -t osx -f "$ZIP_PATH" --primary-bundle-id com.smartcodeltd.stremio -u "$USER" -p "$PASS" | awk '/RequestUUID =/ { print $3 }')
+REQUEST=$(xcrun altool --notarize-app -t osx -f "$ZIP_PATH" --primary-bundle-id com.smartcodeltd.stremio -u "$USER" -p "$PASS" --asc-provider "$TEAM_ID" | awk '/RequestUUID =/ { print $3 }')
 
 echo Got request ID: $REQUEST
 
