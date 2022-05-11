@@ -13,7 +13,7 @@ jobs:
         os: [macOS-latest]
       #  node: ['8']
     env:
-      APP_IDENTITY: "C2E24BC6719F81C54FAD02B8B4E3535B330794B8"
+      APP_IDENTITY: "FA18F75D76A5D513F8465C671CD0FE2F7F9AA848"
       CERT_PASS: ${{ secrets.CERT_PASS }}
       DEST_DIR: ./build/stremio.app/Contents/MacOS
       TAG: master
@@ -101,8 +101,9 @@ jobs:
       - name: Notarizing
         env:
           NOTARIZATION_PWD: ${{ secrets.NOTARIZATION_PWD }}
+          TEAM_ID: ${{ secrets.TEAM_ID }}
         run: |
-          if [ "$DEPLOY" = "true" ]; then ./mac/notarizer.sh Stremio.app "ivo@linvo.com" "$NOTARIZATION_PWD"; fi
+          if [ "$DEPLOY" = "true" ]; then ./mac/notarizer.sh Stremio.app "ivo@linvo.com" "$NOTARIZATION_PWD" "$TEAM_ID"; fi
 
       - name: Pack
         run: |
