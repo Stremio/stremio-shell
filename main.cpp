@@ -4,7 +4,7 @@
 
 #include <clocale>
 
-#define APP_TITLE "Stremio - All You Can Watch"
+#define APP_TITLE "Stremio - Freedom to Stream"
 
 #define DESKTOP true
 
