@@ -51,6 +51,10 @@ install:
   - 7z x ffmpeg-3.3.4-win-32.zip
   - set FFMPEG_BIN_PATH=%cd%
 
+  # Get FFprobe
+  - ps: Start-FileDownload "https://github.com/vot/ffbinaries-prebuilt/releases/download/v3.3/ffprobe-3.3.4-win-32.zip"
+  - 7z x ffprobe-3.3.4-win-32.zip
+
   - if %compiler%==msvc2019 set VCREDIST_BIN_PATH=C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.16.27012\x86\Microsoft.VC141.CRT
   - if %compiler%==msvc2019_64 set VCREDIST_BIN_PATH=C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.16.27012\x64\Microsoft.VC141.CRT
 
@@ -99,6 +103,8 @@ test_script:
   - copy "%OPENSSL_BIN_PATH%\*.dll" dist-win
   # copy-windows-ffmpeg
   - move "%FFMPEG_BIN_PATH%\ffmpeg.exe" dist-win
+  # copy-windows-ffprobe
+  - move "%FFMPEG_BIN_PATH%\ffprobe.exe" dist-win
   # copy-windows-node (stremio-runtime)
   - ps: '& $(Join-Path $env:DLL_DIR "generate_stremio-runtime.cmd") dist-win'
   # copy-windows-server
