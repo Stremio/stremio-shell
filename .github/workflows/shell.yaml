@@ -67,13 +67,15 @@ jobs:
       - name: Add binaries
         run: |
           cp ./mac/ffmpeg $DEST_DIR/
+          cp ./mac/ffprobe $DEST_DIR/
           cat ./mac/node > $DEST_DIR/node
           chmod +w $DEST_DIR/ffmpeg
+          chmod +w $DEST_DIR/ffprobe
           chmod +wx $DEST_DIR/node
 
       - name: Deploy
         run: |
-          macdeployqt ./build/stremio.app -executable=$DEST_DIR/ffmpeg  -executable=$DEST_DIR/node
+          macdeployqt ./build/stremio.app -executable=$DEST_DIR/ffmpeg -executable=$DEST_DIR/ffprobe  -executable=$DEST_DIR/node
 
       - name: Server
         env:
