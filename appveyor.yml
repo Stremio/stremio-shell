@@ -142,6 +142,8 @@ test_script:
   - if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20211118-20241118.pfx /p %CERT_PASS%  ./dist-win/stremio.exe
   - if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20211118-20241118.pfx /p %CERT_PASS%  ./dist-win/stremio-runtime.exe
   - if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20211118-20241118.pfx /p %CERT_PASS%  ./dist-win/ffmpeg.exe
+  - if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20211118-20241118.pfx /p %CERT_PASS%  ./dist-win/ffprobe.exe
+
 
   # build-windows-installer
   - makensis -V2 ./windows/installer/windows-installer.nsi
