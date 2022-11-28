@@ -17,6 +17,7 @@ STREMIO_DESKTOP := stremio.desktop
 STREMIO_BIN := ${BUILD_DIR}/stremio
 NODE_BIN := $(shell which node)
 FFMPEG_BIN := $(shell which ffmpeg)
+FFPROBE_BIN := $(shell which ffprobe)
 
 QT_RESOURCES = ${QT_BIN_PATH}/resources
 QT_TRANSLATIONS = ${QT_BIN_PATH}/translations
@@ -27,7 +28,7 @@ APPIMAGE_FILE := Stremio-v${VERSION}-x86_64.AppImage
 
 ALL: ${APPIMAGE_FILE}
 
-${DEST_DIR}: ${STREMIO_BIN} ${NODE_BIN} ${FFMPEG_BIN} ${ICON_BIN} ${STREMIO_DESKTOP} ${QT_RESOURCES} ${QT_TRANSLATIONS}
+${DEST_DIR}: ${STREMIO_BIN} ${NODE_BIN} ${FFMPEG_BIN} ${FFPROBE_BIN} ${ICON_BIN} ${STREMIO_DESKTOP} ${QT_RESOURCES} ${QT_TRANSLATIONS}
 	mkdir -p ${DEST_DIR}/lib
 	cp -r $^ ${DEST_DIR}/
 	cp -r ${NSS_DIR} ${DEST_DIR}/lib/
