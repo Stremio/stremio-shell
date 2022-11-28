@@ -237,7 +237,7 @@ ApplicationWindow {
     Process {
         id: streamingServer
         property string errMessage:
-            "Error while starting streaming server. Please consider re-installing Stremio from https://www.stremio.com"
+            "Error while starting streaming server. Please try to restart stremio. If it happens again please contact the Stremio support team for assistance"
         property int errors: 0
         property bool fastReload: false
 
