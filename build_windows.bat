@@ -32,6 +32,7 @@ copy windows\mpv-1.dll dist-win
 copy windows\msvcr120.dll dist-win
 copy windows\DS\* dist-win
 copy C:\tools\ffmpeg.exe dist-win
+copy C:\tools\ffprobe.exe dist-win
 copy C:\OpenSSL-Win32\bin\libcrypto-1_1.dll dist-win
 ::windeployqt --release --no-compiler-runtime --qmldir=. ./dist-win/stremio.exe
 
