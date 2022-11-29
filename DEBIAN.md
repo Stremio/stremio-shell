@@ -4,7 +4,7 @@ These instructions have been tested in Debian Buster (Testing)
 
 ## 1. Start by cloning the GIT repository:
 
-``git clone --recurse-submodules -j8 git://github.com/Stremio/stremio-shell.git``
+``git clone --recurse-submodules -j8 https://github.com/Stremio/stremio-shell.git``
 
 ## 2. Install QTCreator
 
