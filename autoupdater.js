@@ -45,7 +45,7 @@
             longTimer.restart();
         });
 
-        // WARNING: all of the slot handlers are handled in another thread, that's why we need the autoUpdaterErr()
+        // WARNING: all the slot handlers are handled in another thread, that's why we need the autoUpdaterErr()
         // signal - to bring execution back to UI thread
         autoUpdater.checkFinished.connect(function(check) {
             // reset the autoupdater error counter

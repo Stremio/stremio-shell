@@ -47,9 +47,9 @@ Then install:
 
 ## 4. Compile Stremio:
 
-$ make -f release.makefile
+`make -f release.makefile`
 
-This will create a new directory named `build` where the `stremio' binary will be located. It will also generate icons and download the streaming server.
+This will create a new directory named `build` where the `stremio` binary will be located. It will also generate icons and download the streaming server.
 
 
 ## 5. Prepare the streaming server
