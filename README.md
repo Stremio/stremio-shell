@@ -4,7 +4,7 @@
 
 1. Make sure you have Qt 5.10.x or newer and Qt Creator
 2. Open the project in Qt creator
-3. build it
+3. Build it
 
 #### Command line to build:
 
