@@ -93,8 +93,9 @@ if ! cd "$DISTROS_DIR/$DISTRO" &> /dev/null; then
 fi
 
 source mkconfig.sh
-IMAGE_HASH=$(docker build  . | tee >(cat >&2) | tail -n 1 | cut -d " " -f 3)
-docker run --rm -v "$DEST_DIR:/app" -t "$IMAGE_HASH" sh -c "(su builduser -c \"./package.sh $BRANCH\") && $COPY_CMD"
+docker build  . -t stremio-docker-build
+IMAGE_NAME="stremio-docker-build"
+docker run --rm -v "$DEST_DIR:/app" -t "$IMAGE_NAME" sh -c "(su builduser -c \"./package.sh $BRANCH\") && $COPY_CMD"
 
 if [[ -n "$CLEAN_CMD" ]]; then
     $CLEAN_CMD
