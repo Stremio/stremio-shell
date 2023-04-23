@@ -94,7 +94,7 @@ fi
 
 source mkconfig.sh
 IMAGE_HASH=$(docker build  . | tee >(cat >&2) | tail -n 1 | cut -d " " -f 3)
-docker run --privileged --rm -v "$DEST_DIR:/app" -t "$IMAGE_HASH" sh -c "(su builduser -c \"./package.sh $BRANCH\") && $COPY_CMD"
+docker run --rm -v "$DEST_DIR:/app" -t "$IMAGE_HASH" sh -c "(su builduser -c \"./package.sh $BRANCH\") && $COPY_CMD"
 
 if [[ -n "$CLEAN_CMD" ]]; then
     $CLEAN_CMD
