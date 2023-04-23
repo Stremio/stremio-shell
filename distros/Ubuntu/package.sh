@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git clone https://github.com/Stremio/stremio-shell.git
+git clone --recurse-submodules -j$(nproc) https://github.com/Stremio/stremio-shell.git
 cd stremio-shell
 if [ -n "$1" ]; then
 	git checkout "$1"

@@ -32,7 +32,7 @@ install:
 
   # Install Resource Hacker
   - ps: $env:RH_INSTALLER = "reshacker_setup.exe"
-  - ps: Start-FileDownload "http://www.angusj.com/resourcehacker/$env:RH_INSTALLER"
+  - ps: Start-FileDownload "https://www.angusj.com/resourcehacker/$env:RH_INSTALLER"
   - ps: Start-Process "$env:RH_INSTALLER" -ArgumentList "/silent /verysilent /sp- /suppressmsgboxes /dir=C:\RH" -Wait
   - ps: del "$env:RH_INSTALLER"
 
@@ -168,7 +168,7 @@ deploy:
   on:
     DEPLOY: true
 
-# We need to customize the Slack notification so we add messages and links to artifacts
+# We need to customize the Slack notification, so we add messages and links to artifacts
 notifications:
   - provider: Slack
     incoming_webhook:
