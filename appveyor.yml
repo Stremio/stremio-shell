@@ -105,10 +105,8 @@ test_script:
   - copy "%FFMPEG_BIN_PATH%\*.dll" dist-win
   # copy-windows-node (stremio-runtime)
   - ps: '& $(Join-Path $env:DLL_DIR "generate_stremio-runtime.cmd") dist-win'
-  # copy-windows-server
-  - appveyor DownloadFile https://s3-eu-west-1.amazonaws.com/stremio-artifacts/four/v%package_version%/server.js -FileName dist-win\server.js
-  # Patch server.js in order to work with node 14
-  - ps: ((Get-Content -path .\dist-win\server.js -Raw) -replace 'os.tmpDir','os.tmpdir') | Set-Content -Path .\dist-win\server.js
+  # Download and patch server.js in order to work with node 14
+  - ps: ((Invoke-WebRequest -Uri (Get-Content -path ./server-url.txt)).Content -replace  'os.tmpDir','os.tmpdir') | Set-Content -Path .\dist-win\server.js
   # copy-windows-ds
   - copy "%DS_BIN_PATH%\DS.exe" dist-win
   - copy "%DS_BIN_PATH%\Microsoft.Search.Interop.dll" dist-win
