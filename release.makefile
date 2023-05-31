@@ -29,7 +29,7 @@ icons:
 	cd "$@" && printf 16,22,24,32,64,128 | xargs -I^ -d, sh -c 'rsvg-convert ../images/stremio.svg -w ^ -o smartcode-stremio_^.png && rsvg-convert ../images/stremio_tray_white.svg -w ^ -o smartcode-stremio-tray_^.png'
 
 ${SERVER_JS}: 
-	wget "https://s3-eu-west-1.amazonaws.com/stremio-artifacts/four/v$(shell ./dist-utils/common/get-version.sh)/server.js" -qO ${SERVER_JS} || rm ${SERVER_JS}
+	wget "${shell cat server-url.txt}" -qO ${SERVER_JS} || rm ${SERVER_JS}
 
 ${STREMIO_BIN}:
 	mkdir -p ${BUILD_DIR}
