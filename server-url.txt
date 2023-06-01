@@ -1,1 +1,1 @@
-https://dl.strem.io/server/v4.20.1/desktop/server.js
+https://dl.strem.io/server/v4.20.2/desktop/server.js
