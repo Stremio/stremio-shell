@@ -7,7 +7,7 @@
 *.lai
 *.so
 ./*.dll
-*.dylib
+./*.dylib
 *.deb
 *.rpm
 

@@ -86,6 +86,7 @@ jobs:
       - name: Fix dependencies
         run: |
           cp ./deps/lib/* ./build/stremio.app/Contents/Frameworks
+          cp ./mac/libcrypto.3.dylib ./build/stremio.app/Contents/Frameworks
 
       - name: Testdrive
         run: ( $DEST_DIR/stremio & sleep 10 && STREMIO_PID=$! && kill $STREMIO_PID )
