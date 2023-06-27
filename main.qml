@@ -160,7 +160,8 @@ ApplicationWindow {
 
     function onMediaKeyPress(){
         console.log("test hazem");
-        mpv.setProperty("pause", !mpv.getProperty("pause"));
+        if(root.visible)
+            mpv.setProperty("pause", !mpv.getProperty("pause"));
     }
 
     // May be called from a message (from another app instance) or when app is initialized with an arg
