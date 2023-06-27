@@ -112,6 +112,9 @@ int main(int argc, char **argv)
     engine->load(QUrl(QStringLiteral("qrc:/main.qml")));
 
 #ifdef Q_OS_LINUX
+/*This soluition baiscally subscribes to Gnome's MediaKeys DBus interface,
+ and binds a qml slot to the MediaPlayerKeyPressed signal that controls the mpv player*/
+
 #define SERVICE_NAME "org.gnome.SettingsDaemon.MediaKeys"
 #define OBJECT_PATH "/org/gnome/SettingsDaemon/MediaKeys"
 #define INTERFACE_NAME "org.gnome.SettingsDaemon.MediaKeys"
