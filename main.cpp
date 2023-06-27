@@ -132,21 +132,21 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    qDebug("interface is valid");
+    qDebug("interface is valid\n");
     QDBusReply<void> reply = interface.call("GrabMediaPlayerKeys", "stremio", (unsigned int)0);
     if (!reply.isValid())
     {
-        qDebug("Reply was: invalid");
+        qDebug("Reply was: invalid\n");
         qDebug("%s", qPrintable(reply.error().message()));
         exit(1);
     }
 
-    qDebug("Reply was: valid");
+    qDebug("Reply was: valid\n");
 
     if (!QObject::connect(&interface, SIGNAL(MediaPlayerKeyPressed(QString, QString)),
-                          engine->rootObjects().value(0), SLOT(onMediaKey())))
+                          engine->rootObjects().value(0), SLOT(onMediaKeyPress())))
     {
-        qDebug("error1:%s",
+        qDebug("connection error:%s\n",
                qPrintable(QDBusConnection::sessionBus().lastError().message()));
     }
     else

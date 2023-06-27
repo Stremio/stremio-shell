@@ -158,7 +158,7 @@ ApplicationWindow {
         }
     }
 
-    function onMediaKey(){
+    function onMediaKeyPress(){
         console.log("test hazem");
         mpv.setProperty("pause", !mpv.getProperty("pause"));
     }

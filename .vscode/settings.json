@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "*.css": "css",
+        "*.html": "html",
+        "*.uss": "css",
+        "*.uxml": "xml",
+        "system_error": "cpp"
+    }
+}
