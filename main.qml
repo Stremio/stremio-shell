@@ -158,6 +158,11 @@ ApplicationWindow {
         }
     }
 
+    function onMediaKey(){
+        console.log("test hazem");
+        mpv.setProperty("pause", !mpv.getProperty("pause"));
+    }
+
     // May be called from a message (from another app instance) or when app is initialized with an arg
     function onAppOpenMedia(message) {
         var url = (message.indexOf('://') > -1 || message.indexOf('magnet:') === 0) ? message : 'file://'+message;

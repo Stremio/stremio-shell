@@ -10,7 +10,7 @@ QMAKE_TARGET_BUNDLE_PREFIX = com.smartcodeltd
 
 QMAKE_INFO_PLIST = Info.plist
 
-QT += qml quick network
+QT += qml quick network dbus
 CONFIG += c++11
 
 include(deps/singleapplication/singleapplication.pri)
