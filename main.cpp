@@ -1,7 +1,6 @@
 #include <QQmlApplicationEngine>
 #include <QtWebEngine>
 #include <QSysInfo>
-#include <QtDBus/QtDBus>
 
 #include <clocale>
 
