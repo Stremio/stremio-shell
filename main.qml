@@ -158,8 +158,8 @@ ApplicationWindow {
         }
     }
 
-    function onMediaKeyPress(){
-        console.log("test hazem");
+    function onMediaKeyPress(action){
+        console.log("test hazem ", action.toString());
         if(root.visible)
             mpv.setProperty("pause", !mpv.getProperty("pause"));
     }
@@ -616,14 +616,13 @@ ApplicationWindow {
         updatePreviousVisibility();
         transport.event("win-state-changed", { state: state })
     }
-
+    
     onVisibilityChanged: {
         var enabledAlwaysOnTop = root.visible && root.visibility != Window.FullScreen;
         systemTray.alwaysOnTopEnabled(enabledAlwaysOnTop);
         if (!enabledAlwaysOnTop) {
             root.flags &= ~Qt.WindowStaysOnTopHint;
         }
-
         updatePreviousVisibility();
         transport.event("win-visibility-changed", { visible: root.visible, visibility: root.visibility,
                             isFullscreen: root.visibility === Window.FullScreen })

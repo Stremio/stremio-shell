@@ -62,7 +62,8 @@ SOURCES       = deps/singleapplication/singleapplication.cpp \
 		systemtray.cpp \
 		razerchroma.cpp \
 		qclipboardproxy.cpp \
-		verifysig.c qrc_qml.cpp \
+		verifysig.c \
+		mediaPlayerKeys.cpp qrc_qml.cpp \
 		moc_singleapplication.cpp \
 		moc_singleapplication_p.cpp \
 		moc_mpv.cpp \
@@ -72,7 +73,8 @@ SOURCES       = deps/singleapplication/singleapplication.cpp \
 		moc_autoupdater.cpp \
 		moc_systemtray.cpp \
 		moc_razerchroma.cpp \
-		moc_qclipboardproxy.cpp
+		moc_qclipboardproxy.cpp \
+		moc_mediaPlayerKeys.cpp
 OBJECTS       = singleapplication.o \
 		singleapplication_p.o \
 		main.o \
@@ -84,6 +86,7 @@ OBJECTS       = singleapplication.o \
 		razerchroma.o \
 		qclipboardproxy.o \
 		verifysig.o \
+		mediaPlayerKeys.o \
 		qrc_qml.o \
 		moc_singleapplication.o \
 		moc_singleapplication_p.o \
@@ -94,7 +97,8 @@ OBJECTS       = singleapplication.o \
 		moc_autoupdater.o \
 		moc_systemtray.o \
 		moc_razerchroma.o \
-		moc_qclipboardproxy.o
+		moc_qclipboardproxy.o \
+		moc_mediaPlayerKeys.o
 DIST          = deps/singleapplication/README.md \
 		deps/singleapplication/CHANGELOG.md \
 		deps/singleapplication/Windows.md \
@@ -203,7 +207,8 @@ DIST          = deps/singleapplication/README.md \
 		razerchroma.h \
 		qclipboardproxy.h \
 		verifysig.h \
-		publickey.h deps/singleapplication/singleapplication.cpp \
+		publickey.h \
+		mediaPlayerKeys.h deps/singleapplication/singleapplication.cpp \
 		deps/singleapplication/singleapplication_p.cpp \
 		main.cpp \
 		mpv.cpp \
@@ -213,7 +218,8 @@ DIST          = deps/singleapplication/README.md \
 		systemtray.cpp \
 		razerchroma.cpp \
 		qclipboardproxy.cpp \
-		verifysig.c
+		verifysig.c \
+		mediaPlayerKeys.cpp
 QMAKE_TARGET  = stremio
 DESTDIR       = 
 TARGET        = stremio
@@ -432,8 +438,8 @@ distdir: FORCE
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents qml.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents deps/singleapplication/SingleApplication deps/singleapplication/singleapplication.h deps/singleapplication/singleapplication_p.h mpv.h stremioprocess.h screensaver.h mainapplication.h autoupdater.h systemtray.h razerchroma.h qclipboardproxy.h verifysig.h publickey.h $(DISTDIR)/
-	$(COPY_FILE) --parents deps/singleapplication/singleapplication.cpp deps/singleapplication/singleapplication_p.cpp main.cpp mpv.cpp stremioprocess.cpp screensaver.cpp autoupdater.cpp systemtray.cpp razerchroma.cpp qclipboardproxy.cpp verifysig.c $(DISTDIR)/
+	$(COPY_FILE) --parents deps/singleapplication/SingleApplication deps/singleapplication/singleapplication.h deps/singleapplication/singleapplication_p.h mpv.h stremioprocess.h screensaver.h mainapplication.h autoupdater.h systemtray.h razerchroma.h qclipboardproxy.h verifysig.h publickey.h mediaPlayerKeys.h $(DISTDIR)/
+	$(COPY_FILE) --parents deps/singleapplication/singleapplication.cpp deps/singleapplication/singleapplication_p.cpp main.cpp mpv.cpp stremioprocess.cpp screensaver.cpp autoupdater.cpp systemtray.cpp razerchroma.cpp qclipboardproxy.cpp verifysig.c mediaPlayerKeys.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -476,9 +482,9 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -std=gnu++11 -Wall -W -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_singleapplication.cpp moc_singleapplication_p.cpp moc_mpv.cpp moc_stremioprocess.cpp moc_screensaver.cpp moc_mainapplication.cpp moc_autoupdater.cpp moc_systemtray.cpp moc_razerchroma.cpp moc_qclipboardproxy.cpp
+compiler_moc_header_make_all: moc_singleapplication.cpp moc_singleapplication_p.cpp moc_mpv.cpp moc_stremioprocess.cpp moc_screensaver.cpp moc_mainapplication.cpp moc_autoupdater.cpp moc_systemtray.cpp moc_razerchroma.cpp moc_qclipboardproxy.cpp moc_mediaPlayerKeys.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_singleapplication.cpp moc_singleapplication_p.cpp moc_mpv.cpp moc_stremioprocess.cpp moc_screensaver.cpp moc_mainapplication.cpp moc_autoupdater.cpp moc_systemtray.cpp moc_razerchroma.cpp moc_qclipboardproxy.cpp
+	-$(DEL_FILE) moc_singleapplication.cpp moc_singleapplication_p.cpp moc_mpv.cpp moc_stremioprocess.cpp moc_screensaver.cpp moc_mainapplication.cpp moc_autoupdater.cpp moc_systemtray.cpp moc_razerchroma.cpp moc_qclipboardproxy.cpp moc_mediaPlayerKeys.cpp
 moc_singleapplication.cpp: deps/singleapplication/singleapplication.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
@@ -540,6 +546,11 @@ moc_qclipboardproxy.cpp: qclipboardproxy.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/hazem/projects/stremio-shell/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/hazem/projects/stremio-shell -I/home/hazem/projects/stremio-shell/deps/singleapplication -I/home/hazem/projects/stremio-shell/deps/libmpv/include -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWebEngine -I/usr/include/x86_64-linux-gnu/qt5/QtWebEngineCore -I/usr/include/x86_64-linux-gnu/qt5/QtQuick -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtWebChannel -I/usr/include/x86_64-linux-gnu/qt5/QtQml -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtDBus -I/usr/include/x86_64-linux-gnu/qt5/QtPositioning -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include qclipboardproxy.h -o moc_qclipboardproxy.cpp
 
+moc_mediaPlayerKeys.cpp: mediaPlayerKeys.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/hazem/projects/stremio-shell/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/hazem/projects/stremio-shell -I/home/hazem/projects/stremio-shell/deps/singleapplication -I/home/hazem/projects/stremio-shell/deps/libmpv/include -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWebEngine -I/usr/include/x86_64-linux-gnu/qt5/QtWebEngineCore -I/usr/include/x86_64-linux-gnu/qt5/QtQuick -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtWebChannel -I/usr/include/x86_64-linux-gnu/qt5/QtQml -I/usr/include/x86_64-linux-gnu/qt5/QtNetwork -I/usr/include/x86_64-linux-gnu/qt5/QtDBus -I/usr/include/x86_64-linux-gnu/qt5/QtPositioning -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include mediaPlayerKeys.h -o moc_mediaPlayerKeys.cpp
+
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
 compiler_moc_source_make_all:
@@ -578,7 +589,8 @@ main.o: main.cpp systemtray.h \
 		deps/libmpv/include/mpv/qthelper.hpp \
 		screensaver.h \
 		razerchroma.h \
-		qclipboardproxy.h
+		qclipboardproxy.h \
+		mediaPlayerKeys.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
 mpv.o: mpv.cpp mpv.h \
@@ -612,6 +624,9 @@ verifysig.o: verifysig.c verifysig.h \
 		publickey.h
 	$(CC) -c $(CFLAGS) $(INCPATH) -o verifysig.o verifysig.c
 
+mediaPlayerKeys.o: mediaPlayerKeys.cpp mediaPlayerKeys.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mediaPlayerKeys.o mediaPlayerKeys.cpp
+
 qrc_qml.o: qrc_qml.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_qml.o qrc_qml.cpp
 
@@ -644,6 +659,9 @@ moc_razerchroma.o: moc_razerchroma.cpp
 
 moc_qclipboardproxy.o: moc_qclipboardproxy.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_qclipboardproxy.o moc_qclipboardproxy.cpp
+
+moc_mediaPlayerKeys.o: moc_mediaPlayerKeys.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mediaPlayerKeys.o moc_mediaPlayerKeys.cpp
 
 ####### Install
 

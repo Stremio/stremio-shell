@@ -22,6 +22,7 @@ list(APPEND WEBENGINE_CONFIG use_proprietary_codecs)
 set(SOURCES
   main.cpp
   mpv.cpp
+  mediaPlayerKeys.cpp
   stremioprocess.cpp
   screensaver.cpp
   systemtray.cpp

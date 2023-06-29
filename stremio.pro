@@ -74,7 +74,8 @@ SOURCES += main.cpp \
     systemtray.cpp \
     razerchroma.cpp \
     qclipboardproxy.cpp \
-    verifysig.c
+    verifysig.c \
+    mediaPlayerKeys.cpp
 
 RESOURCES += qml.qrc
 
@@ -94,4 +95,5 @@ HEADERS += \
     razerchroma.h \
     qclipboardproxy.h \
     verifysig.h \
-    publickey.h
+    publickey.h \
+    mediaPlayerKeys.h
