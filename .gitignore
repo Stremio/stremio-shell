@@ -56,3 +56,5 @@ icons
 server.js
 Stremio*.exe
 
+#vscode
+.vscode/
