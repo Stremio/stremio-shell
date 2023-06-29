@@ -159,8 +159,8 @@ ApplicationWindow {
     }
 
     function onMediaKeyPress(action){
-        console.log("test hazem ", action.toString());
-        if(root.visible)
+        action = action.toString();
+        if(action === "Play" || action === "Pause")
             mpv.setProperty("pause", !mpv.getProperty("pause"));
     }
 
@@ -627,6 +627,12 @@ ApplicationWindow {
         transport.event("win-visibility-changed", { visible: root.visible, visibility: root.visibility,
                             isFullscreen: root.visibility === Window.FullScreen })
     }
+
+
+    //
+    // VISIBILITY CHANGED
+    //
+    signal visibilityChanged(bool visible);
     
     property int appState: Qt.application.state;
     onAppStateChanged: {
@@ -639,6 +645,7 @@ ApplicationWindow {
         if (Qt.platform.os === "osx" && appState === Qt.ApplicationActive && !root.visible) {
             root.show()
         }
+        root.visibilityChanged(root.visible);
     }
 
     onClosing: function(event){
@@ -651,6 +658,7 @@ ApplicationWindow {
     //
     signal autoUpdaterErr(var msg, var err);
     signal autoUpdaterRestartTimer();
+
 
     // Explanation: when the long timer expires, we schedule the short timer; we do that, 
     // because in case the computer has been asleep for a long time, we want another short timer so we don't check

@@ -121,6 +121,10 @@ int main(int argc, char **argv)
     mpk.registerToMediaPlayerKeysSignal(
         engine->rootObjects().value(0),
         SLOT(onMediaKeyPress(QVariant)));
+
+    if(!QObject::connect(engine->rootObjects().value(0), SIGNAL(visibilityChanged(bool)), &mpk, SLOT(handleVisibilityChange(bool)))){
+        qDebug("visibility changed signal connection error\n");
+    }
 #endif
 
 #ifndef Q_OS_MACOS

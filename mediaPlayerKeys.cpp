@@ -22,11 +22,11 @@ void MediaPlayerKeys::releaseMediaPlayerKeys()
     QDBusReply<void> reply = m_interface->call("ReleaseMediaPlayerKeys", APPLICATION_NAME);
     if (!reply.isValid())
     {
-        qDebug("Reply was: invalid\n");
+        qDebug("ReleaseMediaPlayerKeys Reply was: invalid\n");
         qDebug("%s", qPrintable(reply.error().message()));
     }
 
-    qDebug("Reply was: valid\n");
+    qDebug("ReleaseMediaPlayerKeys Reply was: valid\n");
 }
 
 void MediaPlayerKeys::grabMediaPlayerKeys()
@@ -34,11 +34,11 @@ void MediaPlayerKeys::grabMediaPlayerKeys()
     QDBusReply<void> reply = m_interface->call("GrabMediaPlayerKeys", APPLICATION_NAME, (unsigned int)0);
     if (!reply.isValid())
     {
-        qDebug("Reply was: invalid\n");
+        qDebug("GrabMediaPlayerKeys Reply was: invalid\n");
         qDebug("%s", qPrintable(reply.error().message()));
     }
 
-    qDebug("Reply was: valid\n");
+    qDebug("GrabMediaPlayerKeys Reply was: valid\n");
 }
 
 void MediaPlayerKeys::registerToMediaPlayerKeysSignal(QObject *receiver, const char *slot)
