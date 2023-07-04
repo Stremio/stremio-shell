@@ -78,6 +78,10 @@ ApplicationWindow {
                     shouldDisableScreensaver(!args[1]);
                 }
             }
+            if (ev === "mpv-use-config") {
+
+                mpv.useConfig(args[0]);
+            }
             if (ev === "mpv-observe-prop") mpv.observeProperty(args)
             if (ev === "control-event") wakeupEvent()
             if (ev === "wakeup") wakeupEvent()

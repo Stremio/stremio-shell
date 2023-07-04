@@ -203,6 +203,11 @@ void MpvObject::setProperty(const QString& name, const QVariant& value)
     mpv::qt::set_property(mpv, name, value);
 }
 
+void MpvObject::useConfig(const QVariant& value)
+{
+    mpv_set_option_string(mpv, "config", value.toBool() ? "yes" : "no");
+}
+
 void MpvObject::observeProperty(const QString& name)
 {
     observed_properties.insert(name);
