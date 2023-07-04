@@ -80,7 +80,7 @@ ApplicationWindow {
             }
             if (ev === "mpv-use-config") {
 
-                mpv.useConfig(args[0]);
+                mpv.useConfig();
             }
             if (ev === "mpv-observe-prop") mpv.observeProperty(args)
             if (ev === "control-event") wakeupEvent()
