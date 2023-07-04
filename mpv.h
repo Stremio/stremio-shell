@@ -29,6 +29,7 @@ public:
 public slots:
     void command(const QVariant& params);
     void setProperty(const QString& name, const QVariant& value);
+    void MpvObject::useConfig(const QVariant& value);
     QVariant getProperty(const QString& name);
     void observeProperty(const QString& name);
 
