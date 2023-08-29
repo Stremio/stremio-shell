@@ -27,7 +27,7 @@ ApplicationWindow {
 
     property bool quitting: false
 
-    color: "#201f32";
+    color: "#0c0b11";
     title: appTitle
 
     property var previousVisibility: Window.Windowed
@@ -530,7 +530,7 @@ ApplicationWindow {
     //
     Rectangle {
         id: splashScreen;
-        color: "#1B1126";
+        color: "#0c0b11";
         anchors.fill: parent;
         Image {
             id: splashLogo
