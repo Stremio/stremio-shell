@@ -1,5 +1,4 @@
-FROM ubuntu:jammy
-
+FROM ubuntu:22.04
 RUN ln -fs /usr/share/zoneinfo/Europe/Sofia /etc/localtime
 ENV DEBIAN_FRONTEND=noninteractive
 
