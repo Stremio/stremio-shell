@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 RUN ln -fs /usr/share/zoneinfo/Europe/Sofia /etc/localtime
-RUN rm -r /var/lib/apt/lists/*
+RUN rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install package dependencies
