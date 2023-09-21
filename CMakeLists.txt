@@ -5,7 +5,7 @@ if(APPLE)
   set(HAVE_FLAG_SEARCH_PATHS_FIRST 0)
 endif()
 
-project(stremio VERSION "4.4.161")
+project(stremio VERSION "4.4.164")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules/")
 
