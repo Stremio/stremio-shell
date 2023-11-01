@@ -15,35 +15,13 @@ TEAM_ID="$4"
 echo Compresing...
 ditto -c -k --rsrc --keepParent "$APP_PATH" "$ZIP_PATH"
 
-echo Sending notarizing request...
-REQUEST=$(xcrun altool --notarize-app -t osx -f "$ZIP_PATH" --primary-bundle-id com.smartcodeltd.stremio -u "$USER" -p "$PASS" --asc-provider "$TEAM_ID" | awk '/RequestUUID =/ { print $3 }')
+echo "Create keychain profile"
+xcrun notarytool store-credentials "notarytool-profile" --apple-id "$USER" --team-id "$TEAM_ID" --password "$PASS"
 
-echo Got request ID: $REQUEST
+echo Sending notarizing request...
+xcrun notarytool submit "$ZIP_PATH" --keychain-profile "notarytool-profile" --wait
 
 rm "$ZIP_PATH"
-
-#get_status() {
-#	xcrun altool --notarization-info "$REQUEST" -u "$USER" -p "$PASS" | awk '/Status:/ { print $2 }'
-#}
-#
-#echo Checking notarizing response...
-#STATUS="$(get_status)" 
-#while [ "$STATUS" == "in progress" ]; do
-#	sleep 30
-#	echo Not ready yet. Checking again...
-#	STATUS="$(get_status)" 
-#done
-#
-#echo Status: $STATUS
-#
-#if [ "$STATUS" != "success" ]; then
-#	exit 1
-#fi
-echo Waiting for notarization...
-sleep 480
-
-echo Check the notarization status...
-xcrun altool --notarization-info "$REQUEST" -u "$USER" -p "$PASS"
 
 echo Stapling the app...
 xcrun stapler staple "$APP_PATH"
