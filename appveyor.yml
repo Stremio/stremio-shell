@@ -30,11 +30,8 @@ install:
       del $file
   - set OPENSSL_BIN_PATH=C:\OpenSSL-Win32\bin
 
-  # Install Resource Hacker
-  - ps: $env:RH_INSTALLER = "reshacker_setup.exe"
-  - ps: Start-FileDownload "http://www.angusj.com/resourcehacker/$env:RH_INSTALLER"
-  - ps: Start-Process "$env:RH_INSTALLER" -ArgumentList "/silent /verysilent /sp- /suppressmsgboxes /dir=C:\RH" -Wait
-  - ps: del "$env:RH_INSTALLER"
+  # Download rcedit
+  - ps: Start-FileDownload "https://github.com/electron/rcedit/releases/download/v1.1.1/rcedit-x64.exe"
 
   # Temp debugging
   - ps: $env:DLL_DIR = "windows"
