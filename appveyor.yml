@@ -31,7 +31,7 @@ install:
   - set OPENSSL_BIN_PATH=C:\OpenSSL-Win32\bin
 
   # Download rcedit
-  - ps: Start-FileDownload "https://github.com/electron/rcedit/releases/download/v1.1.1/rcedit-x64.exe"
+  - ps: Start-FileDownload "https://github.com/electron/rcedit/releases/download/v1.1.1/rcedit-x86.exe"
 
   # Temp debugging
   - ps: $env:DLL_DIR = "windows"
