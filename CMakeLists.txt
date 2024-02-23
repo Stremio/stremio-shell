@@ -125,5 +125,40 @@ target_link_libraries(${PROJECT_NAME} LINK_PUBLIC
 )
 
 if(UNIX AND NOT APPLE)
-  install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION opt/stremio)
+  if(DEFINED ENV{DH_BUILD})
+    set(BIN_INSTALL_TARGET ${CMAKE_INSTALL_BINDIR})
+  else()
+    set(BIN_INSTALL_TARGET opt/stremio)
+  endif()
+
+  install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${BIN_INSTALL_TARGET})
 endif()
+
+#
+# icons
+#
+
+set(ICONS_DIR ${CMAKE_CURRENT_BINARY_DIR}/icons)
+
+add_custom_command(OUTPUT ${ICONS_DIR}
+  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/dist-utils/generate-icons.sh
+  ARGS ${CMAKE_CURRENT_SOURCE_DIR}
+  COMMENT "Generating icons"
+)
+
+add_custom_target(icons ALL DEPENDS ${ICONS_DIR})
+install(DIRECTORY ${ICONS_DIR} DESTINATION share/icons/stremio)
+
+#
+# server.js
+#
+
+set(SERVER ${CMAKE_CURRENT_BINARY_DIR}/server.js)
+
+add_custom_command(OUTPUT ${SERVER}
+  COMMAND wget -O ${SERVER} -i ${CMAKE_CURRENT_SOURCE_DIR}/server-url.txt
+  COMMENT "Downloading server"
+)
+
+add_custom_target(server ALL DEPENDS ${SERVER})
+install(FILES ${SERVER} DESTINATION share/stremio)
