@@ -1,0 +1,10 @@
+#!/usr/bin/make -f
+
+export DH_BUILD=1
+
+override_dh_auto_configure:
+	qmake
+	dh_auto_configure
+
+%:
+	dh $@ --buildsystem=cmake

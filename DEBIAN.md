@@ -2,6 +2,33 @@
 
 These instructions have been tested in Debian Bookworm 12 (Stable)
 
+# Debian package build
+## 1. Install dependencies
+
+```bash
+apt-get install -y devscripts equivs
+mk-build-deps -i
+```
+
+## 2. Build the package
+
+```bash
+dpkg-buildpackage -us -uc -b
+```
+
+## 3. Install the package
+
+```bash
+apt install ../stremio_*.deb
+```
+
+## 4. Run Stremio
+
+```bash
+stremio
+```
+
+# Manual build
 ## 1. Start by cloning the GIT repository:
 
 ``git clone --recurse-submodules -j8 https://github.com/Stremio/stremio-shell.git``
