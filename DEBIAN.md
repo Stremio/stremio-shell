@@ -6,9 +6,9 @@ These instructions have been tested in Debian Bookworm 12 (Stable)
 
 ``git clone --recurse-submodules -j8 https://github.com/Stremio/stremio-shell.git``
 
-## 2. Install QTCreator
+## 2. Install QTCreator and other dependencies
 
-``sudo apt-get install qtcreator qt5-qmake g++ pkgconf libssl-dev``
+``sudo apt-get install qtcreator qt5-qmake g++ pkgconf libssl-dev librsvg2-bin``
 
 ## 3. Generate the Makefiles for Stremio
 
