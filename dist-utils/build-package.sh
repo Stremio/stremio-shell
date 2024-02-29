@@ -93,7 +93,10 @@ if ! cd "$DISTROS_DIR/$DISTRO" &> /dev/null; then
 fi
 
 source mkconfig.sh
-IMAGE_HASH=$(docker build  . | tee >(cat >&2) | tail -n 1 | cut -d " " -f 3)
+IMAGE_HASH=package-$DISTRO
+IMAGE_HASH=${IMAGE_HASH,,}
+docker rmi -f "$IMAGE_HASH"
+docker build  . -t "$IMAGE_HASH"
 docker run --privileged --rm -v "$DEST_DIR:/app" -t "$IMAGE_HASH" sh -c "(su builduser -c \"./package.sh $BRANCH\") && $COPY_CMD"
 
 if [[ -n "$CLEAN_CMD" ]]; then

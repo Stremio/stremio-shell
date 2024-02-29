@@ -1,15 +1,16 @@
-FROM ubuntu:20.04
-
+FROM ubuntu:22.04
 RUN ln -fs /usr/share/zoneinfo/Europe/Sofia /etc/localtime
-ENV DEBIAN_FRONTEND noninteractive
+RUN rm -rf /var/lib/apt/lists/*
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Install package dependencies
-RUN apt update && apt install -y git librsvg2-bin checkinstall nodejs build-essential cmake qt5-default qtdeclarative5-dev qtdeclarative5-dev-tools qtwebengine5-dev qml-module-qtquick-controls qml-module-qtquick-dialogs qml-module-qt-labs-platform qml-module-qtwebchannel qml-module-qtwebengine wget libssl-dev sudo libmpv-dev
+RUN apt update && apt install -y git librsvg2-bin checkinstall nodejs build-essential cmake qtbase5-dev libqt5core5a qtdeclarative5-dev qtdeclarative5-dev-tools qtwebengine5-dev qml-module-qtquick-controls qml-module-qtquick-dialogs qml-module-qt-labs-platform qml-module-qtwebchannel qml-module-qtwebengine wget libssl-dev sudo libmpv-dev
 
 # Setting up new user
-RUN useradd builduser -m
-RUN passwd -d builduser
-RUN echo 'builduser ALL=(ALL) ALL' >> /etc/sudoers
+RUN adduser --gecos '' --disabled-password builduser
+RUN usermod -aG sudo builduser
+RUN echo 'builduser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
 WORKDIR /home/builduser
 
 # Import the required files
