@@ -43,11 +43,7 @@ install:
   # For DS.exe  
   - set DS_BIN_PATH=%DLL_DIR%\DS
   
-  # Get FFmpeg, FFprobe and set FFMPEG_BIN_PATH
-  - ps: Start-FileDownload "https://repo.jellyfin.org/releases/server/windows/versions/jellyfin-ffmpeg/4.4.1-4/jellyfin-ffmpeg_4.4.1-4-windows_win64.zip"
-  - 7z x jellyfin-ffmpeg_4.4.1-4-windows_win64.zip -offmpeg
-  - set FFMPEG_BIN_PATH=%cd%\ffmpeg
-
+  # For VCRedist
   - if %compiler%==msvc2019 set VCREDIST_BIN_PATH=C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.16.27012\x86\Microsoft.VC141.CRT
   - if %compiler%==msvc2019_64 set VCREDIST_BIN_PATH=C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Redist\MSVC\14.16.27012\x64\Microsoft.VC141.CRT
 
@@ -90,16 +86,12 @@ test_script:
       popd
 
   - mkdir dist-win
-  # copy-windows-mpv
-  - copy "%MPV_BIN_PATH%\mpv-1.dll" dist-win
   # copy-windows-openssl
   - copy "%OPENSSL_BIN_PATH%\*.dll" dist-win
-  # copy-windows-ffmpeg
-  - move "%FFMPEG_BIN_PATH%\ffmpeg.exe" dist-win
-  # copy-windows-ffprobe
-  - move "%FFMPEG_BIN_PATH%\ffprobe.exe" dist-win
-  # copy-windows-ffmpeg-shared
-  - copy "%FFMPEG_BIN_PATH%\*.dll" dist-win
+  # copy ffmpeg and ffprobe
+  - move "%DLL_DIR%\*.exe" dist-win
+  # copy MPV and ffmpeg DLLs
+  - copy "%DLL_DIR%\*.dll" dist-win
   # copy-windows-node (stremio-runtime)
   - ps: '& $(Join-Path $env:DLL_DIR "generate_stremio-runtime.cmd") dist-win'
   # Download server.js in order to work with node 14
