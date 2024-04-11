@@ -146,17 +146,16 @@ Functionend
 
 Function fin_pg_leave
   ${NSD_GetState} $AssociateTorrentCheckbox $checkbox_value
-  IfSilent 0 assoc
-  StrCpy $checkbox_value ${BST_UNCHECKED}
   ${GetOptions} $Parameters /notorrentassoc $R1
-  IfErrors 0 assoc
-  StrCpy $checkbox_value ${BST_CHECKED}
-  assoc:
-  ;MessageBox MB_OK $checkbox_value
+  IfErrors no_assoc
+  GoTo check_checkbox
+  no_assoc:
+  StrCpy $checkbox_value ${BST_UNCHECKED} ; Assume not to associate if /notorrentassoc is present
+  check_checkbox:
   ${If} $checkbox_value == ${BST_CHECKED}
-    !insertmacro APP_ASSOCIATE "torrent" "stremio" "BitTorrent file" "$INSTDIR\stremio.exe,0" "Play with Stremio" "$INSTDIR\stremio.exe $\"%1$\""
-	${EndIf}
-Functionend
+    !insertmacro APP_ASSOCIATE "torrent" "YourAppName" "BitTorrent file" "$INSTDIR\YourApp.exe,0" "Open with YourAppName" "$INSTDIR\YourApp.exe \"%1\""
+  ${EndIf}
+FunctionEnd
 
 !macro checkIfAppIsRunning AppIsRunningErrorMsg
     ; Check if stremio.exe is running
