@@ -1,7 +1,8 @@
 #include <QQmlApplicationEngine>
-#include <QtWebEngine>
+// #include <QtWebEngine>
 #include <QSysInfo>
-
+#include <QQmlContext>
+#include <QDebug>
 #include <clocale>
 
 #define APP_TITLE "Stremio - Freedom to Stream"
@@ -78,7 +79,8 @@ int main(int argc, char **argv)
 
     MainApp app(argc, argv, true);
     #ifndef Q_OS_MACOS
-    if( app.isSecondary() ) {
+    if( false && app.isSecondary() ) {
+        qDebug() << "Secondary instance, sending message";
         if( app.arguments().count() > 1)
             app.sendMessage( app.arguments().at(1).toUtf8() );
         else

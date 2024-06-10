@@ -1,14 +1,14 @@
-import QtQuick 2.7
-import QtWebEngine 1.4
-import QtWebChannel 1.0
-import QtQuick.Window 2.2 // for Window instead of ApplicationWindow; also for Screen
-import QtQuick.Controls 1.4 // for ApplicationWindow
-import QtQuick.Dialogs 1.2
-import com.stremio.process 1.0
-import com.stremio.screensaver 1.0
-import com.stremio.libmpv 1.0
-import com.stremio.clipboard 1.0
-import QtQml 2.2
+import QtQuick
+import QtWebEngine
+import QtWebChannel
+import QtQuick.Window
+import QtQuick.Controls
+import QtQuick.Dialogs
+import com.stremio.process
+import com.stremio.screensaver
+import com.stremio.libmpv
+import com.stremio.clipboard
+import QtQml
 
 import "autoupdater.js" as Autoupdater
 
@@ -441,7 +441,8 @@ ApplicationWindow {
         // In the app, we use open-external IPC signal, but make sure this works anyway
         property string hoveredUrl: ""
         onLinkHovered: webView.hoveredUrl = hoveredUrl
-        onNewViewRequested: function(req) { if (req.userInitiated) Qt.openUrlExternally(webView.hoveredUrl) }
+        // FIXME: this is not working
+        // onNewViewRequested: function(req) { if (req.userInitiated) Qt.openUrlExternally(webView.hoveredUrl) }
 
         // FIXME: When is this called?
         onFullScreenRequested: function(req) {
@@ -464,34 +465,34 @@ ApplicationWindow {
             id: ctxMenu
             MenuItem {
                 text: "Undo"
-                shortcut: StandardKey.Undo
+                // shortcut: StandardKey.Undo
                 onTriggered: webView.triggerWebAction(WebEngineView.Undo)
             }
             MenuItem {
                 text: "Redo"
-                shortcut: StandardKey.Redo
+                // shortcut: StandardKey.Redo
                 onTriggered: webView.triggerWebAction(WebEngineView.Redo)
             }
             MenuSeparator { }
             MenuItem {
                 text: "Cut"
-                shortcut: StandardKey.Cut
+                // shortcut: StandardKey.Cut
                 onTriggered: webView.triggerWebAction(WebEngineView.Cut)
             }
             MenuItem {
                 text: "Copy"
-                shortcut: StandardKey.Copy
+                // shortcut: StandardKey.Copy
                 onTriggered: webView.triggerWebAction(WebEngineView.Copy)
             }
             MenuItem {
                 text: "Paste"
-                shortcut: StandardKey.Paste
+                // shortcut: StandardKey.Paste
                 onTriggered: webView.triggerWebAction(WebEngineView.Paste)
             }
             MenuSeparator { }
             MenuItem {
                 text: "Select All"
-                shortcut: StandardKey.SelectAll
+                // shortcut: StandardKey.SelectAll
                 onTriggered: webView.triggerWebAction(WebEngineView.SelectAll)
             }
         }
@@ -563,7 +564,7 @@ ApplicationWindow {
 
     FileDialog {
       id: fileDialog
-      folder: shortcuts.home
+    //   folder: shortcuts.home
       onAccepted: {
         var fileProtocol = "file://"
         var onWindows = Qt.platform.os === "windows" ? 1 : 0
@@ -600,7 +601,7 @@ ApplicationWindow {
           data: fileDialog.data
         })
       }
-      property var data: {}
+    //   property var data: {}
     }
 
     //

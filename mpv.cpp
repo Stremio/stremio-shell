@@ -9,7 +9,7 @@
 #include <QtGlobal>
 #include <QOpenGLContext>
 
-#include <QtGui/QOpenGLFramebufferObject>
+#include <QOpenGLFramebufferObject>
 
 #include <QtQuick/QQuickWindow>
 #include <QtQuick/QQuickView>
@@ -65,7 +65,7 @@ class MpvRenderer : public QQuickFramebufferObject::Renderer
         // init mpv_gl:
         if (!obj->mpv_gl)
         {
-            mpv_opengl_init_params gl_init_params{get_proc_address_mpv, nullptr, nullptr};
+            mpv_opengl_init_params gl_init_params{get_proc_address_mpv, nullptr};
             mpv_render_param params[]{
                 {MPV_RENDER_PARAM_API_TYPE, const_cast<char *>(MPV_RENDER_API_TYPE_OPENGL)},
                 {MPV_RENDER_PARAM_OPENGL_INIT_PARAMS, &gl_init_params},
@@ -81,7 +81,7 @@ class MpvRenderer : public QQuickFramebufferObject::Renderer
 
     void render()
     {
-        obj->window()->resetOpenGLState();
+        // obj->window()->resetOpenGLState();
 
         QOpenGLFramebufferObject *fbo = framebufferObject();
         mpv_opengl_fbo mpfbo{static_cast<int>(fbo->handle()), fbo->width(), fbo->height(), 0};
@@ -100,7 +100,7 @@ class MpvRenderer : public QQuickFramebufferObject::Renderer
         // other API details.
         mpv_render_context_render(obj->mpv_gl, params);
 
-        obj->window()->resetOpenGLState();
+        // obj->window()->resetOpenGLState();
      }
 };
 
@@ -308,7 +308,7 @@ QVariant MpvObject::getProperty(const QString& name) {
 }
 QQuickFramebufferObject::Renderer *MpvObject::createRenderer() const
 {
-    window()->setPersistentOpenGLContext(true);
+    // window()->setPersistentOpenGLContext(true);
     window()->setPersistentSceneGraph(true);
     return new MpvRenderer(const_cast<MpvObject *>(this));
 }

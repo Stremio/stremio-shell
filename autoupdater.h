@@ -17,7 +17,7 @@
 #include <QQueue>
 #include <QVector>
 #include <QProcess>
-#include <QNetworkConfigurationManager>
+// #include <QNetworkConfigurationManager>
 
 // Mixing C and C++ :(
 extern "C" {
