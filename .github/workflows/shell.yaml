@@ -85,7 +85,7 @@ jobs:
           
       - name: Fix dependencies
         run: |
-          cp ./deps/lib/* ./build/stremio.app/Contents/Frameworks
+          cp ./deps/lib/* ./build/stremio.app/Contents/Frameworks || echo "No deps/lib directory"
           cp ./mac/libcrypto.3.dylib ./build/stremio.app/Contents/Frameworks
 
       - name: Testdrive
