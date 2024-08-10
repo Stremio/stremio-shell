@@ -3,7 +3,7 @@
 	url = https://github.com/Ivshti/libmpv
 [submodule "deps/singleapplication"]
 	path = deps/singleapplication
-	url = http://github.com/itay-grudev/SingleApplication
+	url = https://github.com/itay-grudev/SingleApplication
 [submodule "deps/chroma"]
 	path = deps/chroma
 	url = https://github.com/Ivshti/razerchroma
