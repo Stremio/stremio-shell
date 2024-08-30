@@ -23,7 +23,7 @@ Download and install Git for Windows from here https://git-scm.com/download/win
 Download and install Microsoft Visual Studio Community 2017 from here https://visualstudio.microsoft.com/vs/older-downloads/
 
 
-Download and install QT 5.12.7 from here http://download.qt.io/official_releases/qt/5.12/5.12.7/qt-opensource-windows-x86-5.12.7.exe (I had to disconnect from the Internet in order to skip the account log in/registration). In the setup select QT version for **MSVC 2017 32 bit**. Also the **Qt WebEngine** component must be selected for installation.
+Download and install QT 5.12.7 from here https://download.qt.io/archive/qt/5.12/5.12.7/qt-opensource-windows-x86-5.12.7.exe (I had to disconnect from the Internet in order to skip the account log in/registration). In the setup select QT version for **MSVC 2017 32 bit**. Also the **Qt WebEngine** component must be selected for installation.
 
 Download and install **Win32 OpenSSL v1.1.1** from https://slproweb.com/products/Win32OpenSSL.html
 The full version is required. The light version doesn't include all necessary files.
