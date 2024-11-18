@@ -1,6 +1,10 @@
 #include <QQmlApplicationEngine>
 #include <QtWebEngine>
 #include <QSysInfo>
+#include <QMediaPlayer>
+#include <QMediaService>
+#include <QMediaControl>
+#include <QMediaKeyEvent>
 
 #include <clocale>
 
@@ -29,6 +33,16 @@ typedef QApplication Application;
 #else
 #include <QGuiApplication>
 #endif
+
+void handleMediaKeyEvent(QMediaKeyEvent *event, QMediaPlayer *player) {
+    if (event->key() == Qt::Key_MediaPlay || event->key() == Qt::Key_MediaPause || event->key() == Qt::Key_MediaTogglePlayPause) {
+        if (player->state() == QMediaPlayer::PlayingState) {
+            player->pause();
+        } else {
+            player->play();
+        }
+    }
+}
 
 void InitializeParameters(QQmlApplicationEngine *engine, MainApp& app) {
     QQmlContext *ctx = engine->rootContext();
@@ -104,9 +118,17 @@ int main(int argc, char **argv)
     qmlRegisterType<RazerChroma>("com.stremio.razerchroma", 1, 0, "RazerChroma");
     qmlRegisterType<ClipboardProxy>("com.stremio.clipboard", 1, 0, "Clipboard");
 
+    QMediaPlayer *player = new QMediaPlayer;
+
     InitializeParameters(engine, app); 
 
     engine->load(QUrl(QStringLiteral("qrc:/main.qml")));
+
+    QObject::connect(engine, &QQmlApplicationEngine::objectCreated, [player](QObject *obj, const QUrl &objUrl) {
+        if (obj) {
+            obj->installEventFilter(new QMediaKeyEventFilter(player));
+        }
+    });
 
     #ifndef Q_OS_MACOS
     QObject::connect( &app, &SingleApplication::receivedMessage, &app, &MainApp::processMessage );
@@ -118,3 +140,19 @@ int main(int argc, char **argv)
     engine = nullptr;
     return ret;
 }
+
+class QMediaKeyEventFilter : public QObject {
+    Q_OBJECT
+    QMediaPlayer *player;
+public:
+    QMediaKeyEventFilter(QMediaPlayer *player) : player(player) {}
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) override {
+        if (event->type() == QEvent::KeyPress) {
+            QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+            handleMediaKeyEvent(keyEvent, player);
+            return true;
+        }
+        return QObject::eventFilter(obj, event);
+    }
+};
