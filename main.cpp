@@ -50,7 +50,7 @@ void InitializeParameters(QQmlApplicationEngine *engine, MainApp& app) {
 
 int main(int argc, char **argv)
 {
-    qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--autoplay-policy=no-user-gesture-required");
+    qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--autoplay-policy=no-user-gesture-required --enable-smooth-scrolling");
     #ifdef _WIN32
     // Default to ANGLE (DirectX), because that seems to eliminate so many issues on Windows
     // Also, according to the docs here: https://wiki.qt.io/Qt_5_on_Windows_ANGLE_and_OpenGL, ANGLE is also preferrable
