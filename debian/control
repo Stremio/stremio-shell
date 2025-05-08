@@ -9,6 +9,7 @@ Build-Depends:
   libmpv-dev,
   libqt5webview5-dev,
   libqt5opengl5-dev,
+  librsvg2-bin,
   libssl-dev,
   pkgconf,
   qt5-qmake,
