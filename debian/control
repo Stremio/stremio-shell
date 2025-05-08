@@ -8,6 +8,7 @@ Build-Depends:
   libkf5webengineviewer-dev,
   libmpv-dev,
   libqt5webview5-dev,
+  libqt5opengl5-dev,
   libssl-dev,
   pkgconf,
   qt5-qmake,
