@@ -5,11 +5,13 @@
 
 #include <QObject>
 #include <QJsonObject>
+#include <QJsonValue>
 
 #include <QtGlobal>
 #include <QOpenGLContext>
 
-#include <QtGui/QOpenGLFramebufferObject>
+// Updated include path for Qt6
+#include <QOpenGLFramebufferObject>
 
 #include <QtQuick/QQuickWindow>
 #include <QtQuick/QQuickView>
@@ -81,7 +83,7 @@ class MpvRenderer : public QQuickFramebufferObject::Renderer
 
     void render()
     {
-        obj->window()->resetOpenGLState();
+        // obj->window()->resetOpenGLState(); // This function is removed in Qt6.
 
         QOpenGLFramebufferObject *fbo = framebufferObject();
         mpv_opengl_fbo mpfbo{static_cast<int>(fbo->handle()), fbo->width(), fbo->height(), 0};
@@ -100,8 +102,8 @@ class MpvRenderer : public QQuickFramebufferObject::Renderer
         // other API details.
         mpv_render_context_render(obj->mpv_gl, params);
 
-        obj->window()->resetOpenGLState();
-     }
+        // obj->window()->resetOpenGLState(); // This function is removed in Qt6.
+   }
 };
 
 MpvObject::MpvObject(QQuickItem * parent)
@@ -111,7 +113,7 @@ MpvObject::MpvObject(QQuickItem * parent)
   // Request Multimedia Class Schedule Service.
   DwmEnableMMCSS(TRUE);
 #endif
-    
+
     if (!mpv)
         throw std::runtime_error("could not create mpv context");
 
@@ -163,7 +165,7 @@ void MpvObject::initialize_mpv() {
     // Visible app / stream names
     mpv::qt::set_property(mpv, "audio-client-name", QCoreApplication::applicationName());
     mpv::qt::set_property(mpv, "title", QCoreApplication::applicationName());
- 
+
     // Don't stop on audio output issues
     mpv::qt::set_property(mpv, "audio-fallback-to-null", "yes");
 
@@ -175,7 +177,8 @@ void MpvObject::initialize_mpv() {
     // // Setup handling events from MPV
     mpv_set_wakeup_callback(mpv, wakeup, this);
 
-    foreach (const QString &name, observed_properties) {
+    // Updated 'foreach' to a C++11 range-based for loop for modern compatibility
+    for (const QString &name : observed_properties) {
         mpv_observe_property(mpv, 0, name.toStdString().c_str(), MPV_FORMAT_NODE);
     }
 }
@@ -260,7 +263,7 @@ void MpvObject::handle_mpv_event(mpv_event *event) {
             case MPV_FORMAT_STRING:
                 eventJson["data"] = QString(*(char **)prop->data);
                 break;
-            default: 
+            default:
                 break;
             }
 
@@ -308,7 +311,7 @@ QVariant MpvObject::getProperty(const QString& name) {
 }
 QQuickFramebufferObject::Renderer *MpvObject::createRenderer() const
 {
-    window()->setPersistentOpenGLContext(true);
-    window()->setPersistentSceneGraph(true);
+    // window()->setPersistentOpenGLContext(true); // This function is removed in Qt6
+    // window()->setPersistentSceneGraph(true); // This is now the default and the function is removed.
     return new MpvRenderer(const_cast<MpvObject *>(this));
 }

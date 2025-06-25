@@ -10,8 +10,12 @@ QMAKE_TARGET_BUNDLE_PREFIX = com.smartcodeltd
 
 QMAKE_INFO_PLIST = Info.plist
 
-QT += qml quick network
-CONFIG += c++11
+# Consolidated and updated QT modules for Qt6
+# Replaced webengine with webenginecore and webenginewidgets
+QT += qml quick network widgets webenginecore webenginewidgets webchannel dbus
+
+# Updated C++ standard from C++11 to C++17 for Qt6
+CONFIG += c++17
 
 include(deps/singleapplication/singleapplication.pri)
 DEFINES += QAPPLICATION_CLASS=QApplication
@@ -26,7 +30,7 @@ mac {
 }
 
 # pkg-config way of linking with mpv works perfectly on the mac distribution process, because macdeployqt will also ship all libraries
-# however, we want to hardcode specific *.dylibs, because (1) includes are hardcoded, (2) installing mpv with brew is slow 
+# however, we want to hardcode specific *.dylibs, because (1) includes are hardcoded, (2) installing mpv with brew is slow
 unix:!mac {
     QMAKE_RPATHDIR += '$ORIGIN'
     QT_CONFIG -= no-pkg-config
@@ -60,10 +64,7 @@ win32 {
     include(deps/chroma/chroma.pri)
 }
 
-QT += widgets
-
-# TODO: if def WEBENGINE
-QT += webengine webchannel dbus
+# This setting is still valid in Qt6
 WEBENGINE_CONFIG+=use_proprietary_codecs
 
 SOURCES += main.cpp \

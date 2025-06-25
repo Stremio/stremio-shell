@@ -17,7 +17,8 @@
 #include <QQueue>
 #include <QVector>
 #include <QProcess>
-#include <QNetworkConfigurationManager>
+// Removed QNetworkConfigurationManager as it's obsolete in Qt6
+// #include <QNetworkConfigurationManager>
 
 // Mixing C and C++ :(
 extern "C" {

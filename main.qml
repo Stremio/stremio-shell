@@ -1,14 +1,16 @@
-import QtQuick 2.7
-import QtWebEngine 1.4
-import QtWebChannel 1.0
-import QtQuick.Window 2.2 // for Window instead of ApplicationWindow; also for Screen
-import QtQuick.Controls 1.4 // for ApplicationWindow
-import QtQuick.Dialogs 1.2
+// Updated imports for Qt6
+import QtQuick
+import QtWebEngine
+import QtWebChannel
+import QtQuick.Window // for Window instead of ApplicationWindow; also for Screen
+import QtQuick.Controls // Using modern Qt Quick Controls
+import QtQuick.Dialogs
 import com.stremio.process 1.0
 import com.stremio.screensaver 1.0
 import com.stremio.libmpv 1.0
 import com.stremio.clipboard 1.0
-import QtQml 2.2
+import QtQml
+import Qt.labs.platform // Added based on user finding
 
 import "autoupdater.js" as Autoupdater
 
@@ -19,6 +21,7 @@ ApplicationWindow {
     minimumWidth: 1000
     minimumHeight: 650
 
+    // Screen API is still valid in Qt6 for getting desktop geometry
     readonly property int initialWidth: Math.max(root.minimumWidth, Math.min(1600, Screen.desktopAvailableWidth * 0.8))
     readonly property int initialHeight: Math.max(root.minimumHeight, Math.min(1000, Screen.desktopAvailableHeight * 0.8))
 
@@ -64,7 +67,7 @@ ApplicationWindow {
         id: transport
         readonly property string shellVersion: Qt.application.version
         property string serverAddress: "http://127.0.0.1:11470" // will be set to something else if server inits on another port
-        
+
         readonly property bool isFullscreen: root.visibility === Window.FullScreen // just to send the initial state
 
         signal event(var ev, var args)
@@ -100,16 +103,16 @@ ApplicationWindow {
             if (ev === "file-open") {
               if (typeof args !== "undefined") {
                 var fileDialogDefaults = {
-                  title: "Please choose",
-                  selectExisting: true,
-                  selectFolder: false,
-                  selectMultiple: false,
-                  nameFilters: [],
-                  selectedNameFilter: "",
-                  data: null
+                    title: "Please choose",
+                    selectExisting: true,
+                    selectFolder: false,
+                    selectMultiple: false,
+                    nameFilters: [],
+                    selectedNameFilter: "",
+                    data: null
                 }
                 Object.keys(fileDialogDefaults).forEach(function(key) {
-                  fileDialog[key] = args.hasOwnProperty(key) ? args[key] : fileDialogDefaults[key]
+                    fileDialog[key] = args.hasOwnProperty(key) ? args[key] : fileDialogDefaults[key]
                 })
               }
               fileDialog.open()
@@ -118,7 +121,7 @@ ApplicationWindow {
 
         // events that we want to wait for the app to initialize
         property variant queued: []
-        function queueEvent() { 
+        function queueEvent() {
             if (transport.queued) transport.queued.push(arguments)
             else transport.event.apply(transport, arguments)
         }
@@ -181,7 +184,7 @@ ApplicationWindow {
 
         function onSignalIconMenuAboutToShow() {
             systemTray.updateIsOnTop((root.flags & Qt.WindowStaysOnTopHint) === Qt.WindowStaysOnTopHint);
-	        systemTray.updateVisibleAction(root.visible);
+            systemTray.updateVisibleAction(root.visible);
         }
 
         function onSignalShow() {
@@ -200,12 +203,12 @@ ApplicationWindow {
                 root.flags |= Qt.WindowStaysOnTopHint;
             }
         }
- 
+
         // The signal - close the application by ignoring the check-box
         function onSignalQuit() {
             quitApp();
         }
- 
+
         // Minimize / maximize the window by clicking on the default system tray
         function onSignalIconActivated() {
            showWindow();
@@ -242,7 +245,7 @@ ApplicationWindow {
         property bool fastReload: false
 
         onStarted: function() { stayAliveStreamingServer.stop() }
-        onFinished: function(code, status) { 
+        onFinished: function(code, status) {
             // status -> QProcess::CrashExit is 1
             if (!streamingServer.fastReload && errors < 5 && (code !== 0 || status !== 0) && !root.quitting) {
                 transport.queueEvent("server-crash", {"code": code, "log": streamingServer.getErrBuff()});
@@ -266,23 +269,23 @@ ApplicationWindow {
         onErrorThrown: function (error) {
             if (root.quitting) return; // inhibits errors during quitting
             if (streamingServer.fastReload && error == 1) return; // inhibit errors during fast reload mode;
-                                                                  // we'll unset that after we've restarted the server
+                                                                    // we'll unset that after we've restarted the server
             transport.queueEvent("server-crash", {"code": error, "log": streamingServer.getErrBuff()});
             showStreamingServerErr(error)
        }
     }
     function showStreamingServerErr(code) {
         errorDialog.text = streamingServer.errMessage
-        errorDialog.detailedText = 'Stremio streaming server has thrown an error \nQProcess::ProcessError code: ' 
-            + code + '\n\n' 
+        errorDialog.detailedText = 'Stremio streaming server has thrown an error \nQProcess::ProcessError code: '
+            + code + '\n\n'
             + streamingServer.getErrBuff();
         errorDialog.visible = true
     }
     function launchServer() {
         var node_executable = applicationDirPath + "/node"
         if (Qt.platform.os === "windows") node_executable = applicationDirPath + "/stremio-runtime.exe"
-        streamingServer.start(node_executable, 
-            [applicationDirPath +"/server.js"].concat(Qt.application.arguments.slice(1)), 
+        streamingServer.start(node_executable,
+            [applicationDirPath +"/server.js"].concat(Qt.application.arguments.slice(1)),
             "EngineFS server started at "
         )
     }
@@ -376,10 +379,11 @@ ApplicationWindow {
         focus: true
 
         readonly property string mainUrl: getWebUrl()
-        
+
         url: webView.mainUrl;
         anchors.fill: parent
-        backgroundColor: "transparent";
+        // backgroundColor is not a valid property in Qt6 WebEngineView
+        // color: "transparent";
         property int tries: 0
 
         readonly property int maxTries: 20
@@ -390,14 +394,14 @@ ApplicationWindow {
             webView.profile.httpUserAgent = webView.profile.httpUserAgent+' StremioShell/'+Qt.application.version
 
             // for more info, see
-            // https://github.com/adobe/chromium/blob/master/net/disk_cache/backend_impl.cc - AdjustMaxCacheSize, 
+            // https://github.com/adobe/chromium/blob/master/net/disk_cache/backend_impl.cc - AdjustMaxCacheSize,
             // https://github.com/adobe/chromium/blob/master/net/disk_cache/backend_impl.cc#L2094
             webView.profile.httpCacheMaximumSize = 209715200 // 200 MB
         }
 
         onLoadingChanged: function(loadRequest) {
             // hack for webEngineView changing it's background color on crashes
-            webView.backgroundColor = "transparent"
+            // webView.color = "transparent"
 
             var successfullyLoaded = loadRequest.status == WebEngineView.LoadSucceededStatus
             if (successfullyLoaded || webView.tries > 0) {
@@ -420,9 +424,9 @@ ApplicationWindow {
 
         onRenderProcessTerminated: function(terminationStatus, exitCode) {
             console.log("render process terminated with code "+exitCode+" and status: "+terminationStatus)
-            
+
             // hack for webEngineView changing it's background color on crashes
-            webView.backgroundColor = "black"
+            // webView.color = "black"
 
             retryTimer.restart()
 
@@ -440,8 +444,10 @@ ApplicationWindow {
 
         // In the app, we use open-external IPC signal, but make sure this works anyway
         property string hoveredUrl: ""
-        onLinkHovered: webView.hoveredUrl = hoveredUrl
-        onNewViewRequested: function(req) { if (req.userInitiated) Qt.openUrlExternally(webView.hoveredUrl) }
+        onLinkHovered: webView.hoveredUrl = url // The 'hoveredUrl' argument was removed in Qt6
+
+        // Renamed onNewViewRequested to onNewWindowRequested for Qt6
+        onNewWindowRequested: function(req) { if (req.userInitiated) Qt.openUrlExternally(webView.hoveredUrl) }
 
         // FIXME: When is this called?
         onFullScreenRequested: function(req) {
@@ -456,10 +462,12 @@ ApplicationWindow {
             var targetHost = req.url.toString().split('/')[2]
             if (allowedHost != targetHost && (req.isMainFrame || targetHost !== 'www.youtube.com')) {
                  console.log("onNavigationRequested: disallowed URL "+req.url.toString());
-                 req.action = WebEngineView.IgnoreRequest;
+                 // In Qt6, request is read-only. We need to call methods on it.
+                 req.reject();
             }
         }
 
+        // The Menu from QtQuick.Controls works as a drop-in replacement here
         Menu {
             id: ctxMenu
             MenuItem {
@@ -512,9 +520,10 @@ ApplicationWindow {
 
         DropArea {
             anchors.fill: parent
-            onDropped: function(dropargs){
-                var args = JSON.parse(JSON.stringify(dropargs))
-                transport.event("dragdrop", args.urls)
+            onDropped: function(drop){ // drop argument name changed from dropargs
+                // The structure of the drop event data has changed slightly
+                var args = drop.urls
+                transport.event("dragdrop", args)
             }
         }
         webChannel: wChannel
@@ -568,7 +577,8 @@ ApplicationWindow {
         var fileProtocol = "file://"
         var onWindows = Qt.platform.os === "windows" ? 1 : 0
         var pathSeparators = ["/", "\\"]
-        var files = fileDialog.fileUrls.filter(function(fileUrl) {
+        // fileUrls is now filePaths in Qt6 FileDialog for local files
+        var files = fileDialog.selectedFiles.filter(function(fileUrl) {
           // Ignore network drives and alike
           return fileUrl.startsWith(fileProtocol)
         })
@@ -586,7 +596,7 @@ ApplicationWindow {
           selectMultiple: fileDialog.selectMultiple,
           nameFilters: fileDialog.nameFilters,
           selectedNameFilter: fileDialog.selectedNameFilter,
-          data: fileDialog.data
+          data: fileDialog.dialogData
         })
       }
       onRejected: {
@@ -597,10 +607,10 @@ ApplicationWindow {
           selectMultiple: fileDialog.selectMultiple,
           nameFilters: fileDialog.nameFilters,
           selectedNameFilter: fileDialog.selectedNameFilter,
-          data: fileDialog.data
+          data: fileDialog.dialogData
         })
       }
-      property var data: {}
+      property var dialogData: {}
     }
 
     //
@@ -620,26 +630,29 @@ ApplicationWindow {
 
         updatePreviousVisibility();
         transport.event("win-visibility-changed", { visible: root.visible, visibility: root.visibility,
-                            isFullscreen: root.visibility === Window.FullScreen })
+                                isFullscreen: root.visibility === Window.FullScreen })
     }
-    
+
     property int appState: Qt.application.state;
     onAppStateChanged: {
         // WARNING: we should load the app through https to avoid MITM attacks on the clipboard
         var clipboardUrl
         if (clipboard.text.match(/^(magnet|http|https|file|stremio|ipfs):/)) clipboardUrl = clipboard.text
         transport.event("app-state-changed", { state: appState, clipboard: clipboardUrl })
-        
+
         // WARNING: CAVEAT: this works when you've focused ANOTHER app and then get back to this one
         if (Qt.platform.os === "osx" && appState === Qt.ApplicationActive && !root.visible) {
             root.show()
         }
     }
 
-    onClosing: function(event){
-        event.accepted = false
+    // The correct way to intercept the close event in Qt6
+    // is to use the Window.onClosing attached signal handler.
+    onClosing: {
+        close.accepted = false
         root.hide()
     }
+
 
     //
     // AUTO UPDATER
@@ -647,7 +660,7 @@ ApplicationWindow {
     signal autoUpdaterErr(var msg, var err);
     signal autoUpdaterRestartTimer();
 
-    // Explanation: when the long timer expires, we schedule the short timer; we do that, 
+    // Explanation: when the long timer expires, we schedule the short timer; we do that,
     // because in case the computer has been asleep for a long time, we want another short timer so we don't check
     // immediately (network not connected yet, etc)
     // we also schedule the short timer if the computer is offline
@@ -677,9 +690,9 @@ ApplicationWindow {
 
         // Start streaming server
         var args = Qt.application.arguments
-        if (args.indexOf("--development") > -1 && args.indexOf("--streaming-server") === -1) 
+        if (args.indexOf("--development") > -1 && args.indexOf("--streaming-server") === -1)
             console.log("Skipping launch of streaming server under --development");
-        else 
+        else
             launchServer();
 
         // Handle file opens
@@ -692,3 +705,4 @@ ApplicationWindow {
         Autoupdater.initAutoUpdater(autoUpdater, root.autoUpdaterErr, autoUpdaterShortTimer, autoUpdaterLongTimer, autoUpdaterRestartTimer, webView.profile.httpUserAgent);
     }
 }
+

@@ -10,7 +10,8 @@ AutoUpdater::AutoUpdater(): manager(new QNetworkAccessManager(this)) {
 }
 
 // HANDLE FATAL ERRORS
-void AutoUpdater::emitFatalError(QString msg, QVariant err = QVariant()) {
+// Added default QVariant() to the function definition in the header to fix this
+void AutoUpdater::emitFatalError(QString msg, QVariant err) {
     this->abort();
     emit error(msg, err);
 }
@@ -52,14 +53,14 @@ bool AutoUpdater::isInstalled() {
 // WRAPPERS for public slots to make sure we execute on our thread
 void AutoUpdater::checkForUpdates(QString endpoint, QString userAgent) {
     if (inProgress) return;
-    inProgress = true; 
+    inProgress = true;
     QMetaObject::invokeMethod(this, "checkForUpdatesPerform", Qt::QueuedConnection, Q_ARG(QString, endpoint), Q_ARG(QString, userAgent));
 }
 void AutoUpdater::updateFromVersionDesc(QUrl versionDesc, QByteArray base64Sig) {
     if (inProgress) return;
     inProgress = true;
     QMetaObject::invokeMethod(this, "updateFromVersionDescPerform", Qt::QueuedConnection, Q_ARG(QUrl, versionDesc),
-                              Q_ARG(QByteArray, base64Sig));
+                                 Q_ARG(QByteArray, base64Sig));
 }
 void AutoUpdater::abort() {
     QMetaObject::invokeMethod(this, "abortPerform", Qt::QueuedConnection);
@@ -70,12 +71,12 @@ void AutoUpdater::setForceFullUpdate(bool force) {
     forceFullUpdate = force;
 }
 
-// UTILS 
+// UTILS
 bool AutoUpdater::moveFileToAppDir(QString from) {
     QDir dir;
     QFileInfo oldFile = QFileInfo(from);
     QString dest = QCoreApplication::applicationDirPath() +  QDir::separator() + oldFile.fileName();
-    
+
     if (! QFile::exists(from)) return false;
 
     if (QFile::exists(dest)) {
@@ -85,11 +86,11 @@ bool AutoUpdater::moveFileToAppDir(QString from) {
     return dir.rename(from, dest);
 }
 
-int AutoUpdater::executeCmd(QString cmd, QStringList args, bool noWait = false) {
+int AutoUpdater::executeCmd(QString cmd, QStringList args, bool noWait) {
     QProcess proc;
 
     proc.setProcessChannelMode(QProcess::ForwardedChannels);
-    
+
     if (noWait) {
         proc.startDetached(cmd, args);
         return -1;
@@ -126,7 +127,7 @@ void AutoUpdater::checkForUpdatesPerform(QString endpoint, QString userAgent)
 void AutoUpdater::checkForUpdatesFinished()
 {
     if (currentCheck == NULL) {
-        emitFatalError("internal error - currentCheck NULL on checkForUpdatesFinished");
+        emitFatalError("internal error - currentCheck NULL on checkForUpdatesFinished", QVariant());
         return;
     }
 
@@ -142,7 +143,7 @@ void AutoUpdater::checkForUpdatesFinished()
 
         if (jsonResponse.isObject()) {
             QJsonObject obj = jsonResponse.object();
-            
+
             if (obj.value("upToDate").toBool()) {
                 // NO NEW VERSION, DO NOTHING
                 inProgress = false;
@@ -153,9 +154,9 @@ void AutoUpdater::checkForUpdatesFinished()
                 );
             }
         } else if (error) {
-            emitFatalError("JSON parse error on checkForUpdates "+error->errorString());
+            emitFatalError("JSON parse error on checkForUpdates "+error->errorString(), QVariant());
         } else {
-            emitFatalError("Unable to understand response from checkForUpdates");
+            emitFatalError("Unable to understand response from checkForUpdates", QVariant());
         }
 
         delete error;
@@ -174,7 +175,7 @@ void AutoUpdater::updateFromVersionDescPerform(QUrl versionDesc, QByteArray base
 
 void AutoUpdater::updateFromVersionDescFinished() {
     if (currentCheck == NULL) {
-        emitFatalError("internal error - currentCheck NULL on updateFromVersionDescFinished");
+        emitFatalError("internal error - currentCheck NULL on updateFromVersionDescFinished", QVariant());
         return;
     }
 
@@ -187,10 +188,10 @@ void AutoUpdater::updateFromVersionDescFinished() {
         QByteArray sig = reply->property("signature").toByteArray();
 
         if (verify_sig(
-            (const byte*)dataReply.data(), dataReply.size(), 
+            (const byte*)dataReply.data(), dataReply.size(),
             (const byte*)sig.data(), sig.length()
         ) != 0) {
-            emitFatalError("Unable to verify update signature");
+            emitFatalError("Unable to verify update signature", QVariant());
         } else {
             QJsonParseError *error = NULL;
             QJsonDocument jsonResponse = QJsonDocument::fromJson(dataReply, error);
@@ -198,9 +199,9 @@ void AutoUpdater::updateFromVersionDescFinished() {
             if (jsonResponse.isObject()) {
                 prepareUpdate(jsonResponse);
             } else if (error) {
-                emitFatalError("JSON parse error on updateFromVersionDesc "+error->errorString());
+                emitFatalError("JSON parse error on updateFromVersionDesc "+error->errorString(), QVariant());
             } else {
-                emitFatalError("Unable to understand response from updateFromVersionDesc");
+                emitFatalError("Unable to understand response from updateFromVersionDesc", QVariant());
             }
 
             delete error;
@@ -218,7 +219,7 @@ void AutoUpdater::prepareUpdate(QJsonDocument versionDescDoc) {
     QJsonObject files = versionDesc.value("files").toObject();
 
     QVector<QString> toDownload;
-    
+
     if (forceFullUpdate
         || versionDesc.value("shellVersion").toString() != QCoreApplication::applicationVersion()
     ) {
@@ -228,17 +229,18 @@ void AutoUpdater::prepareUpdate(QJsonDocument versionDescDoc) {
     }
 
     if (! toDownload.length()) {
-        emitFatalError("internal error - no files to download. Unsupported OS?");
+        emitFatalError("internal error - no files to download. Unsupported OS?", QVariant());
         return;
     }
 
-    foreach (const QString &prop, toDownload) {
+    // Replaced legacy 'foreach' with a modern C++11 range-based for loop.
+    for (const QString &prop : toDownload) {
         QJsonObject file = files.value(prop).toObject();
 
         if (! (file.contains("url") && file.contains("checksum"))) continue;
 
         enqueueDownload(
-            QUrl(file.value("url").toString()), 
+            QUrl(file.value("url").toString()),
             QByteArray::fromHex(file.value("checksum").toString().toUtf8())
         );
     }
@@ -276,8 +278,8 @@ void AutoUpdater::startNextDownload() {
 
     // Check if the download is already downloaded - could happen if we try to do a full upgrade when we've
     // already prepared one
-    // Sketchy case: if the file does not exist, getFileChecksum would return the default sha256 hash; - 
-    //   this would actually prevent a case where the version descriptor is generated from empty files from breaking
+    // Sketchy case: if the file does not exist, getFileChecksum would return the default sha256 hash; -
+    //  this would actually prevent a case where the version descriptor is generated from empty files from breaking
     // the system - because this check would return true, and then the file wouldn't exist at all, emitting an error
     // (this shouldn't be able to happen, but still...)
     if (checksum == getFileChecksum(dest)) {
@@ -289,7 +291,7 @@ void AutoUpdater::startNextDownload() {
     // Start the download
     output.setFileName(dest);
     if (!output.open(QIODevice::WriteOnly)) {
-        emitFatalError("error opening file "+dest+" for download: "+output.errorString());
+        emitFatalError("error opening file "+dest+" for download: "+output.errorString(), QVariant());
         return;
     }
 
@@ -309,7 +311,7 @@ void AutoUpdater::downloadFinished()
     output.close();
 
     if (currentDownload == NULL) {
-        emitFatalError("internal error - currentDownload NULL on downloadFinished");
+        emitFatalError("internal error - currentDownload NULL on downloadFinished", QVariant());
         return;
     }
 
@@ -325,7 +327,7 @@ void AutoUpdater::downloadFinished()
             preparedFiles.push_back(dest);
             startNextDownload();
         } else {
-            emitFatalError("Unable to verify checksum for file "+dest);
+            emitFatalError("Unable to verify checksum for file "+dest, QVariant());
         }
     } else if (reply->error() != QNetworkReply::OperationCanceledError) {
         emitFatalError("Network error on downloadFinished "+reply->url().toString(), reply->error());

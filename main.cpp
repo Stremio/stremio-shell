@@ -1,6 +1,10 @@
 #include <QQmlApplicationEngine>
-#include <QtWebEngine>
+#include <QtWebEngineCore/QtWebEngineCore>
 #include <QSysInfo>
+#include <QIcon>
+#include <QQmlContext>
+#include <QQuickWindow>
+#include <QSGRendererInterface>
 
 #include <clocale>
 
@@ -50,6 +54,13 @@ void InitializeParameters(QQmlApplicationEngine *engine, MainApp& app) {
 
 int main(int argc, char **argv)
 {
+    // Required for QtWebEngine in Qt6
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+    QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
+
+    // Removed QtWebEngineCore::initialize() as it's not needed in Qt6
+    // and was causing a build error. Initialization is now automatic.
+
     qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--autoplay-policy=no-user-gesture-required");
     #ifdef _WIN32
     // Default to ANGLE (DirectX), because that seems to eliminate so many issues on Windows
@@ -66,10 +77,10 @@ int main(int argc, char **argv)
     }
     #endif
 
-    // This is really broken on Linux
-    #ifndef Q_OS_LINUX
-    Application::setAttribute(Qt::AA_EnableHighDpiScaling);
-    #endif
+    // In Qt6, HighDpiScaling is enabled by default and this attribute is obsolete.
+    // #ifndef Q_OS_LINUX
+    // Application::setAttribute(Qt::AA_EnableHighDpiScaling);
+    // #endif
 
     Application::setApplicationName("Stremio");
     Application::setApplicationVersion(STREMIO_SHELL_VERSION);
@@ -94,7 +105,7 @@ int main(int argc, char **argv)
     // Qt sets the locale in the QGuiApplication constructor, but libmpv
     // requires the LC_NUMERIC category to be set to "C", so change it back.
     std::setlocale(LC_NUMERIC, "C");
-    
+
 
     static QQmlApplicationEngine* engine = new QQmlApplicationEngine();
 
@@ -104,17 +115,27 @@ int main(int argc, char **argv)
     qmlRegisterType<RazerChroma>("com.stremio.razerchroma", 1, 0, "RazerChroma");
     qmlRegisterType<ClipboardProxy>("com.stremio.clipboard", 1, 0, "Clipboard");
 
-    InitializeParameters(engine, app); 
+    InitializeParameters(engine, app);
 
     engine->load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     #ifndef Q_OS_MACOS
     QObject::connect( &app, &SingleApplication::receivedMessage, &app, &MainApp::processMessage );
     #endif
-    QObject::connect( &app, SIGNAL(receivedMessage(QVariant, QVariant)), engine->rootObjects().value(0),
-                      SLOT(onAppMessageReceived(QVariant, QVariant)) );
+
+    // Updated SIGNAL/SLOT to modern lambda-based syntax for better type safety
+    if (!engine->rootObjects().isEmpty()) {
+        QObject *rootObject = engine->rootObjects().first();
+        QObject::connect(&app, &SingleApplication::receivedMessage, rootObject, [rootObject](const QVariant &msg, const QVariant &id) {
+            QMetaObject::invokeMethod(rootObject, "onAppMessageReceived",
+                                      Q_ARG(QVariant, msg),
+                                      Q_ARG(QVariant, id));
+        });
+    }
+
     int ret = app.exec();
     delete engine;
     engine = nullptr;
     return ret;
 }
+

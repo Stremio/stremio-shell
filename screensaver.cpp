@@ -1,11 +1,13 @@
 #include "screensaver.h"
 #include <QtCore/QLibrary>
+#include <QDebug>
+
 #ifdef Q_OS_LINUX
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusReply>
-static QDBusInterface screenSaverInterface("org.freedesktop.ScreenSaver", 
-           "/org/freedesktop/ScreenSaver", "org.freedesktop.ScreenSaver");
+static QDBusInterface screenSaverInterface("org.freedesktop.ScreenSaver",
+                                      "/org/freedesktop/ScreenSaver", "org.freedesktop.ScreenSaver");
 #endif //Q_OS_LINUX
 #if defined(Q_OS_MAC) && !defined(Q_OS_IOS)
 //http://www.cocoachina.com/macdev/cocoa/2010/0201/453.html
@@ -14,9 +16,8 @@ static QDBusInterface screenSaverInterface("org.freedesktop.ScreenSaver",
 #endif //Q_OS_MAC
 #ifdef Q_OS_WIN
 #include <QAbstractEventDispatcher>
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QAbstractNativeEventFilter>
-#endif
+
 //mingw gcc4.4 EXECUTION_STATE
 #ifdef __MINGW32__
 #ifndef _WIN32_WINDOWS
@@ -27,10 +28,7 @@ static QDBusInterface screenSaverInterface("org.freedesktop.ScreenSaver",
 #define USE_NATIVE_EVENT 0
 
 #if USE_NATIVE_EVENT
-class ScreenSaverEventFilter
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-        : public QAbstractNativeEventFilter
-#endif
+class ScreenSaverEventFilter : public QAbstractNativeEventFilter
 {
 public:
     //screensaver is global
@@ -40,41 +38,34 @@ public:
     }
     void enable(bool yes = true) {
         if (!yes) {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-            mLastEventFilter = QAbstractEventDispatcher::instance()->setEventFilter(eventFilter);
-#else
             QAbstractEventDispatcher::instance()->installNativeEventFilter(this);
-#endif
         } else {
             if (!QAbstractEventDispatcher::instance())
                 return;
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-            mLastEventFilter = QAbstractEventDispatcher::instance()->setEventFilter(mLastEventFilter);
-#else
             QAbstractEventDispatcher::instance()->removeNativeEventFilter(this);
-#endif
         }
     }
     void disable(bool yes = true) {
         enable(!yes);
     }
 
-    bool nativeEventFilter(const QByteArray &eventType, void *message, long *result) {
+    // Updated for Qt6: The 'result' parameter is now qintptr* instead of long*
+    bool nativeEventFilter(const QByteArray &eventType, void *message, qintptr *result) override {
         Q_UNUSED(eventType);
         MSG* msg = static_cast<MSG*>(message);
-        //qDebug("ScreenSaverEventFilter: %p", msg->message);
+        //qDebug() << "ScreenSaverEventFilter:" << msg->message;
         if (WM_DEVICECHANGE == msg->message) {
-            qDebug("~~~~~~~~~~device event");
+            qDebug() << "~~~~~~~~~~device event";
             /*if (msg->wParam == DBT_DEVICEREMOVECOMPLETE) {
-                qDebug("Remove device");
+                qDebug() << "Remove device";
             }*/
 
         }
         if (msg->message == WM_SYSCOMMAND
-                && ((msg->wParam & 0xFFF0) == SC_SCREENSAVE
-                    || (msg->wParam & 0xFFF0) == SC_MONITORPOWER)
+              && ((msg->wParam & 0xFFF0) == SC_SCREENSAVE
+                  || (msg->wParam & 0xFFF0) == SC_MONITORPOWER)
         ) {
-            //qDebug("WM_SYSCOMMAND SC_SCREENSAVE SC_MONITORPOWER");
+            //qDebug() << "WM_SYSCOMMAND SC_SCREENSAVE SC_MONITORPOWER";
             if (result) {
                 //*result = 0; //why crash?
             }
@@ -85,16 +76,7 @@ public:
 private:
     ScreenSaverEventFilter() {}
     ~ScreenSaverEventFilter() {}
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    static QAbstractEventDispatcher::EventFilter mLastEventFilter;
-    static bool eventFilter(void* message) {
-        return ScreenSaverEventFilter::instance().nativeEventFilter("windows_MSG", message, 0);
-    }
-#endif
 };
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-QAbstractEventDispatcher::EventFilter ScreenSaverEventFilter::mLastEventFilter = 0;
-#endif
 #endif //USE_NATIVE_EVENT
 #endif //Q_OS_WIN
 
@@ -133,7 +115,7 @@ bool ScreenSaver::enable(bool yes)
         if ( SystemParametersInfo(SPI_GETSCREENSAVETIMEOUT, 0, &val, 0)) {
             SystemParametersInfo(SPI_SETSCREENSAVETIMEOUT, val, NULL, 0);
         }
-     */
+       */
     //http://msdn.microsoft.com/en-us/library/aa373208%28VS.85%29.aspx
     static EXECUTION_STATE sLastState = 0;
     if (!yes) {
@@ -154,9 +136,9 @@ bool ScreenSaver::enable(bool yes)
         if (cookieID) {
             screenSaverInterface.call("UnInhibit", cookieID);
             rv = true;
-            qDebug("ScreenSaver:: UnInhibit Successful %d", cookieID);
+            qDebug() << "ScreenSaver: UnInhibit Successful" << cookieID;
         } else {
-            qWarning("ScreenSaver::Asked for Dbus UnInhibit, but Inhibit never called. Ignoring");
+            qWarning() << "ScreenSaver: Asked for Dbus UnInhibit, but Inhibit never called. Ignoring";
         }
     } else {
         if(screenSaverInterface.isValid()) {
@@ -165,9 +147,9 @@ bool ScreenSaver::enable(bool yes)
             if (reply.isValid()) {
                 cookieID = reply.value();
                 rv = true;
-                qDebug("ScreenSaver::Dbus Inhibit Successful %d", cookieID);
-            } else {   
-                qWarning("ScreenSaver::Dbus Inhibit Failed");
+                qDebug() << "ScreenSaver: Dbus Inhibit Successful" << cookieID;
+            } else {
+                qWarning() << "ScreenSaver: Dbus Inhibit Failed";
             }
         }
     }
@@ -191,9 +173,9 @@ bool ScreenSaver::enable(bool yes)
     rv = success == kIOReturnSuccess;
 #endif //Q_OS_MAC
     if (!rv) {
-        qWarning("Failed to enable/disable screen saver (enabled: %d)", yes);
+        qWarning() << "Failed to enable/disable screen saver (enabled:" << yes << ")";
     } else {
-        qDebug("Successful to enable/disable screen saver (enabled: %d)", yes);
+        qDebug() << "Successful to enable/disable screen saver (enabled:" << yes << ")";
     }
     return rv;
 }

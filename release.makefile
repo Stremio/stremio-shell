@@ -15,7 +15,7 @@ install:
 	install -Dm 644 ${SERVER_JS} "${INSTALL_DIR}/server.js"
 	install -Dm 644 smartcode-stremio.desktop "${INSTALL_DIR}/smartcode-stremio.desktop"
 	cp -r icons "${INSTALL_DIR}/"
-	ln -s "${shell which node}" "${INSTALL_DIR}/node"
+	ln -s "/home/lynchmv/.nvm/versions/node/v22.16.0/bin/node" "${INSTALL_DIR}/node"
 ifneq ("$(wildcard ../mpv-build/mpv/build)","")
 	cp ../mpv-build/mpv/build/libmpv.so* "${INSTALL_DIR}/"
 endif
