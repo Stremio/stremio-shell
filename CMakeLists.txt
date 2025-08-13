@@ -47,7 +47,7 @@ if(APPLE)
   set(MPV_LIBRARY_mpv ${CMAKE_CURRENT_SOURCE_DIR}/iina/deps/lib/libmpv.dylib)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath,@executable_path/../Frameworks")
   add_definitions("-pipe")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -arch x64")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -arch x86_64")
   set(ENV{OPENSSL_ROOT_DIR} $ENV{OPENSSL_BIN_PATH})
 endif()
 
