@@ -14,7 +14,7 @@ jobs:
     env:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
   
       - name: Submodules
         run: git submodule update --init --recursive
