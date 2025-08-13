@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macOS-latest]
+        os: [macOS-13]
       #  node: ['8']
     env:
       APP_IDENTITY: "FA18F75D76A5D513F8465C671CD0FE2F7F9AA848"
