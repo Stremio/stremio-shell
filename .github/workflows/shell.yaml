@@ -60,7 +60,7 @@ jobs:
         run: |
           git clone https://github.com/iina/iina
           bash ./iina/other/download_libs.sh
-          export MPV_BIN_PATH=$(pwd)/deps
+          export MPV_BIN_PATH=$(pwd)/iina/deps
           ( cd $MPV_BIN_PATH/lib && ln -s libmpv.2.dylib libmpv.dylib )
           export OPENSSL_BIN_PATH=$(brew --prefix openssl)
           mkdir build
