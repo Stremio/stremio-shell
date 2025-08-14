@@ -9,14 +9,13 @@ for /f delims^=^"^ tokens^=2 %%i IN ('type .\CMakeLists.txt ^| find "stremio VER
 SET BUILD_DIR=build
 
 :: Set up VS environment
-if not defined DevEnvDir (
-   CALL "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x86
-)
+CALL "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" x86
 
 IF NOT EXIST "%BUILD_DIR%" mkdir "%BUILD_DIR%"
 PUSHD "%BUILD_DIR%"
 
 cmake -G"NMake Makefiles" -DCMAKE_BUILD_TYPE=Release ..
+::exit /b
 cmake --build .
 
 POPD
