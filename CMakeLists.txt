@@ -25,7 +25,6 @@ set(SOURCES
   stremioprocess.cpp
   screensaver.cpp
   systemtray.cpp
-  razerchroma.cpp
   qclipboardproxy.cpp
   verifysig.c
   mainapplication.h
@@ -35,7 +34,7 @@ set(SOURCES
 
 set(MPV_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/deps/libmpv/include)
 if(WIN32)
-  list(APPEND SOURCES deps/chroma/chroma stremio.rc)
+  list(APPEND SOURCES stremio.rc)
   set(QT_DEFAULT_MAJOR_VERSION 5)
   set(ENV{Qt5_DIR} $ENV{QTDIR})
   set(MPV_LIBRARY_mpv ${CMAKE_CURRENT_SOURCE_DIR}/deps/libmpv/win32/mpv.lib)
@@ -106,8 +105,6 @@ endif()
 target_include_directories(${PROJECT_NAME} PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${MPV_INCLUDE_DIR}
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/deps/chroma>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/deps/chroma/ChromaSDK/inc>
 )
 
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC

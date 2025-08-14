@@ -23,7 +23,6 @@ typedef QApplication Application;
 #include "stremioprocess.h"
 #include "mpv.h"
 #include "screensaver.h"
-#include "razerchroma.h"
 #include "qclipboardproxy.h"
 
 #else
@@ -101,7 +100,6 @@ int main(int argc, char **argv)
     qmlRegisterType<Process>("com.stremio.process", 1, 0, "Process");
     qmlRegisterType<ScreenSaver>("com.stremio.screensaver", 1, 0, "ScreenSaver");
     qmlRegisterType<MpvObject>("com.stremio.libmpv", 1, 0, "MpvObject");
-    qmlRegisterType<RazerChroma>("com.stremio.razerchroma", 1, 0, "RazerChroma");
     qmlRegisterType<ClipboardProxy>("com.stremio.clipboard", 1, 0, "Clipboard");
 
     InitializeParameters(engine, app); 
