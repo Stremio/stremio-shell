@@ -39,7 +39,7 @@
         if(QOperatingSystemVersion::current() <= QOperatingSystemVersion::Windows7) {
             icon = QIcon(":/images/stremio_window.png");
         } else {
-            icon = QIcon::fromTheme("smartcode-stremio-tray", QIcon(":/images/stremio_tray_white.png"));
+            icon = QIcon::fromTheme("smartcode-stremio-tray", QIcon(":/images/stremio_window.png"));
             icon.setIsMask(true);
         }
 

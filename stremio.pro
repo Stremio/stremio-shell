@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-VERSION=4.4.168
+VERSION=4.4.169
 
 DEFINES += STREMIO_SHELL_VERSION=\\\"$$VERSION\\\"
 
@@ -55,11 +55,6 @@ win32{
     INCLUDEPATH += C:/OpenSSL-Win32/include
 }
 
-# Razer Chroma SDK
-win32 {
-    include(deps/chroma/chroma.pri)
-}
-
 QT += widgets
 
 # TODO: if def WEBENGINE
@@ -72,7 +67,6 @@ SOURCES += main.cpp \
     screensaver.cpp \
     autoupdater.cpp \
     systemtray.cpp \
-    razerchroma.cpp \
     qclipboardproxy.cpp \
     verifysig.c
 
@@ -91,7 +85,6 @@ HEADERS += \
     mainapplication.h \
     autoupdater.h \
     systemtray.h \
-    razerchroma.h \
     qclipboardproxy.h \
     verifysig.h \
     publickey.h

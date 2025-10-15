@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macOS-latest]
+        os: [macOS-13]
       #  node: ['8']
     env:
       APP_IDENTITY: "FA18F75D76A5D513F8465C671CD0FE2F7F9AA848"
@@ -23,8 +23,10 @@ jobs:
       #  with:
       #    xcode-version: '11.5'
 
-      - uses: actions/checkout@v2
-  
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+
       # - uses: actions/setup-node@v1
       #   with:
       #     node-version: ${{ matrix.node }}
@@ -42,7 +44,7 @@ jobs:
           if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then echo DEPLOY=false >> $GITHUB_ENV; else echo DEPLOY=true >> $GITHUB_ENV; fi
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v4
         with:
           version: 5.15.2
           modules: qtwebengine qtwebglplugin
@@ -58,7 +60,7 @@ jobs:
         run: |
           git clone https://github.com/iina/iina
           bash ./iina/other/download_libs.sh
-          export MPV_BIN_PATH=$(pwd)/deps
+          export MPV_BIN_PATH=$(pwd)/iina/deps
           ( cd $MPV_BIN_PATH/lib && ln -s libmpv.2.dylib libmpv.dylib )
           export OPENSSL_BIN_PATH=$(brew --prefix openssl)
           mkdir build
@@ -85,7 +87,7 @@ jobs:
           
       - name: Fix dependencies
         run: |
-          cp ./deps/lib/* ./build/stremio.app/Contents/Frameworks
+          cp ./iina/deps/lib/* ./build/stremio.app/Contents/Frameworks
           cp ./mac/libcrypto.3.dylib ./build/stremio.app/Contents/Frameworks
 
       - name: Testdrive
@@ -119,7 +121,7 @@ jobs:
           if [ "$DEPLOY" = "true" ]; then codesign --deep --force -v -s $APP_IDENTITY "$DMG_PATH"; fi
 
       - name: Store DMG
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: StremioDMG
           path: "${{ env.DMG_PATH }}"

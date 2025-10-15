@@ -124,15 +124,16 @@ test_script:
   - windeployqt --release --no-compiler-runtime --qmldir=. ./dist-win/stremio.exe
 
   # sign-windows-files
-  - if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20211118-20241118.pfx /p %CERT_PASS%  ./dist-win/stremio.exe
-  - if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20211118-20241118.pfx /p %CERT_PASS%  ./dist-win/stremio-runtime.exe
-  - if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20211118-20241118.pfx /p %CERT_PASS%  ./dist-win/ffmpeg.exe
-  - if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20211118-20241118.pfx /p %CERT_PASS%  ./dist-win/ffprobe.exe
+  #- if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20211118-20241118.pfx /p %CERT_PASS%  ./dist-win/stremio.exe
+  #- if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20211118-20241118.pfx /p %CERT_PASS%  ./dist-win/stremio-runtime.exe
+  #- if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20211118-20241118.pfx /p %CERT_PASS%  ./dist-win/ffmpeg.exe
+  #- if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20211118-20241118.pfx /p %CERT_PASS%  ./dist-win/ffprobe.exe
 
 
   # build-windows-installer
   - makensis -V2 ./windows/installer/windows-installer.nsi
-  - if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20211118-20241118.pfx /p %CERT_PASS% *.exe
+  - ps: Compress-Archive -Path .\dist-win -DestinationPath "Stremio $env:package_version.zip"
+  #- if "%DEPLOY%" == "true" SignTool sign /f ./windows/smartcode-20211118-20241118.pfx /p %CERT_PASS% *.exe
 
   # TODO: test if stremio.exe starts properly; because the missing DLLs errors are handled at run-time, we cannot catch them sanely
   # we can mix that with the server integration test, then we'd be able to detect some sanity
@@ -141,7 +142,7 @@ test_script:
 
 # Deploy artifacts to S3
 artifacts:
-  - path: "*.exe"
+  - path: "*.zip"
 
 deploy:
   provider: S3
@@ -150,7 +151,7 @@ deploy:
   bucket: stremio-artifacts
   region: eu-west-1
   set_public: true
-  folder: shell-win/$(UPLOAD_PATH)
+  folder: shell-win-unsigned/$(UPLOAD_PATH)
   max_error_retry: 1
   on:
     DEPLOY: true

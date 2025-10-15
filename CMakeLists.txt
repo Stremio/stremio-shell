@@ -5,7 +5,7 @@ if(APPLE)
   set(HAVE_FLAG_SEARCH_PATHS_FIRST 0)
 endif()
 
-project(stremio VERSION "4.4.168")
+project(stremio VERSION "4.4.169")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules/")
 
@@ -25,7 +25,6 @@ set(SOURCES
   stremioprocess.cpp
   screensaver.cpp
   systemtray.cpp
-  razerchroma.cpp
   qclipboardproxy.cpp
   verifysig.c
   mainapplication.h
@@ -35,7 +34,7 @@ set(SOURCES
 
 set(MPV_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/deps/libmpv/include)
 if(WIN32)
-  list(APPEND SOURCES deps/chroma/chroma stremio.rc)
+  list(APPEND SOURCES stremio.rc)
   set(QT_DEFAULT_MAJOR_VERSION 5)
   set(ENV{Qt5_DIR} $ENV{QTDIR})
   set(MPV_LIBRARY_mpv ${CMAKE_CURRENT_SOURCE_DIR}/deps/libmpv/win32/mpv.lib)
@@ -44,7 +43,7 @@ endif()
 if(APPLE)
   list(APPEND SOURCES images/stremio.icns)
   set_source_files_properties(images/stremio.icns PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
-  set(MPV_LIBRARY_mpv ${CMAKE_CURRENT_SOURCE_DIR}/deps/lib/libmpv.dylib)
+  set(MPV_LIBRARY_mpv ${CMAKE_CURRENT_SOURCE_DIR}/iina/deps/lib/libmpv.dylib)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath,@executable_path/../Frameworks")
   add_definitions("-pipe")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -arch x86_64")
@@ -106,8 +105,6 @@ endif()
 target_include_directories(${PROJECT_NAME} PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${MPV_INCLUDE_DIR}
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/deps/chroma>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/deps/chroma/ChromaSDK/inc>
 )
 
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC

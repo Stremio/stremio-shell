@@ -94,7 +94,6 @@ ApplicationWindow {
             if (ev === "autoupdater-notif-clicked" && autoUpdater.onNotifClicked) {
                 autoUpdater.onNotifClicked();
             }
-            //if (ev === "chroma-toggle") { args.enabled ? chroma.enable() : chroma.disable() }
             if (ev === "screensaver-toggle") shouldDisableScreensaver(args.disabled)
             if (ev === "file-close") fileDialog.close()
             if (ev === "file-open") {
