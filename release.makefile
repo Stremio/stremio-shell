@@ -1,19 +1,20 @@
 
-BUILD_DIR := build
-INSTALL_DIR := ${PREFIX}/opt/stremio
+BUILD_DIR	:= build
+INSTALL_DIR	:= ${PREFIX}/opt/stremio
 
-ICON_BIN := smartcode-stremio.svg
+ICON_BIN	:= smartcode-stremio.svg
 
-SERVER_JS := server.js
+SERVER_JS	:= server.js
 
-STREMIO_BIN := ${BUILD_DIR}/stremio
+STREMIO_BIN	:= ${BUILD_DIR}/stremio
 
 ALL: ${STREMIO_BIN} ${SERVER_JS} icons
 
 install:
 	make -C ${BUILD_DIR} install
 	install -Dm 644 ${SERVER_JS} "${INSTALL_DIR}/server.js"
-	install -Dm 644 smartcode-stremio.desktop "${INSTALL_DIR}/smartcode-stremio.desktop"
+	install -Dm 644 smartcode-stremio.desktop \
+		"${INSTALL_DIR}/smartcode-stremio.desktop"
 	cp -r icons "${INSTALL_DIR}/"
 	ln -s "${shell which node}" "${INSTALL_DIR}/node"
 ifneq ("$(wildcard ../mpv-build/mpv/build)","")
@@ -26,14 +27,21 @@ uninstall:
 
 icons:
 	mkdir -p "$@"
-	cd "$@" && printf 16,22,24,32,64,128 | xargs -I^ -d, sh -c 'rsvg-convert ../images/stremio.svg -w ^ -o smartcode-stremio_^.png && rsvg-convert ../images/stremio_tray_white.svg -w ^ -o smartcode-stremio-tray_^.png'
+	cd "$@" && \
+	printf 16,22,24,32,64,128 | \
+	xargs -I^ -d, sh -c \
+	'rsvg-convert ../images/stremio.svg -w ^ -o smartcode-stremio_^.png && \
+	rsvg-convert ../images/stremio_tray_white.svg -w ^ -o smartcode-stremio-tray_^.png'
 
-${SERVER_JS}: 
+${SERVER_JS}:
 	wget "${shell cat server-url.txt}" -qO ${SERVER_JS} || rm ${SERVER_JS}
 
 ${STREMIO_BIN}:
 	mkdir -p ${BUILD_DIR}
-	cd ${BUILD_DIR} && cmake -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${PREFIX}" ..
+	cd ${BUILD_DIR} && \
+		cmake -G"Unix Makefiles" \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX="${PREFIX}" ..
 	make -j -C ${BUILD_DIR}
 
 clean:

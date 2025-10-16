@@ -46,6 +46,7 @@ debug/*
 release/*
 
 moc_predefs\.h
+Makefile
 
 # binary on Linux
 stremio
@@ -57,3 +58,10 @@ server.js
 Stremio*.exe
 
 rcedit-x86.exe
+
+# debian build files
+debian/*debhelper*
+debian/files
+debian/*.substvars
+obj-*/
+stremio-build-deps_*

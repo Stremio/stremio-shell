@@ -106,7 +106,14 @@ int AutoUpdater::executeCmd(QString cmd, QStringList args, bool noWait = false) 
 // CHECK FOR UPDATES
 void AutoUpdater::checkForUpdatesPerform(QString endpoint, QString userAgent)
 {
-    QByteArray serverHash = getFileChecksum(QCoreApplication::applicationDirPath() +  QDir::separator() + SERVER_FNAME);
+    QString serverDir = QCoreApplication::applicationDirPath();
+
+    // debian package installation
+    if (serverDir == "/usr/bin") {
+        serverDir = "/usr/share/stremio";
+    }
+
+    QByteArray serverHash = getFileChecksum(serverDir +  QDir::separator() + SERVER_FNAME);
     QByteArray asarHash = getFileChecksum(QCoreApplication::applicationDirPath() +  QDir::separator() + ASAR_FNAME);
 
     QUrl url = QUrl(endpoint);

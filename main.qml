@@ -279,9 +279,16 @@ ApplicationWindow {
     }
     function launchServer() {
         var node_executable = applicationDirPath + "/node"
+        var server_dir = applicationDirPath
+
+        // debian package installation
+        if (server_dir === "/usr/bin") {
+           server_dir = "/usr/share/stremio"
+        }
+
         if (Qt.platform.os === "windows") node_executable = applicationDirPath + "/stremio-runtime.exe"
         streamingServer.start(node_executable, 
-            [applicationDirPath +"/server.js"].concat(Qt.application.arguments.slice(1)), 
+            [server_dir + "/server.js"].concat(Qt.application.arguments.slice(1)), 
             "EngineFS server started at "
         )
     }

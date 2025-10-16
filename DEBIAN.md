@@ -1,7 +1,42 @@
 # Build Stremio for Debian GNU/Linux
 
-These instructions have been tested in Debian Bookworm 12 (Stable)
+These instructions have been tested in Debian Bookworm 12 (Stable).
+In order to use this package, you will have to enable the `non-free` component
+in your `sources.list(5)` to install `libfdk-aac2`.
 
+# Debian package build
+## 1. Checkout submodules
+
+```bash
+git submodule update --init --recursive
+```
+
+## 2. Install dependencies
+
+```bash
+apt-get install -y devscripts equivs
+mk-build-deps -i
+```
+
+## 3. Build the package
+
+```bash
+dpkg-buildpackage -us -uc -b
+```
+
+## 4. Install the package
+
+```bash
+apt install ../stremio_*.deb
+```
+
+## 5. Run Stremio
+
+```bash
+stremio
+```
+
+# Manual build
 ## 1. Start by cloning the GIT repository:
 
 ``git clone --recurse-submodules -j8 https://github.com/Stremio/stremio-shell.git``
