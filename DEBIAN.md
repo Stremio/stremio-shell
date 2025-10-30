@@ -1,96 +1,154 @@
-# Build Stremio for Debian GNU/Linux
+# Installing Stremio on Debian/Ubuntu
 
-These instructions have been tested in Debian Bookworm 12 (Stable)
+## Option 1: APT Repository (Recommended)
 
-## 1. Start by cloning the GIT repository:
+### Official Debian Package
 
-``git clone --recurse-submodules -j8 https://github.com/Stremio/stremio-shell.git``
+**Stremio is officially packaged for Debian** by maintainer Juan Manuel Méndez Rey ([ITP #943703](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=943703)). The packages are currently under review for submission to the official Debian archive.
 
-## 2. Install QTCreator and other dependencies
+**Canonical source repositories** (Debian Salsa GitLab):
+- https://salsa.debian.org/mendezr/stremio (main package - GPL-3.0)
+- https://salsa.debian.org/mendezr/stremio-server (streaming server - proprietary)
 
-``sudo apt-get install qtcreator qt5-qmake g++ pkgconf libssl-dev librsvg2-bin``
+For the easiest installation on Debian systems, use the APT repository:
 
-## 3. Generate the Makefiles for Stremio
+### Installation Steps
 
-``cd stremio-shell``
+#### Add Repository GPG Key
 
-``qmake``
-
-## 3.1 Install missing dependencies
-
-If you see this message:
-
-```
-Info: creating stash file /home/mendezr/development/misc/stremio-shell/.qmake.stash
-Project ERROR: mpv development package not found
+```bash
+wget -qO - https://debian.vejeta.com/key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/stremio-debian.gpg
 ```
 
-Then you need to install the development package for mpv (movie player)
+#### Add Repository Source
 
-``sudo apt-get install libmpv-dev``
+Choose the appropriate repository for your Debian version:
 
-If you see this message:
-
-```
-Project ERROR: Unknown module(s) in QT: qml quick webengine
-```
-
-Then install:
-``sudo apt-get install libqt5webview5-dev``
-
-If you find:
-```Project ERROR: Unknown module(s) in QT: webengine```
-
-Then install:
-
-``sudo apt-get install libkf5webengineviewer-dev``
-
-## 4. Compile Stremio:
-
-$ make -f release.makefile
-
-This will create a new directory named `build` where the `stremio' binary will be located. It will also generate icons and download the streaming server.
-
-
-## 5. Prepare the streaming server
-
-Upon running the ./build/stremio binary, stremio should start up as usual. Except it won't start the streaming server, for this you need to have NodeJS installed and server.js in your working dir, for which you need to do:
-
-``cp ./server.js ./build/ && ln -s "$(which node)" ./build/node``
-
-
-## 6. Install other dependencies
-
-If you get this messages:
-
-```
-$ ./stremio
-QQmlApplicationEngine failed to load component
-qrc:/main.qml:3 module "QtWebChannel" is not installed
-qrc:/main.qml:2 module "QtWebEngine" is not installed
-qrc:/main.qml:12 module "Qt.labs.platform" is not installed
-qrc:/main.qml:3 module "QtWebChannel" is not installed
-qrc:/main.qml:2 module "QtWebEngine" is not installed
-qrc:/main.qml:12 module "Qt.labs.platform" is not installed
-qrc:/main.qml:3 module "QtWebChannel" is not installed
-qrc:/main.qml:2 module "QtWebEngine" is not installed
-qrc:/main.qml:12 module "Qt.labs.platform" is not installed
+**For Debian 13 (Trixie - current stable):**
+```bash
+echo "deb [signed-by=/usr/share/keyrings/stremio-debian.gpg] https://debian.vejeta.com trixie main non-free" | sudo tee /etc/apt/sources.list.d/stremio.list
 ```
 
-That means you need to install:
+**For Debian 12 (Bookworm - previous stable):**
+```bash
+echo "deb [signed-by=/usr/share/keyrings/stremio-debian.gpg] https://debian.vejeta.com bookworm main non-free" | sudo tee /etc/apt/sources.list.d/stremio.list
+```
 
-``sudo apt-get install qml-module-qtwebchannel qml-module-qt-labs-platform qml-module-qtwebengine qml-module-qtquick-dialogs qml-module-qtquick-controls qtdeclarative5-dev qml-module-qt-labs-settings qml-module-qt-labs-folderlistmodel``
+**For Debian sid (unstable) / Kali Rolling:**
+```bash
+echo "deb [signed-by=/usr/share/keyrings/stremio-debian.gpg] https://debian.vejeta.com sid main non-free" | sudo tee /etc/apt/sources.list.d/stremio.list
+```
 
-Now you should be able to run it normally.
+#### Install Stremio
 
-## 7. Run Stremio
+```bash
+sudo apt update
+sudo apt install stremio stremio-server
+```
 
-``./build/stremio``
+### Available Packages
 
-If you get a popup window stating:
+- **stremio** (main/free) - Desktop client with Qt5/QML interface (GPL-3.0, required)
+- **stremio-server** (non-free) - BitTorrent streaming server (proprietary, optional but recommended)
 
-Error while starting streaming server. Please consider re-installing Stremio from https://www.stremio.com
+### Tested Distributions
 
-Perhaps you've skipped step #5
+- ✅ Debian 13 (Trixie)
+- ✅ Debian 12 (Bookworm)
+- ✅ Debian sid (unstable)
+- ✅ Kali Linux (rolling)
 
-Cheers! 
+**Ubuntu**: Installation should work similarly on Ubuntu 22.04+ (untested). Use the trixie repository for Ubuntu users.
+
+### Benefits of APT Repository
+
+- **Automatic updates**: Receive new versions via regular `apt upgrade`
+- **Dependency handling**: APT automatically installs all required dependencies
+- **GPG signed**: Packages are cryptographically signed for security
+- **System integration**: Proper integration with desktop environments and system libraries
+
+---
+
+## Building Debian Packages
+
+For proper system integration, you can build Debian packages using `dpkg-buildpackage`.
+
+### Requirements
+
+- Debian/Ubuntu system with development tools
+- Complete build dependencies (listed in `debian/control`)
+- Understanding of Debian packaging workflow
+
+### Reference Implementation
+
+The official Debian packages use:
+- **100% system libraries** (no bundled dependencies)
+- **FHS compliant installation** (no `/opt` directory)
+- **Proper license separation** (GPL client in main, proprietary server in non-free)
+
+See the canonical source repositories for packaging details:
+- https://salsa.debian.org/mendezr/stremio
+- https://salsa.debian.org/mendezr/stremio-server
+
+### Build Command
+
+```bash
+QT_DEFAULT_MAJOR_VERSION=5 dpkg-buildpackage -us -uc
+```
+
+This generates `.deb` packages that can be installed with `dpkg -i`.
+
+---
+
+## Known Issues & Solutions
+
+### QtWebEngine Initialization
+
+Stremio requires QtWebEngine to be initialized before the QApplication constructor. This is handled automatically in the official packages.
+
+### QML Module Dependencies
+
+All QML modules must be available at runtime. The APT repository packages declare these as dependencies, ensuring automatic installation.
+
+### Streaming Server Environment
+
+The streaming server (server.js) requires certain environment variables (HOME, USER, PWD) to function correctly. Official packages configure this automatically.
+
+---
+
+## Contributing
+
+### Package Maintenance
+
+Official Debian packages are maintained at:
+- **Salsa GitLab** (canonical source): https://salsa.debian.org/mendezr/
+- **GitHub** (CI/CD and releases): https://github.com/vejeta/stremio-debian
+
+### Bug Reports
+
+- **Debian packaging issues**: File at https://github.com/vejeta/stremio-debian/issues
+- **Stremio application issues**: File at https://github.com/Stremio/stremio-shell/issues
+
+### ITP Status
+
+**Intent To Package** filed as [Debian Bug #943703](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=943703).
+
+Packages are prepared for submission to the official Debian archive and are currently under review.
+
+### Contact
+
+**Maintainer**: Juan Manuel Méndez Rey
+**Email**: vejeta@gmail.com
+**Salsa**: https://salsa.debian.org/mendezr
+
+---
+
+## Additional Resources
+
+- **Stremio Website**: https://www.stremio.com/
+- **APT Repository**: https://debian.vejeta.com
+- **GitHub Releases**: https://github.com/vejeta/stremio-debian/releases
+
+---
+
+*Last updated: October 2025*
