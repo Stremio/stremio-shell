@@ -335,27 +335,80 @@ ApplicationWindow {
             webView.url = webView.mainUrl;
         }
     }
-    function injectJS() {
-        splashScreen.visible = false
-        pulseOpacity.running = false
-        removeSplashTimer.running = false
-        webView.webChannel.registerObject( 'transport', transport )
-        // Try-catch to be able to return the error as result, but still throw it in the client context
-        // so it can be caught and reported
-        var injectedJS = "try { initShellComm() } " +
-                "catch(e) { setTimeout(function() { throw e }); e.message || JSON.stringify(e) }"
-        webView.runJavaScript(injectedJS, function(err) {
-            if (!err) {
-                webView.tries = 0
-            } else {
-                errorDialog.text = "User Interface could not be loaded.\n\nPlease try again later or contact the Stremio support team for assistance."
-                errorDialog.detailedText = err
-                errorDialog.visible = true
 
-                console.error(err)
+function injectJS() {
+    splashScreen.visible = false;
+    pulseOpacity.running = false;
+    removeSplashTimer.running = false;
+    webView.webChannel.registerObject('transport', transport);
+   
+
+    const injectedJs = `
+        (function() {
+            try {
+                let isToggling = false;
+
+                const togglePlay = async () => {
+                    const video = document.querySelector('video');
+                    if (video && !isToggling) {
+                        isToggling = true;
+                        video.paused ? await video.play() : await video.pause();
+                        isToggling = false;
+                    }
+                };
+
+                const attachListener = () => {
+                    const video = document.querySelector('video');
+                    if (video && !video._listenerAttached) {
+                        video._listenerAttached = true;
+                        video.addEventListener('click', togglePlay);
+                    }
+                };
+
+                new MutationObserver((mutations) => {
+                    mutations.forEach(() => attachListener());
+                }).observe(document.body, {
+                    childList: true,
+                    subtree: true
+                });
+
+                const origEmit = shellEvents.emit;
+                shellEvents.emit = (event, ...args) => {
+                    console.log("shellEvents.emit:", event, args);
+                    origEmit.call(shellEvents, event, ...args);
+                    if (event === 'availabilityChanged') attachListener();
+                };
+
+                const origInit = window.initShellComm;
+                window.initShellComm = () => {
+                    console.log("Calling original initShellComm...");
+                    origInit?.();
+                    attachListener();
+                };
+
+                attachListener();
+
+            } catch (e) {
+                console.error("Error in injected script:", e);
+                throw e;
             }
-        });
-    }
+        })();
+    `;
+
+    webView.runJavaScript(injectedJs, function(result) {
+        if (!result) {
+            console.log("JavaScript injected successfully");
+            webView.tries = 0;
+        } else {
+            errorDialog.text = "User Interface could not be loaded.\n\nPlease try again later or contact the Stremio support team for assistance.";
+            errorDialog.detailedText = result;
+            errorDialog.visible = true;
+
+            console.error(result);
+        }
+    });
+}
+
 
     // We want to remove the splash after a minute
     Timer {
