@@ -32,6 +32,8 @@ ApplicationWindow {
 
     property var previousVisibility: Window.Windowed
     property bool wasFullScreen: false
+    property bool suppressNextKeyboardSubtitleToast: false
+    property int keyboardSubtitleEnableCount: 0
 
     function setFullScreen(fullscreen) {
         if (fullscreen) {
@@ -299,7 +301,18 @@ ApplicationWindow {
     MpvObject {
         id: mpv
         anchors.fill: parent
-        onMpvEvent: function(ev, args) { transport.event(ev, args) }
+        onMpvEvent: function(ev, args) {
+            // Avoid repeating "Subtitles loaded" toast when subtitles are enabled by keyboard shortcut.
+            if (root.suppressNextKeyboardSubtitleToast &&
+                    ev === "mpv-prop-change" &&
+                    args &&
+                    (args.name === "sid" || args.name === "track-list")) {
+                root.suppressNextKeyboardSubtitleToast = false
+                suppressKeyboardSubtitleToastTimer.stop()
+                return
+            }
+            transport.event(ev, args)
+        }
     }
 
     //
@@ -333,6 +346,15 @@ ApplicationWindow {
             // we want to revert to the mainUrl in case the URL we were at was the one that caused the crash
             //webView.reload()
             webView.url = webView.mainUrl;
+        }
+    }
+    Timer {
+        id: suppressKeyboardSubtitleToastTimer
+        interval: 800
+        running: false
+        repeat: false
+        onTriggered: function () {
+            root.suppressNextKeyboardSubtitleToast = false
         }
     }
     function injectJS() {
@@ -507,6 +529,25 @@ ApplicationWindow {
         Action {
             shortcut: StandardKey.Paste
             onTriggered: webView.triggerWebAction(WebEngineView.Paste)
+        }
+
+        Action {
+            shortcut: "C"
+            shortcutContext: Qt.ApplicationShortcut
+            onTriggered: {
+                if (typeof(mpv.getProperty("path")) === "string") {
+                    var subVisibility = mpv.getProperty("sub-visibility")
+                    var willEnable = (subVisibility === false || subVisibility === 0 || subVisibility === "no")
+                    if (willEnable) {
+                        if (root.keyboardSubtitleEnableCount > 0) {
+                            root.suppressNextKeyboardSubtitleToast = true
+                            suppressKeyboardSubtitleToastTimer.restart()
+                        }
+                        root.keyboardSubtitleEnableCount += 1
+                    }
+                    mpv.command(["cycle", "sub-visibility"])
+                }
+            }
         }
 
         DropArea {
