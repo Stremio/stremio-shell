@@ -133,6 +133,14 @@ ApplicationWindow {
         shouldDisableScreensaver(mode === "player")
     }
 
+    property real panscanValue: 0.0
+
+    function toggleZoomToFill() {
+        panscanValue = panscanValue === 0.0 ? 1.0 : 0.0
+        mpv.setProperty("panscan", panscanValue)
+        console.log("Panscan set to: " + panscanValue)
+    }
+
     function wakeupEvent() {
         shouldDisableScreensaver(true)
         timerScreensaver.restart()
@@ -517,6 +525,12 @@ ApplicationWindow {
             }
         }
         webChannel: wChannel
+    }
+
+    // Keyboard shortcut to toggle zoom-to-fill (removes black bars by zooming/cropping)
+    Shortcut {
+        sequence: "Z"
+        onActivated: toggleZoomToFill()
     }
 
     WebChannel {
