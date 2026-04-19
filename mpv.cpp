@@ -167,6 +167,10 @@ void MpvObject::initialize_mpv() {
     // Don't stop on audio output issues
     mpv::qt::set_property(mpv, "audio-fallback-to-null", "yes");
 
+    #ifdef Q_OS_MACOS
+    // Changes audio output to avfoundation on MacOS for compatibility with Spatial audio
+     mpv::qt::set_property(mpv, "ao", "avfoundation");
+    #endif
     // User-visible application name used by some audio APIs (at least PulseAudio).
     mpv::qt::set_property(mpv, "audio-client-name", QCoreApplication::applicationName());
     // User-visible stream title used by some audio APIs (at least PulseAudio and wasapi).
