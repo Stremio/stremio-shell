@@ -446,7 +446,7 @@ ApplicationWindow {
         // In the app, we use open-external IPC signal, but make sure this works anyway
         property string hoveredUrl: ""
         onLinkHovered: function(url) { webView.hoveredUrl = url }
-        onNewViewRequested: function(req) { if (req.userInitiated) Qt.openUrlExternally(webView.hoveredUrl) }
+        onNewWindowRequested: function(req) { if (req.userInitiated) Qt.openUrlExternally(webView.hoveredUrl) }
 
         // FIXME: When is this called?
         onFullScreenRequested: function(req) {
