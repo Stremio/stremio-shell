@@ -281,7 +281,7 @@ ApplicationWindow {
         errorDialog.detailedText = 'Stremio streaming server has thrown an error \nQProcess::ProcessError code: ' 
             + code + '\n\n' 
             + streamingServer.getErrBuff();
-        errorDialog.visible = true
+        errorDialog.open()
     }
     function launchServer() {
         var node_executable = applicationDirPath + "/node"
@@ -356,7 +356,7 @@ ApplicationWindow {
             } else {
                 errorDialog.text = "User Interface could not be loaded.\n\nPlease try again later or contact the Stremio support team for assistance."
                 errorDialog.detailedText = err
-                errorDialog.visible = true
+                errorDialog.open()
 
                 console.error(err)
             }
@@ -561,8 +561,6 @@ ApplicationWindow {
     MessageDialog {
         id: errorDialog
         title: "Stremio - Application Error"
-        property string detailedText: ""
-        informativeText: detailedText
         buttons: MessageDialog.Ok
     }
 
