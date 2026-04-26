@@ -14,9 +14,7 @@ static QDBusInterface screenSaverInterface("org.freedesktop.ScreenSaver",
 #endif //Q_OS_MAC
 #ifdef Q_OS_WIN
 #include <QAbstractEventDispatcher>
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QAbstractNativeEventFilter>
-#endif
 //mingw gcc4.4 EXECUTION_STATE
 #ifdef __MINGW32__
 #ifndef _WIN32_WINDOWS
@@ -27,10 +25,7 @@ static QDBusInterface screenSaverInterface("org.freedesktop.ScreenSaver",
 #define USE_NATIVE_EVENT 0
 
 #if USE_NATIVE_EVENT
-class ScreenSaverEventFilter
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-        : public QAbstractNativeEventFilter
-#endif
+class ScreenSaverEventFilter : public QAbstractNativeEventFilter
 {
 public:
     //screensaver is global
@@ -40,41 +35,27 @@ public:
     }
     void enable(bool yes = true) {
         if (!yes) {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-            mLastEventFilter = QAbstractEventDispatcher::instance()->setEventFilter(eventFilter);
-#else
             QAbstractEventDispatcher::instance()->installNativeEventFilter(this);
-#endif
         } else {
             if (!QAbstractEventDispatcher::instance())
                 return;
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-            mLastEventFilter = QAbstractEventDispatcher::instance()->setEventFilter(mLastEventFilter);
-#else
             QAbstractEventDispatcher::instance()->removeNativeEventFilter(this);
-#endif
         }
     }
     void disable(bool yes = true) {
         enable(!yes);
     }
 
-    bool nativeEventFilter(const QByteArray &eventType, void *message, long *result) {
+    bool nativeEventFilter(const QByteArray &eventType, void *message, qintptr *result) {
         Q_UNUSED(eventType);
         MSG* msg = static_cast<MSG*>(message);
-        //qDebug("ScreenSaverEventFilter: %p", msg->message);
         if (WM_DEVICECHANGE == msg->message) {
             qDebug("~~~~~~~~~~device event");
-            /*if (msg->wParam == DBT_DEVICEREMOVECOMPLETE) {
-                qDebug("Remove device");
-            }*/
-
         }
         if (msg->message == WM_SYSCOMMAND
                 && ((msg->wParam & 0xFFF0) == SC_SCREENSAVE
                     || (msg->wParam & 0xFFF0) == SC_MONITORPOWER)
         ) {
-            //qDebug("WM_SYSCOMMAND SC_SCREENSAVE SC_MONITORPOWER");
             if (result) {
                 //*result = 0; //why crash?
             }
@@ -85,16 +66,7 @@ public:
 private:
     ScreenSaverEventFilter() {}
     ~ScreenSaverEventFilter() {}
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    static QAbstractEventDispatcher::EventFilter mLastEventFilter;
-    static bool eventFilter(void* message) {
-        return ScreenSaverEventFilter::instance().nativeEventFilter("windows_MSG", message, 0);
-    }
-#endif
 };
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-QAbstractEventDispatcher::EventFilter ScreenSaverEventFilter::mLastEventFilter = 0;
-#endif
 #endif //USE_NATIVE_EVENT
 #endif //Q_OS_WIN
 

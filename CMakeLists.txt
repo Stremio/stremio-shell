@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.16)
 # set(CMAKE_CONFIGURATION_TYPES "Release" CACHE STRING "" FORCE)
 if(APPLE)
-  set(CMAKE_OSX_DEPLOYMENT_TARGET "10.10" CACHE STRING "Minimum OS X deployment version")
+  set(CMAKE_OSX_DEPLOYMENT_TARGET "10.14" CACHE STRING "Minimum OS X deployment version")
   set(HAVE_FLAG_SEARCH_PATHS_FIRST 0)
 endif()
 
@@ -12,7 +12,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules/")
 
 add_definitions(-DSTREMIO_SHELL_BIN_VERSION=${NUMERIC_VERSION} -DSTREMIO_SHELL_VERSION="${PROJECT_VERSION}"  -DUNICODE -D_UNICODE)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_AUTOMOC ON)
@@ -34,9 +34,12 @@ set(SOURCES
 )
 
 set(MPV_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/deps/libmpv/include)
+if(NOT QT_DEFAULT_MAJOR_VERSION)
+  set(QT_DEFAULT_MAJOR_VERSION 6)
+endif()
+
 if(WIN32)
   list(APPEND SOURCES stremio.rc)
-  set(QT_DEFAULT_MAJOR_VERSION 5)
   set(ENV{Qt6_DIR} $ENV{QTDIR})
   set(MPV_LIBRARY_mpv ${CMAKE_CURRENT_SOURCE_DIR}/deps/libmpv/win32/mpv.lib)
 endif()
@@ -56,7 +59,7 @@ add_subdirectory(deps/singleapplication)
 
 set(CMAKE_BUILD_RPATH_USE_ORIGIN TRUE)
 
-find_package(Qt${QT_DEFAULT_MAJOR_VERSION} COMPONENTS Widgets Network Qml Quick WebEngine WebChannel DBus OpenGL REQUIRED)
+find_package(Qt${QT_DEFAULT_MAJOR_VERSION} COMPONENTS Widgets Network Qml Quick WebEngineQuick WebChannel DBus OpenGL REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(MPV REQUIRED)
 
@@ -109,14 +112,14 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC
-  Qt5::Qml
-  Qt5::Quick
-  Qt5::Network
-  Qt5::Widgets
-  Qt5::WebEngine
-  Qt5::WebChannel
-  Qt5::DBus
-  Qt5::OpenGL
+  Qt${QT_DEFAULT_MAJOR_VERSION}::Qml
+  Qt${QT_DEFAULT_MAJOR_VERSION}::Quick
+  Qt${QT_DEFAULT_MAJOR_VERSION}::Network
+  Qt${QT_DEFAULT_MAJOR_VERSION}::Widgets
+  Qt${QT_DEFAULT_MAJOR_VERSION}::WebEngineQuick
+  Qt${QT_DEFAULT_MAJOR_VERSION}::WebChannel
+  Qt${QT_DEFAULT_MAJOR_VERSION}::DBus
+  Qt${QT_DEFAULT_MAJOR_VERSION}::OpenGL
   SingleApplication::SingleApplication
   OpenSSL::Crypto
   ${MPV_LIBRARY}

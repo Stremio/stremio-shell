@@ -1,14 +1,15 @@
-import QtQuick 2.7
-import QtWebEngine 1.4
-import QtWebChannel 1.0
-import QtQuick.Window 2.2 // for Window instead of ApplicationWindow; also for Screen
-import QtQuick.Controls 1.4 // for ApplicationWindow
-import QtQuick.Dialogs 1.2
+import QtQuick
+import QtWebEngine
+import QtWebChannel
+import QtQuick.Window
+import QtQuick.Controls
+import QtQuick.Dialogs
 import com.stremio.process 1.0
 import com.stremio.screensaver 1.0
 import com.stremio.libmpv 1.0
 import com.stremio.clipboard 1.0
-import QtQml 2.2
+import QtQml
+import QtCore
 
 import "autoupdater.js" as Autoupdater
 
@@ -98,18 +99,23 @@ ApplicationWindow {
             if (ev === "file-close") fileDialog.close()
             if (ev === "file-open") {
               if (typeof args !== "undefined") {
-                var fileDialogDefaults = {
-                  title: "Please choose",
-                  selectExisting: true,
-                  selectFolder: false,
-                  selectMultiple: false,
-                  nameFilters: [],
-                  selectedNameFilter: "",
-                  data: null
+                fileDialog.title = args.hasOwnProperty("title") ? args.title : "Please choose"
+                fileDialog.selectExisting = args.hasOwnProperty("selectExisting") ? args.selectExisting : true
+                fileDialog.selectFolder = args.hasOwnProperty("selectFolder") ? args.selectFolder : false
+                fileDialog.selectMultiple = args.hasOwnProperty("selectMultiple") ? args.selectMultiple : false
+                fileDialog.nameFilters = args.hasOwnProperty("nameFilters") ? args.nameFilters : []
+                fileDialog.data = args.hasOwnProperty("data") ? args.data : null
+
+                // Map legacy properties to Qt6 fileMode
+                if (fileDialog.selectFolder) {
+                  fileDialog.fileMode = FileDialog.OpenFolder
+                } else if (fileDialog.selectMultiple) {
+                  fileDialog.fileMode = FileDialog.OpenFiles
+                } else if (fileDialog.selectExisting) {
+                  fileDialog.fileMode = FileDialog.OpenFile
+                } else {
+                  fileDialog.fileMode = FileDialog.SaveFile
                 }
-                Object.keys(fileDialogDefaults).forEach(function(key) {
-                  fileDialog[key] = args.hasOwnProperty(key) ? args[key] : fileDialogDefaults[key]
-                })
               }
               fileDialog.open()
             }
@@ -439,7 +445,7 @@ ApplicationWindow {
 
         // In the app, we use open-external IPC signal, but make sure this works anyway
         property string hoveredUrl: ""
-        onLinkHovered: webView.hoveredUrl = hoveredUrl
+        onLinkHovered: function(url) { webView.hoveredUrl = url }
         onNewViewRequested: function(req) { if (req.userInitiated) Qt.openUrlExternally(webView.hoveredUrl) }
 
         // FIXME: When is this called?
@@ -461,34 +467,34 @@ ApplicationWindow {
 
         Menu {
             id: ctxMenu
-            MenuItem {
+            Action {
                 text: "Undo"
                 shortcut: StandardKey.Undo
                 onTriggered: webView.triggerWebAction(WebEngineView.Undo)
             }
-            MenuItem {
+            Action {
                 text: "Redo"
                 shortcut: StandardKey.Redo
                 onTriggered: webView.triggerWebAction(WebEngineView.Redo)
             }
             MenuSeparator { }
-            MenuItem {
+            Action {
                 text: "Cut"
                 shortcut: StandardKey.Cut
                 onTriggered: webView.triggerWebAction(WebEngineView.Cut)
             }
-            MenuItem {
+            Action {
                 text: "Copy"
                 shortcut: StandardKey.Copy
                 onTriggered: webView.triggerWebAction(WebEngineView.Copy)
             }
-            MenuItem {
+            Action {
                 text: "Paste"
                 shortcut: StandardKey.Paste
                 onTriggered: webView.triggerWebAction(WebEngineView.Paste)
             }
             MenuSeparator { }
-            MenuItem {
+            Action {
                 text: "Select All"
                 shortcut: StandardKey.SelectAll
                 onTriggered: webView.triggerWebAction(WebEngineView.SelectAll)
@@ -504,9 +510,9 @@ ApplicationWindow {
             }
         }
 
-        Action {
-            shortcut: StandardKey.Paste
-            onTriggered: webView.triggerWebAction(WebEngineView.Paste)
+        Shortcut {
+            sequence: StandardKey.Paste
+            onActivated: webView.triggerWebAction(WebEngineView.Paste)
         }
 
         DropArea {
@@ -555,19 +561,26 @@ ApplicationWindow {
     MessageDialog {
         id: errorDialog
         title: "Stremio - Application Error"
-        // onAccepted handler does not work
-        //icon: StandardIcon.Critical
-        //standardButtons: StandardButton.Ok
+        property string detailedText: ""
+        informativeText: detailedText
+        buttons: MessageDialog.Ok
     }
 
     FileDialog {
       id: fileDialog
-      folder: shortcuts.home
+      currentFolder: StandardPaths.writableLocation(StandardPaths.HomeLocation)
+      // Qt6 FileDialog properties for compatibility with the transport event API
+      property bool selectExisting: true
+      property bool selectFolder: false
+      property bool selectMultiple: false
+      property var data: {}
       onAccepted: {
         var fileProtocol = "file://"
         var onWindows = Qt.platform.os === "windows" ? 1 : 0
         var pathSeparators = ["/", "\\"]
-        var files = fileDialog.fileUrls.filter(function(fileUrl) {
+        var files = fileDialog.selectedFiles.map(function(fileUrl) {
+          return fileUrl.toString()
+        }).filter(function(fileUrl) {
           // Ignore network drives and alike
           return fileUrl.startsWith(fileProtocol)
         })
@@ -584,7 +597,7 @@ ApplicationWindow {
           selectFolder: fileDialog.selectFolder,
           selectMultiple: fileDialog.selectMultiple,
           nameFilters: fileDialog.nameFilters,
-          selectedNameFilter: fileDialog.selectedNameFilter,
+          selectedNameFilter: fileDialog.selectedNameFilterIndex,
           data: fileDialog.data
         })
       }
@@ -595,11 +608,10 @@ ApplicationWindow {
           selectFolder: fileDialog.selectFolder,
           selectMultiple: fileDialog.selectMultiple,
           nameFilters: fileDialog.nameFilters,
-          selectedNameFilter: fileDialog.selectedNameFilter,
+          selectedNameFilter: fileDialog.selectedNameFilterIndex,
           data: fileDialog.data
         })
       }
-      property var data: {}
     }
 
     //

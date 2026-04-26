@@ -15,9 +15,8 @@
 #include <QUrlQuery>
 #include <QProcessEnvironment>
 #include <QQueue>
-#include <QVector>
+#include <QList>
 #include <QProcess>
-#include <QNetworkConfigurationManager>
 
 // Mixing C and C++ :(
 extern "C" {

@@ -9,7 +9,7 @@
 #include <QtGlobal>
 #include <QOpenGLContext>
 
-#include <QtGui/QOpenGLFramebufferObject>
+#include <QOpenGLFramebufferObject>
 
 #include <QtQuick/QQuickWindow>
 #include <QtQuick/QQuickView>
@@ -81,8 +81,6 @@ class MpvRenderer : public QQuickFramebufferObject::Renderer
 
     void render()
     {
-        obj->window()->resetOpenGLState();
-
         QOpenGLFramebufferObject *fbo = framebufferObject();
         mpv_opengl_fbo mpfbo{static_cast<int>(fbo->handle()), fbo->width(), fbo->height(), 0};
         int flip_y{0};
@@ -99,8 +97,6 @@ class MpvRenderer : public QQuickFramebufferObject::Renderer
         // See render_gl.h on what OpenGL environment mpv expects, and
         // other API details.
         mpv_render_context_render(obj->mpv_gl, params);
-
-        obj->window()->resetOpenGLState();
      }
 };
 
@@ -308,7 +304,6 @@ QVariant MpvObject::getProperty(const QString& name) {
 }
 QQuickFramebufferObject::Renderer *MpvObject::createRenderer() const
 {
-    window()->setPersistentOpenGLContext(true);
-    window()->setPersistentSceneGraph(true);
+    // Qt6: persistent OpenGL context and scene graph are the default behavior
     return new MpvRenderer(const_cast<MpvObject *>(this));
 }
