@@ -1,5 +1,6 @@
 #include <QQmlApplicationEngine>
 #include <QtWebEngineQuick>
+#include <QQuickWindow>
 
 #include <clocale>
 
@@ -49,6 +50,10 @@ void InitializeParameters(QQmlApplicationEngine *engine, MainApp& app) {
 int main(int argc, char **argv)
 {
     qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--autoplay-policy=no-user-gesture-required");
+
+    // Qt6: Force OpenGL backend for QQuickFramebufferObject (used by MPV renderer).
+    // Without this, Qt6 RHI may choose Vulkan/Metal and MPV frames won't update.
+    QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
 
     // Qt6: QtWebEngineQuick::initialize() must be called before QApplication
     QtWebEngineQuick::initialize();
