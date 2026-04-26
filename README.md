@@ -1,47 +1,42 @@
 ## Build
 
-### Build instructions for Mac OS X
+This branch (`qt6-migration`) uses **Qt 6** and **CMake** as the build system.
 
-1. Make sure you have Qt 5.10.x or newer and Qt Creator
-2. Open the project in Qt creator
-3. build it
+### Dependencies
 
-#### Command line to build:
-
+**Debian/Ubuntu:**
+```bash
+sudo apt install qt6-base-dev qt6-declarative-dev qt6-webengine-dev \
+  qt6-webchannel-dev qt6-tools-dev libgl-dev libmpv-dev libssl-dev cmake
 ```
-qmake
-make
+
+### Build instructions (all platforms)
+
+```bash
+# Clone with submodules
+git clone --recurse-submodules https://github.com/vejeta/stremio-shell.git
+cd stremio-shell
+git checkout qt6-migration
+
+# If you already cloned without --recurse-submodules:
+git submodule update --init
+
+# Build
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release -DQT_DEFAULT_MAJOR_VERSION=6
+make -j$(nproc)
 ```
-### Build instructions for Windows
 
-Please, refer to [WINDOWS.md](https://github.com/Stremio/stremio-shell/blob/master/WINDOWS.md) for a detailed explanation of how to build the latest Stremio in Windows.
+### Platform-specific notes
 
-
-### Build instructions for Debian GNU/Linux
-
-Please, refer to [DEBIAN.md](https://github.com/Stremio/stremio-shell/blob/master/DEBIAN.md) for a detailed explanation of how to build the latest Stremio in Debian.
-
-### Build instructions for OpenSuseLeap 15.0
-
-Please, refer to [OpenSuseLeap.md](https://github.com/Stremio/stremio-shell/blob/master/OpenSuseLeap.md) for a detailed explanation of how to build the latest Stremio in OpenSuseLeap 15.0
-
-### Build instructions for Docker builds of supported Linux distros
-
-There are Docker files and setup scripts for supported Linux distributions (Debian, Fedora, Arch), located in the `./distros` directory.
-
-There is also an automated build script located in `./dist-utils/build-package.sh`.
-
-For more information refer to the [DOCKER.md](DOCKER.md) file.
-
-## Third-party install scripts
-
-There are repositories for third-party install scripts that may be useful for you, most notably: https://github.com/alexandru-balan/Stremio-Install-Scripts
-
-We give no guarantees about their correctness or security.
+- **Windows**: Refer to [WINDOWS.md](WINDOWS.md)
+- **Debian**: Refer to [DEBIAN.md](DEBIAN.md)
+- **OpenSuse Leap**: Refer to [OpenSuseLeap.md](OpenSuseLeap.md)
+- **Docker**: See `./distros` directory and [DOCKER.md](DOCKER.md)
 
 ## Releasing a version
 
-1. Bump the version in the `stremio.pro` file
+1. Bump the version in `CMakeLists.txt`
 2. Create a git tag with the corresponding version
 
 ## Arguments
