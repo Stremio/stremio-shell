@@ -182,6 +182,8 @@ void MpvObject::on_update(void *ctx)
 void MpvObject::doUpdate()
 {
     update();
+    if (window())
+        window()->update();
 }
 
 void MpvObject::command(const QVariant& params)
@@ -300,6 +302,7 @@ QVariant MpvObject::getProperty(const QString& name) {
 }
 QQuickFramebufferObject::Renderer *MpvObject::createRenderer() const
 {
-    // Qt6: persistent OpenGL context and scene graph are the default behavior
+    window()->setPersistentGraphics(true);
+    window()->setPersistentSceneGraph(true);
     return new MpvRenderer(const_cast<MpvObject *>(this));
 }
