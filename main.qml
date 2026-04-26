@@ -104,7 +104,7 @@ ApplicationWindow {
                 fileDialog.selectFolder = args.hasOwnProperty("selectFolder") ? args.selectFolder : false
                 fileDialog.selectMultiple = args.hasOwnProperty("selectMultiple") ? args.selectMultiple : false
                 fileDialog.nameFilters = args.hasOwnProperty("nameFilters") ? args.nameFilters : []
-                fileDialog.data = args.hasOwnProperty("data") ? args.data : null
+                fileDialog.extraData = args.hasOwnProperty("data") ? args.data : null
 
                 // Map legacy properties to Qt6 fileMode
                 if (fileDialog.selectFolder) {
@@ -571,7 +571,7 @@ ApplicationWindow {
       property bool selectExisting: true
       property bool selectFolder: false
       property bool selectMultiple: false
-      property var data: {}
+      property var extraData: null
       onAccepted: {
         var fileProtocol = "file://"
         var onWindows = Qt.platform.os === "windows" ? 1 : 0
@@ -596,7 +596,7 @@ ApplicationWindow {
           selectMultiple: fileDialog.selectMultiple,
           nameFilters: fileDialog.nameFilters,
           selectedNameFilter: fileDialog.selectedNameFilterIndex,
-          data: fileDialog.data
+          data: fileDialog.extraData
         })
       }
       onRejected: {
@@ -607,7 +607,7 @@ ApplicationWindow {
           selectMultiple: fileDialog.selectMultiple,
           nameFilters: fileDialog.nameFilters,
           selectedNameFilter: fileDialog.selectedNameFilterIndex,
-          data: fileDialog.data
+          data: fileDialog.extraData
         })
       }
     }
