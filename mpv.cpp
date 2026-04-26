@@ -11,6 +11,7 @@
 
 #include <QOpenGLFramebufferObject>
 
+#include <QGuiApplication>
 #include <QtQuick/QQuickWindow>
 #include <QtQuick/QQuickView>
 
@@ -66,9 +67,23 @@ class MpvRenderer : public QQuickFramebufferObject::Renderer
         if (!obj->mpv_gl)
         {
             mpv_opengl_init_params gl_init_params{get_proc_address_mpv, nullptr, nullptr};
+
+            mpv_render_param display{MPV_RENDER_PARAM_INVALID, nullptr};
+#if defined(Q_OS_UNIX) && !defined(Q_OS_DARWIN)
+            if (QGuiApplication::platformName() == QStringLiteral("xcb")) {
+                display.type = MPV_RENDER_PARAM_X11_DISPLAY;
+                display.data = qGuiApp->nativeInterface<QNativeInterface::QX11Application>()->display();
+            }
+            if (QGuiApplication::platformName() == QStringLiteral("wayland")) {
+                display.type = MPV_RENDER_PARAM_WL_DISPLAY;
+                display.data = qGuiApp->nativeInterface<QNativeInterface::QWaylandApplication>()->display();
+            }
+#endif
+
             mpv_render_param params[]{
                 {MPV_RENDER_PARAM_API_TYPE, const_cast<char *>(MPV_RENDER_API_TYPE_OPENGL)},
                 {MPV_RENDER_PARAM_OPENGL_INIT_PARAMS, &gl_init_params},
+                display,
                 {MPV_RENDER_PARAM_INVALID, nullptr}};
 
             if (mpv_render_context_create(&obj->mpv_gl, obj->mpv, params) < 0)
@@ -90,9 +105,7 @@ class MpvRenderer : public QQuickFramebufferObject::Renderer
             {MPV_RENDER_PARAM_FLIP_Y, &flip_y},
             {MPV_RENDER_PARAM_INVALID, nullptr}};
 
-        obj->window()->beginExternalCommands();
         mpv_render_context_render(obj->mpv_gl, params);
-        obj->window()->endExternalCommands();
      }
 };
 
@@ -182,8 +195,6 @@ void MpvObject::on_update(void *ctx)
 void MpvObject::doUpdate()
 {
     update();
-    if (window())
-        window()->update();
 }
 
 void MpvObject::command(const QVariant& params)
@@ -302,7 +313,5 @@ QVariant MpvObject::getProperty(const QString& name) {
 }
 QQuickFramebufferObject::Renderer *MpvObject::createRenderer() const
 {
-    window()->setPersistentGraphics(true);
-    window()->setPersistentSceneGraph(true);
     return new MpvRenderer(const_cast<MpvObject *>(this));
 }
