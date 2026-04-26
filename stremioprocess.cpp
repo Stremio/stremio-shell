@@ -56,6 +56,21 @@ void Process::start(const QString &program, const QVariantList &arguments, QStri
     QObject::connect(this, &QProcess::readyReadStandardError, this, &Process::onStdErr);
     QObject::connect(this, &QProcess::started, this, &Process::onStarted);
 
+    // Ensure essential environment variables are available to spawned processes.
+    // QProcess may not inherit the full environment; Node.js server.js requires
+    // HOME, USER, and PWD for path.join() operations on cache directories.
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    if (!env.contains("HOME")) {
+        env.insert("HOME", QStandardPaths::writableLocation(QStandardPaths::HomeLocation));
+    }
+    if (!env.contains("USER")) {
+        env.insert("USER", qgetenv("USER"));
+    }
+    if (!env.contains("PWD")) {
+        env.insert("PWD", QDir::currentPath());
+    }
+    this->setProcessEnvironment(env);
+
     QProcess::start(program, args);
 }
 

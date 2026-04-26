@@ -1,9 +1,11 @@
 #ifndef STREMIOPROCESS_H
 #define STREMIOPROCESS_H
 #include <QProcess>
+#include <QProcessEnvironment>
 #include <QVariant>
 #include <QStandardPaths>
 #include <QObject>
+#include <QDir>
 #include <iostream>
 
 class Process : public QProcess {
