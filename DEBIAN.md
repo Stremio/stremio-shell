@@ -1,96 +1,58 @@
 # Build Stremio for Debian GNU/Linux
 
-These instructions have been tested in Debian Bookworm 12 (Stable)
+These instructions have been tested on Debian Trixie 13 and Sid (unstable).
 
-## 1. Start by cloning the GIT repository:
+## 1. Clone the repository
 
-``git clone --recurse-submodules -j8 https://github.com/Stremio/stremio-shell.git``
-
-## 2. Install QTCreator and other dependencies
-
-``sudo apt-get install qtcreator qt5-qmake g++ pkgconf libssl-dev librsvg2-bin``
-
-## 3. Generate the Makefiles for Stremio
-
-``cd stremio-shell``
-
-``qmake``
-
-## 3.1 Install missing dependencies
-
-If you see this message:
-
-```
-Info: creating stash file /home/mendezr/development/misc/stremio-shell/.qmake.stash
-Project ERROR: mpv development package not found
+```bash
+git clone --recurse-submodules https://github.com/vejeta/stremio-shell.git
+cd stremio-shell
+git checkout qt6-migration
 ```
 
-Then you need to install the development package for mpv (movie player)
+If you already cloned without `--recurse-submodules`:
 
-``sudo apt-get install libmpv-dev``
-
-If you see this message:
-
-```
-Project ERROR: Unknown module(s) in QT: qml quick webengine
+```bash
+git submodule update --init
 ```
 
-Then install:
-``sudo apt-get install libqt5webview5-dev``
+## 2. Install build dependencies
 
-If you find:
-```Project ERROR: Unknown module(s) in QT: webengine```
+```bash
+sudo apt-get install cmake g++ pkgconf libssl-dev libmpv-dev librsvg2-bin \
+  qt6-base-dev qt6-declarative-dev qt6-webengine-dev qt6-webchannel-dev qt6-tools-dev libgl-dev
+```
 
-Then install:
+## 3. Build Stremio
 
-``sudo apt-get install libkf5webengineviewer-dev``
+```bash
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release -DQT_DEFAULT_MAJOR_VERSION=6
+make -j$(nproc)
+```
 
-## 4. Compile Stremio:
+## 4. Install runtime QML dependencies
 
-$ make -f release.makefile
+If you see errors like `module "QtWebEngine" is not installed` when running, install:
 
-This will create a new directory named `build` where the `stremio' binary will be located. It will also generate icons and download the streaming server.
-
+```bash
+sudo apt-get install qml6-module-qtwebengine qml6-module-qtwebchannel \
+  qml6-module-qtquick-controls qml6-module-qtquick-dialogs
+```
 
 ## 5. Prepare the streaming server
 
-Upon running the ./build/stremio binary, stremio should start up as usual. Except it won't start the streaming server, for this you need to have NodeJS installed and server.js in your working dir, for which you need to do:
+The stremio binary expects a Node.js server in the same directory:
 
-``cp ./server.js ./build/ && ln -s "$(which node)" ./build/node``
-
-
-## 6. Install other dependencies
-
-If you get this messages:
-
-```
-$ ./stremio
-QQmlApplicationEngine failed to load component
-qrc:/main.qml:3 module "QtWebChannel" is not installed
-qrc:/main.qml:2 module "QtWebEngine" is not installed
-qrc:/main.qml:12 module "Qt.labs.platform" is not installed
-qrc:/main.qml:3 module "QtWebChannel" is not installed
-qrc:/main.qml:2 module "QtWebEngine" is not installed
-qrc:/main.qml:12 module "Qt.labs.platform" is not installed
-qrc:/main.qml:3 module "QtWebChannel" is not installed
-qrc:/main.qml:2 module "QtWebEngine" is not installed
-qrc:/main.qml:12 module "Qt.labs.platform" is not installed
+```bash
+cp ./server.js ./build/
+ln -s "$(which node)" ./build/node
 ```
 
-That means you need to install:
+## 6. Run Stremio
 
-``sudo apt-get install qml-module-qtwebchannel qml-module-qt-labs-platform qml-module-qtwebengine qml-module-qtquick-dialogs qml-module-qtquick-controls qtdeclarative5-dev qml-module-qt-labs-settings qml-module-qt-labs-folderlistmodel``
+```bash
+./build/stremio
+```
 
-Now you should be able to run it normally.
-
-## 7. Run Stremio
-
-``./build/stremio``
-
-If you get a popup window stating:
-
-Error while starting streaming server. Please consider re-installing Stremio from https://www.stremio.com
-
-Perhaps you've skipped step #5
-
-Cheers! 
+If you get a popup about the streaming server failing, make sure you completed step 5.
