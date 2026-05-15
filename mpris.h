@@ -1,11 +1,11 @@
-#pragma once
+#ifndef MPRIS_H
+#define MPRIS_H
 
 #include <QtDBus/QDBusAbstractAdaptor>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusObjectPath>
 #include <QVariantMap>
-#include <QWindow>
 
 #include "mpv.h"
 
@@ -105,3 +105,5 @@ private:
 };
 
 void mprisSetup(MpvObject *player);
+
+#endif // MPRIS_H

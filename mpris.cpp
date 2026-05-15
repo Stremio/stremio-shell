@@ -18,12 +18,11 @@ void MprisRootAdaptor::Raise()
 {
     QQuickItem *item = qobject_cast<QQuickItem *>(parent());
     if (!item) return;
-    QWindow *win = item->window();
-    if (win) {
-        win->show();
-        win->raise();
-        win->requestActivate();
-    }
+    QQuickWindow *win = item->window();
+    if (!win) return;
+    win->show();
+    win->raise();
+    win->requestActivate();
 }
 
 // ─── MprisPlayerAdaptor ───────────────────────────────────────────────────────
