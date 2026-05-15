@@ -70,6 +70,11 @@ SOURCES += main.cpp \
     qclipboardproxy.cpp \
     verifysig.c
 
+unix:!mac {
+    SOURCES += mpris.cpp
+    HEADERS += mpris.h
+}
+
 RESOURCES += qml.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
