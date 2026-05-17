@@ -41,6 +41,10 @@ if(WIN32)
   set(MPV_LIBRARY_mpv ${CMAKE_CURRENT_SOURCE_DIR}/deps/libmpv/win32/mpv.lib)
 endif()
 
+if(UNIX AND NOT APPLE)
+  list(APPEND SOURCES mpris.cpp)
+endif()
+
 if(APPLE)
   list(APPEND SOURCES images/stremio.icns)
   set_source_files_properties(images/stremio.icns PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")

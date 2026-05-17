@@ -118,7 +118,7 @@ int main(int argc, char **argv)
             if (mpv) {
                 mprisSetup(mpv);
             } else {
-                qWarning("MPRIS: MpvObject não encontrado na árvore QML");
+                qWarning("MPRIS: MpvObject not found in QML object tree");
             }
         }
     }

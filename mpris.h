@@ -28,7 +28,7 @@ public:
     bool        canRaise()            const { return true; }
     bool        hasTrackList()        const { return false; }
     QString     identity()            const { return "Stremio"; }
-    QString     desktopEntry()        const { return "stremio"; }
+    QString     desktopEntry()        const { return "smartcode-stremio"; }
     QStringList supportedUriSchemes() const { return {}; }
     QStringList supportedMimeTypes()  const { return {}; }
 
@@ -98,10 +98,11 @@ private:
     void emitPropertiesChanged(const QVariantMap &changed);
 
     MpvObject *m_player;
-    bool       m_idle   = true;
-    bool       m_paused = false;
+    bool       m_idle      = true;
+    bool       m_paused    = false;
     QString    m_title;
-    double     m_duration = 0.0;
+    double     m_duration  = 0.0;
+    int        m_trackSeq  = 0;
 };
 
 void mprisSetup(MpvObject *player);

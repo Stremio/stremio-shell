@@ -30,8 +30,7 @@ void MprisRootAdaptor::Raise()
 MprisPlayerAdaptor::MprisPlayerAdaptor(MpvObject *player)
     : QDBusAbstractAdaptor(player), m_player(player)
 {
-    // Observa as propriedades mpv relevantes para MPRIS
-    player->observeProperty("core-idle");
+    player->observeProperty("idle-active");
     player->observeProperty("pause");
     player->observeProperty("media-title");
     player->observeProperty("duration");
@@ -52,7 +51,7 @@ QVariantMap MprisPlayerAdaptor::metadata() const
 {
     QVariantMap map;
     map["mpris:trackid"] = QVariant::fromValue(
-        QDBusObjectPath("/org/stremio/track/0")
+        QDBusObjectPath(QString("/org/stremio/track/%1").arg(m_trackSeq))
     );
     if (!m_title.isEmpty())
         map["xesam:title"] = m_title;
@@ -103,8 +102,11 @@ void MprisPlayerAdaptor::Seek(qlonglong offsetUs)
     emit Seeked(position());
 }
 
-void MprisPlayerAdaptor::SetPosition(const QDBusObjectPath &, qlonglong positionUs)
+void MprisPlayerAdaptor::SetPosition(const QDBusObjectPath &trackId, qlonglong positionUs)
 {
+    // Ignore stale requests targeting a previous track
+    QString expected = QString("/org/stremio/track/%1").arg(m_trackSeq);
+    if (trackId.path() != expected) return;
     m_player->setProperty("time-pos", double(positionUs) / 1e6);
     emit Seeked(positionUs);
 }
@@ -116,15 +118,20 @@ void MprisPlayerAdaptor::onMpvEvent(const QString &event, const QVariant &value)
         QString     name = obj["name"].toString();
         QVariant    data = obj["data"].toVariant();
 
-        if (name == "core-idle") {
+        if (name == "idle-active") {
             bool idle = data.toBool();
             if (idle != m_idle) {
                 m_idle = idle;
                 if (m_idle) {
                     m_title.clear();
                     m_duration = 0.0;
+                    emitPropertiesChanged({
+                        {"PlaybackStatus", playbackStatus()},
+                        {"Metadata", QVariant::fromValue(metadata())}
+                    });
+                } else {
+                    emitPropertiesChanged({{"PlaybackStatus", playbackStatus()}});
                 }
-                emitPropertiesChanged({{"PlaybackStatus", playbackStatus()}});
             }
         } else if (name == "pause") {
             bool paused = data.toBool();
@@ -134,6 +141,7 @@ void MprisPlayerAdaptor::onMpvEvent(const QString &event, const QVariant &value)
             }
         } else if (name == "media-title") {
             m_title = data.toString();
+            m_trackSeq++;
             emitPropertiesChanged({{"Metadata", QVariant::fromValue(metadata())}});
         } else if (name == "duration") {
             m_duration = data.toDouble();
@@ -145,7 +153,10 @@ void MprisPlayerAdaptor::onMpvEvent(const QString &event, const QVariant &value)
         m_idle  = true;
         m_title.clear();
         m_duration = 0.0;
-        emitPropertiesChanged({{"PlaybackStatus", QString("Stopped")}});
+        emitPropertiesChanged({
+            {"PlaybackStatus", QString("Stopped")},
+            {"Metadata", QVariant::fromValue(metadata())}
+        });
     }
 }
 
@@ -169,12 +180,12 @@ void mprisSetup(MpvObject *player)
 
     QDBusConnection bus = QDBusConnection::sessionBus();
     if (!bus.registerObject(MPRIS_OBJECT_PATH, player)) {
-        qWarning("MPRIS: falha ao registrar objeto D-Bus em %s", MPRIS_OBJECT_PATH);
+        qWarning("MPRIS: failed to register D-Bus object at %s", MPRIS_OBJECT_PATH);
         return;
     }
     if (!bus.registerService(SERVICE_NAME)) {
-        qWarning("MPRIS: falha ao registrar serviço %s", SERVICE_NAME);
+        qWarning("MPRIS: failed to register service %s", SERVICE_NAME);
         return;
     }
-    qDebug("MPRIS: registrado com sucesso — KDE Connect pode controlar o Stremio");
+    qDebug("MPRIS: registered successfully — media controllers can now control Stremio");
 }
