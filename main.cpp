@@ -25,6 +25,10 @@ typedef QApplication Application;
 #include "screensaver.h"
 #include "qclipboardproxy.h"
 
+#ifdef Q_OS_LINUX
+#include "mpris.h"
+#endif
+
 #else
 #include <QGuiApplication>
 #endif
@@ -105,6 +109,20 @@ int main(int argc, char **argv)
     InitializeParameters(engine, app); 
 
     engine->load(QUrl(QStringLiteral("qrc:/main.qml")));
+
+#ifdef Q_OS_LINUX
+    {
+        QObject *root = engine->rootObjects().value(0);
+        if (root) {
+            MpvObject *mpv = root->findChild<MpvObject*>();
+            if (mpv) {
+                mprisSetup(mpv);
+            } else {
+                qWarning("MPRIS: MpvObject not found in QML object tree");
+            }
+        }
+    }
+#endif
 
     #ifndef Q_OS_MACOS
     QObject::connect( &app, &SingleApplication::receivedMessage, &app, &MainApp::processMessage );
