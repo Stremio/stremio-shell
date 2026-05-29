@@ -505,8 +505,28 @@ ApplicationWindow {
         }
 
         Action {
+            shortcut: StandardKey.Undo
+            onTriggered: webView.triggerWebAction(WebEngineView.Undo)
+        }
+        Action {
+            shortcut: StandardKey.Redo
+            onTriggered: webView.triggerWebAction(WebEngineView.Redo)
+        }
+        Action {
+            shortcut: StandardKey.Cut
+            onTriggered: webView.triggerWebAction(WebEngineView.Cut)
+        }
+        Action {
+            shortcut: StandardKey.Copy
+            onTriggered: webView.triggerWebAction(WebEngineView.Copy)
+        }
+        Action {
             shortcut: StandardKey.Paste
             onTriggered: webView.triggerWebAction(WebEngineView.Paste)
+        }
+        Action {
+            shortcut: StandardKey.SelectAll
+            onTriggered: webView.triggerWebAction(WebEngineView.SelectAll)
         }
 
         DropArea {
