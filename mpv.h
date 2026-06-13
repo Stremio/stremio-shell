@@ -35,7 +35,7 @@ public slots:
 signals:
     void onUpdate();
     void mpvEvent(const QString& ev, const QVariant& value);
-
+    void shellPropertyChanged(const QString& name, const QVariant& value = QVariant());
 private slots:
     void doUpdate();
     void on_mpv_events();
@@ -44,6 +44,7 @@ private:
     static void wakeup(void *ctx);
     void handle_mpv_event(mpv_event *event);
     void initialize_mpv();
+    void observeShellProperties();
     QSet<QString> observed_properties;
 };
 

@@ -8,6 +8,7 @@ import com.stremio.process 1.0
 import com.stremio.screensaver 1.0
 import com.stremio.libmpv 1.0
 import com.stremio.clipboard 1.0
+import com.stremio.mediacontrols 1.0
 import QtQml 2.2
 
 import "autoupdater.js" as Autoupdater
@@ -76,6 +77,7 @@ ApplicationWindow {
                 mpv.setProperty(args[0], args[1]);
                 if (args[0] === "pause") {
                     shouldDisableScreensaver(!args[1]);
+                    syncMediaControls();
                 }
             }
             if (ev === "mpv-observe-prop") mpv.observeProperty(args)
@@ -145,7 +147,36 @@ ApplicationWindow {
     }
 
     function isPlayerPlaying() {
-        return root.visible && typeof(mpv.getProperty("path"))==="string" && !mpv.getProperty("pause")
+        return root.visible && isMediaPlaying()
+    }
+
+    function hasLoadedMedia() {
+        var path = mpv.getProperty("path")
+        return typeof(path) === "string" && path.length > 0 && !mpv.getProperty("idle-active")
+    }
+
+    function isMediaPlaying() {
+        return hasLoadedMedia() && !mpv.getProperty("pause")
+    }
+
+    function syncMediaControls() {
+        mediaControls.active = hasLoadedMedia()
+        mediaControls.playing = isMediaPlaying()
+    }
+
+    function setMediaPaused(paused) {
+        if (!hasLoadedMedia()) {
+            syncMediaControls()
+            return
+        }
+
+        mpv.setProperty("pause", paused)
+        wakeupEvent()
+        syncMediaControls()
+    }
+
+    function toggleMediaPlayPause() {
+        setMediaPaused(!mpv.getProperty("pause"))
     }
 
     // Received external message
@@ -230,6 +261,26 @@ ApplicationWindow {
         id: clipboard
     }
 
+    MediaControls {
+        id: mediaControls
+    }
+
+    Connections {
+        target: mediaControls
+
+        function onPlayRequested() {
+            setMediaPaused(false)
+        }
+
+        function onPauseRequested() {
+            setMediaPaused(true)
+        }
+
+        function onTogglePlayPauseRequested() {
+            toggleMediaPlayPause()
+        }
+    }
+
     //
     // Streaming server
     //
@@ -299,7 +350,13 @@ ApplicationWindow {
     MpvObject {
         id: mpv
         anchors.fill: parent
-        onMpvEvent: function(ev, args) { transport.event(ev, args) }
+        onShellPropertyChanged: function(name, value) {
+            syncMediaControls();
+        }
+        onMpvEvent: function(ev, args) {
+            transport.event(ev, args)
+            syncMediaControls();
+        }
     }
 
     //
@@ -689,5 +746,7 @@ ApplicationWindow {
         // Check for updates
         console.info(" **** Completed. Loading Autoupdater ***")
         Autoupdater.initAutoUpdater(autoUpdater, root.autoUpdaterErr, autoUpdaterShortTimer, autoUpdaterLongTimer, autoUpdaterRestartTimer, webView.profile.httpUserAgent);
+
+        syncMediaControls();
     }
 }
