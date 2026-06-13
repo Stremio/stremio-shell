@@ -2,9 +2,11 @@
 
 #include <stdexcept>
 #include <clocale>
+#include <cstdint>
 
 #include <QObject>
 #include <QJsonObject>
+#include <QJsonValue>
 
 #include <QtGlobal>
 #include <QOpenGLContext>
@@ -22,6 +24,8 @@
 
 namespace
 {
+const uint64_t ShellObserverId = 1;
+
 void on_mpv_redraw(void *ctx)
 {
     MpvObject::on_update(ctx);
@@ -175,6 +179,8 @@ void MpvObject::initialize_mpv() {
     // // Setup handling events from MPV
     mpv_set_wakeup_callback(mpv, wakeup, this);
 
+    observeShellProperties();
+
     foreach (const QString &name, observed_properties) {
         mpv_observe_property(mpv, 0, name.toStdString().c_str(), MPV_FORMAT_NODE);
     }
@@ -210,6 +216,13 @@ void MpvObject::observeProperty(const QString& name)
     mpv_observe_property(mpv, 0, name.toStdString().c_str(), MPV_FORMAT_NODE);
 }
 
+void MpvObject::observeShellProperties()
+{
+    mpv_observe_property(mpv, ShellObserverId, "path", MPV_FORMAT_NODE);
+    mpv_observe_property(mpv, ShellObserverId, "pause", MPV_FORMAT_NODE);
+    mpv_observe_property(mpv, ShellObserverId, "idle-active", MPV_FORMAT_NODE);
+}
+
 void MpvObject::wakeup(void *ctx)
 {
     QMetaObject::invokeMethod((MpvObject*)ctx, "on_mpv_events", Qt::QueuedConnection);
@@ -232,8 +245,11 @@ void MpvObject::handle_mpv_event(mpv_event *event) {
 
     eventJson["id"] = qint64(event->reply_userdata);
 
-    if (event->error < 0)
+    if (event->error < 0) {
+        if (event->reply_userdata == ShellObserverId)
+            return;
         eventJson["error"] = QString(mpv_error_string(event->error));
+    }
 
     switch (event->event_id) {
         // WARNING: we are not handling the following event types, it does not seem we need them:
@@ -241,30 +257,40 @@ void MpvObject::handle_mpv_event(mpv_event *event) {
         // case MPV_EVENT_CLIENT_MESSAGE:
         case MPV_EVENT_PROPERTY_CHANGE: {
             mpv_event_property *prop = (mpv_event_property *) event->data;
-            eventJson["name"] = QString(prop->name);
+            const QString propName(prop->name);
+            QVariant propValue;
+            eventJson["name"] = propName;
 
             // NOTE: because we always observe as node, we can handle only that case; we are handling the others, to be safe :)
             switch (prop->format) {
             case MPV_FORMAT_NODE:
+                propValue = mpv::qt::node_to_variant((mpv_node *) prop->data);
                 // Show the player only if there is a video stream
-                if(((mpv_node *)prop->data)->format == MPV_FORMAT_INT64 && eventJson["name"] == "vid")
+                if(((mpv_node *)prop->data)->format == MPV_FORMAT_INT64 && propName == "vid")
                     this->setVisible(true);
-                eventJson["data"] = QJsonValue::fromVariant(mpv::qt::node_to_variant((mpv_node *) prop->data));
+                eventJson["data"] = QJsonValue::fromVariant(propValue);
                 break;
             case MPV_FORMAT_DOUBLE:
-                eventJson["data"] = *(double *)prop->data;
+                propValue = *(double *)prop->data;
+                eventJson["data"] = propValue.toDouble();
                 break;
             case MPV_FORMAT_FLAG:
-                eventJson["data"] = *(int *)prop->data;
+                propValue = *(int *)prop->data;
+                eventJson["data"] = propValue.toInt();
                 break;
             case MPV_FORMAT_STRING:
-                eventJson["data"] = QString(*(char **)prop->data);
+                propValue = QString(*(char **)prop->data);
+                eventJson["data"] = propValue.toString();
                 break;
             default: 
                 break;
             }
 
-            Q_EMIT mpvEvent("mpv-prop-change", eventJson);
+            if (event->reply_userdata == ShellObserverId) {
+                Q_EMIT shellPropertyChanged(propName, propValue);
+            } else {
+                Q_EMIT mpvEvent("mpv-prop-change", eventJson);
+            }
             break;
         }
         case MPV_EVENT_END_FILE: {

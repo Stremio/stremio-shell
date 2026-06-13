@@ -19,10 +19,12 @@ DEFINES += QAPPLICATION_CLASS=QApplication
 mac {
     QMAKE_LFLAGS_SONAME  = -Wl,-install_name,@executable_path/../Frameworks/
     LIBS += -framework CoreFoundation
+    LIBS += -weak_framework MediaPlayer
     QMAKE_RPATHDIR += @executable_path/../Frameworks
     QMAKE_RPATHDIR += @executable_path/lib
     #LIBS += -L $$PWD/deps/libmpv/mac/lib -lmpv
     LIBS += -L${MPV_BIN_PATH}/lib -lmpv -lc
+    OBJECTIVE_SOURCES += mediacontrols_macos.mm
 }
 
 # pkg-config way of linking with mpv works perfectly on the mac distribution process, because macdeployqt will also ship all libraries
@@ -67,6 +69,7 @@ SOURCES += main.cpp \
     screensaver.cpp \
     autoupdater.cpp \
     systemtray.cpp \
+    mediacontrols.cpp \
     qclipboardproxy.cpp \
     verifysig.c
 
@@ -85,6 +88,7 @@ HEADERS += \
     mainapplication.h \
     autoupdater.h \
     systemtray.h \
+    mediacontrols.h \
     qclipboardproxy.h \
     verifysig.h \
     publickey.h

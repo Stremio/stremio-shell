@@ -24,6 +24,7 @@ typedef QApplication Application;
 #include "mpv.h"
 #include "screensaver.h"
 #include "qclipboardproxy.h"
+#include "mediacontrols.h"
 
 #else
 #include <QGuiApplication>
@@ -101,6 +102,7 @@ int main(int argc, char **argv)
     qmlRegisterType<ScreenSaver>("com.stremio.screensaver", 1, 0, "ScreenSaver");
     qmlRegisterType<MpvObject>("com.stremio.libmpv", 1, 0, "MpvObject");
     qmlRegisterType<ClipboardProxy>("com.stremio.clipboard", 1, 0, "Clipboard");
+    qmlRegisterType<MediaControls>("com.stremio.mediacontrols", 1, 0, "MediaControls");
 
     InitializeParameters(engine, app); 
 
