@@ -27,6 +27,9 @@ ApplicationWindow {
 
     property bool quitting: false
 
+    // Remove the OS native title bar so the app's own top bar flows seamlessly
+    flags: Qt.Window | Qt.FramelessWindowHint
+
     color: "#0c0b11";
     title: appTitle
 
@@ -527,6 +530,115 @@ ApplicationWindow {
     // Splash screen
     // Must be over the UI
     //
+    // Frameless window drag region — covers the top bar area of the web UI.
+    // Sits above the WebEngineView so mouse press+drag moves the window.
+    // Clicks and other interactions fall through to the web content below.
+    MouseArea {
+        id: windowDragArea
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: 70 // matches the Stremio web UI top bar height
+        // Only active in windowed mode; fullscreen needs no drag handle
+        enabled: root.visibility !== Window.FullScreen && root.visibility !== Window.Maximized
+
+        property point pressPos
+
+        onPressed: function(mouse) {
+            pressPos = Qt.point(mouse.x, mouse.y)
+        }
+
+        onPositionChanged: function(mouse) {
+            if (pressed) {
+                var delta = Qt.point(mouse.x - pressPos.x, mouse.y - pressPos.y)
+                root.x += delta.x
+                root.y += delta.y
+            }
+        }
+
+        // Pass double-click through as a maximize toggle
+        onDoubleClicked: function() {
+            if (root.visibility === Window.Maximized) {
+                root.visibility = Window.Windowed
+            } else {
+                root.visibility = Window.Maximized
+            }
+        }
+
+        // Keep cursor as default — don't show a move cursor over the web UI top bar
+        cursorShape: Qt.ArrowCursor
+    }
+
+    // Edge resize handles — restore OS-style resizing lost with FramelessWindowHint.
+    // Each handle is a thin transparent strip along a window edge.
+    property int resizeMargin: 6
+
+    // Bottom edge
+    MouseArea {
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: root.resizeMargin
+        enabled: root.visibility !== Window.FullScreen && root.visibility !== Window.Maximized
+        cursorShape: Qt.SizeVerCursor
+        property int pressY
+        property int pressHeight
+        onPressed: function(m) { pressY = m.y; pressHeight = root.height }
+        onPositionChanged: function(m) {
+            if (pressed) root.height = Math.max(root.minimumHeight, pressHeight + (m.y - pressY))
+        }
+    }
+    // Right edge
+    MouseArea {
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        width: root.resizeMargin
+        enabled: root.visibility !== Window.FullScreen && root.visibility !== Window.Maximized
+        cursorShape: Qt.SizeHorCursor
+        property int pressX
+        property int pressWidth
+        onPressed: function(m) { pressX = m.x; pressWidth = root.width }
+        onPositionChanged: function(m) {
+            if (pressed) root.width = Math.max(root.minimumWidth, pressWidth + (m.x - pressX))
+        }
+    }
+    // Left edge
+    MouseArea {
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        width: root.resizeMargin
+        enabled: root.visibility !== Window.FullScreen && root.visibility !== Window.Maximized
+        cursorShape: Qt.SizeHorCursor
+        property int pressX
+        property int pressWidth
+        onPressed: function(m) { pressX = root.x + m.x; pressWidth = root.width }
+        onPositionChanged: function(m) {
+            if (pressed) {
+                var newW = Math.max(root.minimumWidth, pressWidth - (root.x + m.x - pressX))
+                if (newW !== root.width) { root.x = root.x + root.width - newW; root.width = newW }
+            }
+        }
+    }
+    // Bottom-right corner
+    MouseArea {
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        width: root.resizeMargin * 2
+        height: root.resizeMargin * 2
+        enabled: root.visibility !== Window.FullScreen && root.visibility !== Window.Maximized
+        cursorShape: Qt.SizeFDiagCursor
+        property int pressX; property int pressY; property int pressW; property int pressH
+        onPressed: function(m) { pressX = m.x; pressY = m.y; pressW = root.width; pressH = root.height }
+        onPositionChanged: function(m) {
+            if (pressed) {
+                root.width = Math.max(root.minimumWidth, pressW + (m.x - pressX))
+                root.height = Math.max(root.minimumHeight, pressH + (m.y - pressY))
+            }
+        }
+    }
+
     Rectangle {
         id: splashScreen;
         color: "#0c0b11";
