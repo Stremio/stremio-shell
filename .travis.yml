@@ -11,7 +11,7 @@ jobs:
         - BUILD_OS="linux"
         - DISTRO="Ubuntu"
     - os: linux
-      dist: xenial
+      dist: focal
       sudo: required
       services:
         - docker
