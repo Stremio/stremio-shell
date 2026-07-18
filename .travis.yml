@@ -8,8 +8,24 @@ jobs:
       services:
         - docker
       env:
-        global:
-        - BUILD_OS: "linux"
+        - BUILD_OS="linux"
+        - DISTRO="Ubuntu"
+    - os: linux
+      dist: focal
+      sudo: required
+      services:
+        - docker
+      env:
+        - BUILD_OS="linux"
+        - DISTRO="Ubuntu-24.04"
+    - os: linux
+      dist: xenial
+      sudo: required
+      services:
+        - docker
+      env:
+        - BUILD_OS="linux"
+        - DISTRO="ArchLinux"
 
     # - os: osx
     #   compiler: clang
@@ -42,7 +58,7 @@ script:
   - echo "> building from TAG $TAG"
   - echo "> Using node $(node --version)"
 
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export DISTROS=`ls distros`; for i in $DISTROS; do echo "Building for distro $i..." && ./dist-utils/build-package.sh $i -d $DESTDIR -t $TAG; done fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ -n "$DISTRO" ]; then echo "Building for distro $DISTRO..." && ./dist-utils/build-package.sh $DISTRO -d $DESTDIR -t $TAG; fi
 
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ( qmake . && make ); fi
 
