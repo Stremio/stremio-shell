@@ -11,6 +11,7 @@ STREMIO_BIN := ${BUILD_DIR}/stremio
 ALL: ${STREMIO_BIN} ${SERVER_JS} icons
 
 install:
+	mkdir -p "${INSTALL_DIR}"
 	make -C ${BUILD_DIR} install
 	install -Dm 644 ${SERVER_JS} "${INSTALL_DIR}/server.js"
 	install -Dm 644 smartcode-stremio.desktop "${INSTALL_DIR}/smartcode-stremio.desktop"
