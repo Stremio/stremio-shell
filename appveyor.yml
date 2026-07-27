@@ -42,5 +42,5 @@ test_script:
       pushd build
       "%QTDIR%\bin\qmake.exe" ..\stremio.pro CONFIG+=release
       nmake
-      if not exist stremio.exe exit /b 1
+      if not exist release\stremio.exe exit /b 1
       popd
