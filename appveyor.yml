@@ -39,9 +39,7 @@ test_script:
       if (!(Test-Path "deps\libmpv\win32\mpv.lib")) { throw 'The pinned libmpv import library is missing' }
   - cmd: |
       if not exist build mkdir build
-      pushd build
+      cd /d build
       "%QTDIR%\bin\qmake.exe" ..\stremio.pro CONFIG+=release
       nmake
       dir /b release
-      popd
-      exit /b 0
