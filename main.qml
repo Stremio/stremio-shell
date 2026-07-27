@@ -26,6 +26,7 @@ ApplicationWindow {
     height: root.initialHeight
 
     property bool quitting: false
+    property bool pictureInPicture: false
 
     color: "#0c0b11";
     title: appTitle
@@ -34,6 +35,9 @@ ApplicationWindow {
     property bool wasFullScreen: false
 
     function setFullScreen(fullscreen) {
+        if (fullscreen && root.pictureInPicture) {
+            setPictureInPicture(false);
+        }
         if (fullscreen) {
             root.visibility = Window.FullScreen;
             root.wasFullScreen = true;
@@ -41,6 +45,40 @@ ApplicationWindow {
             root.visibility = root.previousVisibility;
             root.wasFullScreen = false;
         }
+    }
+
+    function setPictureInPicture(enabled) {
+        enabled = enabled === true;
+        if (enabled === root.pictureInPicture) {
+            if (enabled) {
+                pipWindow.show();
+                pipWindow.raise();
+                pipWindow.requestActivate();
+            }
+            return;
+        }
+
+        if (enabled && root.visibility === Window.FullScreen) {
+            return;
+        }
+
+        if (enabled) {
+            // Move the existing libmpv scene item into a real top-level Qt window.
+            // The MPV instance remains alive, so playback does not restart.
+            mpv.parent = pipWindow.contentItem;
+            mpv.visible = true;
+            root.pictureInPicture = true;
+            pipWindow.show();
+            pipWindow.raise();
+            pipWindow.requestActivate();
+        } else {
+            pipWindow.hide();
+            mpv.parent = root.contentItem;
+            mpv.visible = true;
+            root.pictureInPicture = false;
+        }
+
+        transport.event("win-pip-changed", { enabled: root.pictureInPicture });
     }
 
     function showWindow() {
@@ -83,6 +121,7 @@ ApplicationWindow {
             if (ev === "wakeup") wakeupEvent()
             if (ev === "set-window-mode") onWindowMode(args)
             if (ev === "open-external") Qt.openUrlExternally(args)
+            if (ev === "win-set-pip") setPictureInPicture(args && args.enabled === true)
             if (ev === "win-focus" && !root.visible) {
                 showWindow();
             }
@@ -165,6 +204,7 @@ ApplicationWindow {
 
     function quitApp() {
         root.quitting = true;
+        if (root.pictureInPicture) setPictureInPicture(false);
         webView.destroy();
         systemTray.hideIconTray();
         streamingServer.kill();
@@ -300,6 +340,24 @@ ApplicationWindow {
         id: mpv
         anchors.fill: parent
         onMpvEvent: function(ev, args) { transport.event(ev, args) }
+    }
+
+    Window {
+        id: pipWindow
+        visible: false
+        title: appTitle + " - Picture-in-Picture"
+        width: Math.max(320, Math.round(root.width * 0.4))
+        height: Math.max(180, Math.round(root.height * 0.4))
+        minimumWidth: 320
+        minimumHeight: 180
+        color: "black"
+        flags: Qt.Window | Qt.WindowStaysOnTopHint | Qt.WindowCloseButtonHint |
+               Qt.WindowMinimizeButtonHint
+
+        onClosing: function(close) {
+            close.accepted = false;
+            if (root.pictureInPicture) root.setPictureInPicture(false);
+        }
     }
 
     //
