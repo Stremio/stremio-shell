@@ -4,7 +4,9 @@ platform: x86
 configuration: Release
 
 environment:
-  QTDIR: C:\Qt\5.15.2\msvc2019
+  # AppVeyor's current VS2019 image provides the x86 MSVC2017 Qt 5.13 kit.
+  # MSVC 2019 is binary-compatible with the MSVC 2017 runtime used by Qt.
+  QTDIR: C:\Qt\5.13.2\msvc2017
 
 clone_depth: 1
 
