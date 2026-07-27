@@ -101,7 +101,8 @@ ApplicationWindow {
                         onWindowMode(args[1]);
                         return;
                     }
-                    case 'open-external': {
+                    case 'open-external':
+                    case 'play-external': {
                         Qt.openUrlExternally(args[1]);
                         return;
                     }
