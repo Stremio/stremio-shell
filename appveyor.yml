@@ -1,4 +1,4 @@
-image: Previous Visual Studio 2019
+image: Visual Studio 2017
 
 platform: x86
 configuration: Release
@@ -28,7 +28,7 @@ install:
       Start-Process $file.Name -ArgumentList '/silent /verysilent /sp- /suppressmsgboxes /dir=C:\OpenSSL-Win32' -Wait
       Remove-Item $file.Name
 
-  - CALL "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
+  - CALL "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
   - set PATH=%QTDIR%\bin;%PATH%
 
 build: off
