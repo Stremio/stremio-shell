@@ -1,0 +1,44 @@
+image: Visual Studio 2019
+
+platform: x86
+configuration: Release
+
+environment:
+  QTDIR: C:\Qt\5.15.2\msvc2019
+
+clone_depth: 1
+
+install:
+  - git submodule update --init --recursive
+
+  # stremio.pro links against the x86 OpenSSL import library.
+  - ps: |
+      $hashesUrl = 'https://raw.githubusercontent.com/slproweb/opensslhashes/master/win32_openssl_hashes.json'
+      $files = (Invoke-RestMethod $hashesUrl).files
+      $file = $files.psobject.properties |
+        Where-Object { $_.Name.StartsWith('Win32OpenSSL-1_1_1') -and $_.Name.EndsWith('.exe') } |
+        Select-Object -First 1
+      if ($null -eq $file) { throw 'Unable to find a Win32 OpenSSL 1.1.1 installer' }
+      Start-FileDownload $file.Value.url
+      if ((Get-FileHash $file.Name -Algorithm SHA256).Hash -ne $file.Value.sha256) {
+        throw 'OpenSSL installer checksum does not match'
+      }
+      Start-Process $file.Name -ArgumentList '/silent /verysilent /sp- /suppressmsgboxes /dir=C:\OpenSSL-Win32' -Wait
+      Remove-Item $file.Name
+
+  - CALL "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
+  - set PATH=%QTDIR%\bin;%PATH%
+
+build: off
+
+test_script:
+  - ps: |
+      if (!(Test-Path "$env:QTDIR\bin\qmake.exe")) { throw "Qt qmake was not found at $env:QTDIR" }
+      if (!(Test-Path "deps\libmpv\win32\mpv.lib")) { throw 'The pinned libmpv import library is missing' }
+  - cmd: |
+      if not exist build mkdir build
+      pushd build
+      "%QTDIR%\bin\qmake.exe" ..\stremio.pro CONFIG+=release
+      nmake
+      if not exist stremio.exe exit /b 1
+      popd
