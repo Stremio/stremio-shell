@@ -1,10 +1,10 @@
-image: Visual Studio 2019
+image: Previous Visual Studio 2019
 
 platform: x86
 configuration: Release
 
 environment:
-  # AppVeyor's current VS2019 image provides the x86 MSVC2017 Qt 5.13 kit.
+  # The previous VS2019 image retains the x86 MSVC2017 Qt 5.13 kit.
   # MSVC 2019 is binary-compatible with the MSVC 2017 runtime used by Qt.
   QTDIR: C:\Qt\5.13.2\msvc2017
 
