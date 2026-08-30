@@ -142,6 +142,19 @@ void MpvObject::initialize_mpv() {
     // terminal=yes brings us all the terminal logs; on windows it's much better with winpty (https://github.com/mpv-player/mpv/blob/master/DOCS/compile-windows.md)
     mpv_set_option_string(mpv, "terminal", "yes");
     mpv_set_option_string(mpv, "msg-level", "all=v");
+    // Keep the decoder's native 5.1/7.1 layout and apply a dialogue-focused
+    // stereo matrix before PulseAudio receives the stream.  The center channel
+    // carries most dialogue, while LFE and surround channels are intentionally
+    // attenuated to prevent effects from masking speech.
+    mpv_set_option_string(mpv, "audio-channels", "stereo");
+    mpv_set_option_string(mpv, "ad-lavc-downmix", "no");
+    mpv_set_option_string(mpv, "af",
+        "lavfi=[pan=stereo|"
+        "FL=0.50*FL+0.85*FC+0.20*LFE+0.35*BL+0.35*SL|"
+        "FR=0.50*FR+0.85*FC+0.20*LFE+0.35*BR+0.35*SR,"
+        "acompressor=threshold=0.125:ratio=3:attack=20:release=250:makeup=1.5,"
+        "alimiter=limit=0.95:level=0]");
+
 
     if (mpv_initialize(mpv) < 0)
         throw std::runtime_error("could not initialize mpv context");
