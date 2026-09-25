@@ -2,6 +2,28 @@
 
 These instructions have been tested in Debian Bookworm 12 (Stable)
 
+## Prebuilt packages
+
+You may not need to build anything.
+
+Stremio is now in Debian: `stremio` was accepted into unstable (main) on
+24 September 2026, along with `stremio-server-installer` in contrib for the
+streaming server component ([ITP #943703](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=943703),
+[tracker](https://tracker.debian.org/pkg/stremio)).
+
+```bash
+sudo apt install stremio stremio-server-installer
+```
+
+That package builds [stremio-linux-shell](https://github.com/Stremio/stremio-linux-shell),
+the GTK4 / WebKitGTK 6 client, rather than this Qt5 shell.
+
+Prebuilt packages of **this** Qt5 shell, and builds for Debian stable, are
+available from a third-party repository at https://debian.vejeta.com as
+`stremio-qt5`.
+
+The instructions below remain the way to build this repository from source.
+
 ## 1. Start by cloning the GIT repository:
 
 ``git clone --recurse-submodules -j8 https://github.com/Stremio/stremio-shell.git``
