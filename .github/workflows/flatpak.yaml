@@ -45,7 +45,7 @@ jobs:
           mv Stremio.flatpak "$FLATPAK_PATH"
 
       - name: Store the Flatpak
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: StremioFlatpak
           path: ${{ env.FLATPAK_PATH }}
