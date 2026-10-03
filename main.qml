@@ -73,6 +73,8 @@ ApplicationWindow {
             if (ev === "app-ready") transport.flushQueue()
             if (ev === "mpv-command" && args && args[0] !== "run") mpv.command(args)
             if (ev === "mpv-set-prop") {
+                // This property is misspelled in https://app.strem.io/shell-v4.4/blob.js causing keyboard shortcuts to never get enabled
+                if (args[0] === "input-defalt-bindings") args[0] = "input-default-bindings";
                 mpv.setProperty(args[0], args[1]);
                 if (args[0] === "pause") {
                     shouldDisableScreensaver(!args[1]);
